@@ -1,0 +1,7 @@
+.git/
+.vercel/
+.env
+.env.local
+.env*.local
+.DS_Store
+inscricoes-maratona-ia-20260825-183710.xlsx
