@@ -7,3 +7,5 @@ supabase/.temp/
 *.xlsx
 *.xls
 *.csv
+.vercel
+.env*.local
