@@ -1,0 +1,9 @@
+{
+  "persistenceMode": "supabase",
+  "environmentBaseFiles": {
+    "homolog": "inscricoes-maratona-ia-20260921-131155.xlsx",
+    "producao": ""
+  },
+  "url": "https://sdnrrzwrvbdnhdjypfub.supabase.co",
+  "anonKey": "sb_publishable_7l084K9t4jUUdED07fOj8w_Oo4airGc"
+}
