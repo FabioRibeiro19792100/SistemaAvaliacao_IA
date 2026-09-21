@@ -9390,6 +9390,9 @@ let baseConfirmada = false;
 let dashCharts = {};
 const ARQUIVO_PADRAO = '';
 const ARQUIVO_PADRAO_HOMOLOG = '';
+const STARTUP_BASE_OVERRIDES = {
+  '20260921': 'inscricoes-maratona-ia-20260921-131155.xlsx',
+};
 const STORAGE_KEY = 'maratonaia_app_state_v1';
 const SUPABASE_SETTINGS_KEY = 'maratonaia_supabase_settings_v1';
 const PRIMARY_ENVIRONMENT = 'homolog';
@@ -9544,6 +9547,21 @@ function currentEnvironmentConfig() {
 
 function defaultBaseFileForEnvironment(env) {
   return 'inscricoes-maratona-ia-20260921-131155.xlsx';
+}
+
+function applyStartupBaseOverride() {
+  const requestedBase = new URLSearchParams(window.location.search).get('base');
+  const baseFile = STARTUP_BASE_OVERRIDES[requestedBase];
+  if (!baseFile) return false;
+
+  activeEnvironment = PRIMARY_ENVIRONMENT;
+  persistenceMode = 'local';
+  environmentBaseFiles[PRIMARY_ENVIRONMENT] = baseFile;
+  selectedLocalBaseNames[PRIMARY_ENVIRONMENT] = baseFile;
+  environmentRemoteReady[PRIMARY_ENVIRONMENT] = false;
+  remoteBootResolved[PRIMARY_ENVIRONMENT] = true;
+  remoteBootFailureReason[PRIMARY_ENVIRONMENT] = '';
+  return true;
 }
 
 function normalizeEnvironmentBaseFile(env, value) {
@@ -13358,6 +13376,7 @@ function showStartupRoute() {
 }
 
 hydrateSupabaseSettings();
+applyStartupBaseOverride();
 if (persistenceMode === 'supabase') {
   carregandoEstadoRemoto = true;
   resetRuntimeStateForEnvironment();
@@ -13386,6 +13405,7 @@ window.addEventListener('load', () => {
   setTimeout(async () => {
     await loadProjectSummaries();
     await loadSharedSupabaseSettings();
+    applyStartupBaseOverride();
     if (persistenceMode === 'supabase' && hasSupabaseCredentials()) {
       await waitForSupabaseSdk();
     }
