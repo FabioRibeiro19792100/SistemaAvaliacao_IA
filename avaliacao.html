@@ -6600,20 +6600,13 @@ function buildAttachmentViewerConfig(url = '', tipo = '') {
   if (/\.(mp4|webm|mov|m4v)(\?|#|$)/.test(lowerUrl)) {
     return {
       kind: 'video',
-      src: shouldUseAttachmentProxy(normalizedUrl) ? proxiedUrl : normalizedUrl,
+      src: normalizedUrl,
       note: ''
     };
   }
   if (lowerTipo === 'video_criativo') {
-    if (shouldUseAttachmentProxy(normalizedUrl)) {
-      return {
-        kind: 'video',
-        src: proxiedUrl,
-        note: ''
-      };
-    }
     return {
-      kind: 'iframe',
+      kind: 'video',
       src: normalizedUrl,
       note: ''
     };
