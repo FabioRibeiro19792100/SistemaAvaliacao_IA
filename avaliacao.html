@@ -9543,11 +9543,14 @@ function currentEnvironmentConfig() {
 }
 
 function defaultBaseFileForEnvironment(env) {
-  return 'inscricoes-maratona-ia-20260908-171520.xlsx';
+  return 'inscricoes-maratona-ia-20260921-131155.xlsx';
 }
 
 function normalizeEnvironmentBaseFile(env, value) {
   const raw = String(value || '').trim();
+  if (raw === 'inscricoes-maratona-ia-20260908-171520.xlsx') {
+    return defaultBaseFileForEnvironment(env);
+  }
   if (isLegacyFakeBaseName(raw)) return '';
   return raw;
 }
