@@ -7,8 +7,18 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>Sistema de Avaliação — Maratona IA</title>
+<script>
+(() => {
+  const params = new URLSearchParams(location.search);
+  const parecerista = params.get('par');
+  if (!parecerista || params.has('legacy_reviewer')) return;
+  const destino = new URL('avaliador-maratona.html', location.href);
+  destino.searchParams.set('par', parecerista);
+  location.replace(destino.href);
+})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.34.1/dist/tabler-icons.min.css">
 <script src="./vendor/chart.umd.js"></script>
 <script src="./vendor/xlsx.full.min.js"></script>
@@ -664,20 +674,40 @@ tr:hover td.sticky{background:#FAFAFA}
 .results-summary-toggle-sign{font-size:15px;font-weight:500;line-height:.9}
 .results-summary-toggle-label{font-size:7.5px;font-weight:600;letter-spacing:.04em;line-height:1.1;white-space:nowrap;text-transform:uppercase}
 #view-resultados .results-table{width:100%!important;min-width:980px!important;table-layout:fixed}
-#view-resultados:not(.results-summary-open) .results-table .s0{left:0;width:6%;min-width:0;max-width:none}
-#view-resultados:not(.results-summary-open) .results-table .res-actions-col{width:7%;min-width:0;max-width:none}
-#view-resultados:not(.results-summary-open) .results-table .s5{left:13%;width:21%;min-width:0;max-width:none}
-#view-resultados:not(.results-summary-open) .results-table .res-state-col{width:10%;min-width:0;max-width:none;white-space:normal}
-#view-resultados .results-table .res-state-col{text-transform:uppercase}
-#view-resultados:not(.results-summary-open) .results-table .res-university-col{width:18%;min-width:0;max-width:none}
-#view-resultados .results-table .res-university-col{text-transform:uppercase}
+#view-resultados:not(.results-summary-open) .results-table .s0{left:0;width:5%;min-width:0;max-width:none}
+#view-resultados:not(.results-summary-open) .results-table .s5{left:5%;width:31%;min-width:0;max-width:none}
+#view-resultados.results-id-open:not(.results-summary-open) .results-table .s5{left:10%;width:26%}
+#view-resultados col.res-id-number-col,
+#view-resultados th.res-id-number-col,
+#view-resultados td.res-id-number-col{display:none}
+#view-resultados.results-id-open col.res-id-number-col{display:table-column}
+#view-resultados.results-id-open th.res-id-number-col,
+#view-resultados.results-id-open td.res-id-number-col{display:table-cell}
+#view-resultados:not(.results-summary-open) .results-table .res-id-number-col{width:5%;min-width:0;max-width:none}
+#view-resultados .results-table th.res-id-number-col,
+#view-resultados .results-table td.res-id-number-col{text-align:center}
+#view-resultados .results-table td.res-id-number-col{color:#1A73E8;font-size:11px;font-weight:700;font-variant-numeric:tabular-nums}
+#view-resultados.results-id-open:not(.results-summary-open) .results-table .res-id-number-col{position:sticky;left:5%;z-index:5;background:#fff}
+#view-resultados:not(.results-summary-open) .results-table .res-university-col{width:22%;min-width:0;max-width:none}
+#view-resultados .results-table .res-university-col{text-transform:uppercase;font-size:10.5px;font-weight:400;font-style:normal;line-height:1.35;color:#202124}
+#view-resultados .results-table .res-university-col .res-muted{color:#202124!important}
+#view-resultados .res-university-location{display:grid;gap:1px;margin-top:3px;color:#202124;font-size:inherit;font-weight:400;font-style:normal;line-height:inherit;text-transform:uppercase}
+#view-resultados:not(.results-summary-open) .results-table .res-gender-col{width:10%;min-width:90px;max-width:none}
+#view-resultados:not(.results-summary-open) .results-table .res-race-col{width:10%;min-width:90px;max-width:none}
+#view-resultados .results-table .res-gender-col,
+#view-resultados .results-table .res-race-col{vertical-align:top;text-transform:uppercase;font-size:10.5px;font-weight:400;font-style:normal;line-height:1.35;color:#202124}
+#view-resultados .res-video-duration-value{display:block;width:34px;padding-top:0;color:#202124;font-size:9px;font-weight:400;font-style:normal;line-height:1;font-variant-numeric:tabular-nums;font-feature-settings:"tnum";text-align:center;white-space:nowrap}
+#view-resultados .res-video-duration-value.is-loading{color:#A0A7B1;font-weight:500}
 #view-resultados:not(.results-summary-open) .results-table .s7{width:8%;min-width:0;max-width:none}
 #view-resultados:not(.results-summary-open) .results-table .crit,
-#view-resultados:not(.results-summary-open) .results-table .crit-td{width:10%;min-width:0;max-width:none}
+#view-resultados:not(.results-summary-open) .results-table .crit-td{width:9%;min-width:0;max-width:none}
 #view-resultados .results-table th,
 #view-resultados .results-table td{border-right:1px solid #DDE3EA}
-#view-resultados .results-table thead th{vertical-align:top}
+#view-resultados .results-table thead th{vertical-align:top;font-size:9.5px;font-weight:600;font-style:normal;line-height:1.25;letter-spacing:.04em;text-transform:uppercase;color:#3C4043}
 #view-resultados .results-table thead th{padding-left:8px;padding-right:8px}
+#view-resultados .results-table thead th .peso{font-size:9.5px;font-weight:600;font-style:normal;line-height:1.2;letter-spacing:.04em;text-transform:uppercase;color:#3C4043}
+#view-resultados:not(.results-summary-open) .results-table th.rank-col-head{font-size:9.5px;padding-left:6px;padding-right:6px}
+#view-resultados .results-header-label{display:block;font-family:inherit!important;font-size:9.5px!important;font-weight:600!important;font-style:normal!important;line-height:1.25!important;letter-spacing:.04em!important;text-transform:uppercase!important;color:#3C4043!important}
 #view-resultados .results-table th:last-child,
 #view-resultados .results-table td:last-child{border-right:0}
 #view-resultados .results-table .crit,
@@ -693,27 +723,44 @@ tr:hover td.sticky{background:#FAFAFA}
 #view-resultados.results-summary-open td.res-project-summary-col{display:table-cell}
 #view-resultados .results-table .s7{left:456px}
 #view-resultados.results-summary-open .results-table th.s0,
-#view-resultados.results-summary-open .results-table td.s0{position:sticky;left:0}
-#view-resultados.results-summary-open .results-table th.s3,
-#view-resultados.results-summary-open .results-table td.s3{position:sticky;left:86px}
+#view-resultados.results-summary-open .results-table td.s0{position:sticky;left:0;width:70px;min-width:70px;max-width:70px}
 #view-resultados.results-summary-open .results-table th.s5,
-#view-resultados.results-summary-open .results-table td.s5{position:sticky;left:194px}
+#view-resultados.results-summary-open .results-table td.s5{position:sticky;left:70px;width:300px;min-width:300px;max-width:300px}
+#view-resultados.results-summary-open.results-id-open .results-table th.s5,
+#view-resultados.results-summary-open.results-id-open .results-table td.s5{left:128px}
+#view-resultados.results-summary-open .results-table .res-id-number-col{position:sticky;left:370px;width:58px;min-width:58px;max-width:58px;z-index:5;background:#fff}
 #view-resultados.results-summary-open .results-table tbody td.s0,
-#view-resultados.results-summary-open .results-table tbody td.s3,
 #view-resultados.results-summary-open .results-table tbody td.s5{z-index:5;background:#fff}
 #view-resultados.results-summary-open .results-table thead th.s0,
-#view-resultados.results-summary-open .results-table thead th.s3,
 #view-resultados.results-summary-open .results-table thead th.s5{z-index:18;background:#F3F4F6}
 #view-resultados.results-summary-open .results-table th.res-project-summary-col,
-#view-resultados.results-summary-open .results-table td.res-project-summary-col{position:sticky;left:456px;background:#fff;z-index:4;box-shadow:3px 0 7px -4px rgba(15,23,42,.28)}
+#view-resultados.results-summary-open .results-table td.res-project-summary-col{position:sticky;left:370px;background:#fff;z-index:4;box-shadow:3px 0 7px -4px rgba(15,23,42,.28)}
+#view-resultados.results-summary-open.results-id-open .results-table th.res-project-summary-col,
+#view-resultados.results-summary-open.results-id-open .results-table td.res-project-summary-col{left:428px}
 #view-resultados.results-summary-open .results-table th.res-project-summary-col{background:#F3F4F6;z-index:17}
 #view-resultados.results-summary-open .results-table th.s7,
-#view-resultados.results-summary-open .results-table td.s7{position:sticky;left:776px;box-shadow:3px 0 7px -4px rgba(15,23,42,.28)}
+#view-resultados.results-summary-open .results-table td.s7{position:sticky;left:690px;box-shadow:3px 0 7px -4px rgba(15,23,42,.28)}
+#view-resultados.results-summary-open.results-id-open .results-table th.s7,
+#view-resultados.results-summary-open.results-id-open .results-table td.s7{left:748px}
 #view-resultados.results-summary-open .results-table tbody td.s7{z-index:5;background:#fff}
 #view-resultados.results-summary-open .results-table thead th.s7{z-index:18;background:#F3F4F6}
 .res-project-summary-head{text-align:left;border-left:0 !important}
-.res-project-summary-text{font-size:11.5px;line-height:1.45;color:#5F6368;white-space:normal}
+.res-project-summary-text{font-size:11.5px;font-weight:400;font-style:normal;line-height:1.45;color:#202124;white-space:normal}
 .res-project-summary-empty{color:#BDC1C6}
+.res-leader-head{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start;gap:10px}
+.res-leader-name{min-width:0;font-size:12.5px;font-weight:400;font-style:normal;line-height:1.25;color:#202124}
+.res-name-actions{display:grid;grid-template-columns:27px 27px;align-items:start;align-self:start;gap:4px;width:58px;flex:0 0 58px}
+.res-name-actions .icon-btn{align-self:start;width:27px;height:27px;margin:0;border-color:#D7E0EC;border-radius:6px;font-size:15px}
+.res-video-action{display:grid;grid-template-columns:27px;grid-template-rows:27px auto;justify-items:center;align-items:start;gap:3px;width:27px}
+#view-resultados .team-member-line{color:#202124;font-weight:400;font-style:normal}
+#view-resultados .nota-main,
+#view-resultados .res-criterion-score,
+#view-resultados .res-criterion-calc{color:#202124;font-weight:400;font-style:normal}
+.results-team-head{align-items:flex-start}
+.results-team-title{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+.results-id-toggle{display:inline-flex;align-items:center;gap:4px;padding:0;border:0;background:transparent;color:#1A73E8;font:inherit;font-size:8.5px;font-weight:700;letter-spacing:.01em;text-transform:none;cursor:pointer}
+.results-id-toggle:hover{text-decoration:underline}
+.results-id-toggle-sign{font-size:12px;line-height:.8}
 .results-summary-flag{display:inline-flex;align-items:center;gap:7px;margin-left:10px;padding-left:14px;border-left:1px solid #E5E7EB;color:#64748B;font-size:11px;line-height:1;white-space:nowrap;cursor:pointer;user-select:none}
 .results-summary-flag input{width:14px;height:14px;margin:0;accent-color:#1A73E8;cursor:pointer}
 .results-summary-flag span{font-weight:600}
@@ -815,6 +862,7 @@ tr:hover td.sticky{background:#FAFAFA}
 #view-resultados .tbl-scroll{
   overflow:visible;
   padding-right:0;
+  padding-top:0;
 }
 #view-resultados.results-summary-open > div > .tbl-card{overflow:hidden}
 #view-resultados.results-summary-open .tbl-scroll{
@@ -825,7 +873,8 @@ tr:hover td.sticky{background:#FAFAFA}
   overscroll-behavior-x:contain;
   overscroll-behavior-y:auto;
 }
-#view-resultados.results-summary-open .results-table thead{top:0}
+#view-resultados.results-summary-open .results-criteria-floating-label{top:0}
+#view-resultados.results-summary-open .results-table thead{top:24px}
 #view-resultados > div > .tbl-card{
   overflow:visible;
 }
@@ -854,9 +903,11 @@ tr:hover td.sticky{background:#FAFAFA}
 }
 #view-resultados .results-table thead{
   position:sticky;
-  top:calc(24px + var(--results-toolbar-h, 0px) + 8px);
+  top:calc(24px + var(--results-toolbar-h, 0px) + 32px);
   z-index:20;
 }
+#view-resultados .results-criteria-floating-label{position:sticky;top:calc(24px + var(--results-toolbar-h, 0px) + 8px);z-index:21;height:24px;display:flex;align-items:center;justify-content:flex-end;background:#fff;pointer-events:none}
+#view-resultados .results-criteria-floating-label span{display:block;width:27%;color:#8B949E;font-size:9px;font-weight:500;line-height:1;letter-spacing:.05em;text-align:center;text-transform:uppercase;white-space:nowrap}
 #view-resultados .results-table thead tr:first-child th,
 #view-resultados .results-table thead tr:nth-child(2) th,
 #view-resultados .results-table thead th[rowspan="2"]{
@@ -930,6 +981,9 @@ tr:hover td.sticky{background:#FAFAFA}
 #view-resultados .results-table thead tr:first-child th,
 #view-resultados .results-table thead th[rowspan="2"]{vertical-align:top;padding-top:12px}
 #view-resultados .results-table thead th.sticky{border-right:1px solid #DDE3EA !important}
+#view-resultados .results-table thead tr:first-child th{height:58px;vertical-align:top;padding-top:8px;padding-bottom:8px}
+#view-resultados .results-table thead tr:first-child th.crit{position:relative;vertical-align:top;padding-top:8px;padding-bottom:22px}
+#view-resultados .results-table thead tr:first-child th.crit .peso{position:absolute;left:4px;right:4px;bottom:7px;margin:0;text-align:center}
 :is(#view-resultados,#view-portal,#view-banca) .results-table{
   table-layout:fixed;
   flex:0 0 auto;
@@ -940,6 +994,27 @@ tr:hover td.sticky{background:#FAFAFA}
 }
 :is(#view-resultados,#view-portal,#view-banca) .results-table tbody > tr:not(.sub-row) > td{
   height:96px;
+}
+#view-resultados .results-table tbody > tr:not(.sub-row) > td{
+  height:auto;
+  padding-top:6px;
+  padding-bottom:6px;
+  vertical-align:top;
+}
+#view-resultados .results-table .leader-cell{
+  min-height:0;
+}
+#view-resultados .results-table .nota-cell{
+  min-height:0;
+  gap:4px;
+  padding-top:0;
+  justify-content:center;
+}
+#view-resultados .results-table .nota-actions{
+  margin-top:3px;
+}
+#view-resultados .results-table .nota-progress-btn{
+  gap:4px;
 }
 :is(#view-resultados,#view-portal,#view-banca) .results-table thead tr:first-child th:last-child,
 :is(#view-resultados,#view-portal,#view-banca) .results-table thead tr:nth-child(2) th:last-child,
@@ -1017,6 +1092,14 @@ tr:hover td.sticky{background:#FAFAFA}
 #view-resultados.results-has-filters .results-table tbody > tr.res-convergence-row:hover > td.id-col{
   background:#DCEBFF;
 }
+#view-resultados .results-table thead th.s7{background:#EAF2FD}
+#view-resultados .results-table tbody > tr:not(.sub-row) > td.s7{background:#F4F8FE}
+#view-resultados .results-table tbody > tr.sub-row > td.s7{background:#F8FBFF}
+#view-resultados .results-table tbody > tr:hover > td.s7{background:#EAF2FD}
+#view-resultados .results-table tbody > tr.res-top-row > td.s7{background:#EDF3FA}
+#view-resultados .results-table tbody > tr.res-near-row > td.s7{background:#F5F3E8}
+#view-resultados .results-table tbody > tr.res-convergence-row > td.s7{background:#DFECFD}
+#view-resultados .results-table tbody > tr.res-convergence-row:hover > td.s7{background:#D4E5FB}
 .res-convergence-label{display:block;margin-top:5px;color:#1A73E8;font-size:8.5px;font-weight:600;line-height:1.15;letter-spacing:.01em;text-transform:uppercase;white-space:nowrap}
 .res-rank-line{display:grid;grid-template-columns:22px max-content max-content;align-items:center;gap:7px;min-height:16px}
 .res-rank-line .sw-sm{flex:0 0 auto}
@@ -1697,11 +1780,11 @@ tr:hover td.sticky{background:#FAFAFA}
 .ia-note{
   margin-top:12px;
   padding:12px 14px;
-  border:1px solid #D2E3FC;
+  border:1px solid #E0E3E7;
   border-radius:10px;
-  background:#F8FBFF;
+  background:#F8F9FA;
   font-size:12px;
-  color:#3367D6;
+  color:#5F6368;
   font-weight:600;
   line-height:1.55;
 }
@@ -2056,13 +2139,12 @@ textarea::placeholder{color:#BDC1C6}
 .split-reference-grid{display:flex;flex-direction:column;min-height:100%}
 .split-hero{
   padding:14px 16px 12px;
-  border-bottom:1px solid #DADCE0;
-  background:#F3F4F6;
-  background-image:none;
+  border-bottom:1px solid rgba(255,255,255,.18);
+  background:#1A73E8;
   position:sticky;
   top:0;
   z-index:3;
-  box-shadow:none;
+  box-shadow:0 1px 0 rgba(255,255,255,.12), 0 8px 18px rgba(15,23,42,.14);
 }
 #overlay .split-hero-close{
   position:absolute;
@@ -2129,7 +2211,7 @@ textarea::placeholder{color:#BDC1C6}
   font-size:11px;
   letter-spacing:0;
   text-transform:none;
-  color:#5F6368;
+  color:#fff;
 }
 .split-kicker-dot{
   color:rgba(255,255,255,.62);
@@ -2150,7 +2232,7 @@ textarea::placeholder{color:#BDC1C6}
 .split-leader{
   font-size:14px;
   font-weight:600;
-  color:#202124;
+  color:#fff;
   line-height:1.25;
   margin-top:8px;
   text-transform:uppercase;
@@ -2172,7 +2254,7 @@ textarea::placeholder{color:#BDC1C6}
 .split-inst{
   font-size:14px;
   font-weight:400;
-  color:#5F6368;
+  color:#fff;
   margin-top:6px;
   line-height:1.35;
   text-transform:uppercase;
@@ -2181,7 +2263,7 @@ textarea::placeholder{color:#BDC1C6}
 .split-hero-course{
   font-size:14px;
   font-weight:400;
-  color:#5F6368;
+  color:#fff;
   margin-top:4px;
   line-height:1.35;
   text-transform:uppercase;
@@ -2190,17 +2272,12 @@ textarea::placeholder{color:#BDC1C6}
 .split-hero-location{
   font-size:14px;
   font-weight:400;
-  color:#5F6368;
+  color:#fff;
   margin-top:4px;
   line-height:1.35;
   text-transform:uppercase;
   opacity:.92;
 }
-.split-profile-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,.65fr);gap:12px 22px;margin-top:16px;padding-top:14px;border-top:1px solid #DADCE0}
-.split-profile-item{min-width:0}
-.split-profile-item-wide{grid-column:1/-1}
-.split-profile-label,.split-materials-title{display:block;margin-bottom:4px;font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#8A929D}
-.split-profile-value{display:block;font-size:12.5px;font-weight:500;line-height:1.4;color:#3C4043;text-transform:uppercase;overflow-wrap:anywhere}
 .split-meta-rows{
   padding:10px 16px;
   border-bottom:1px solid #F1F3F4;
@@ -2291,26 +2368,24 @@ textarea::placeholder{color:#BDC1C6}
 }
 .split-materials-list{
   display:flex;
-  flex-wrap:wrap;
-  gap:10px;
+  flex-wrap:nowrap;
+  gap:8px;
   width:100%;
-  min-height:0;
+  min-height:60px;
   align-items:center;
   box-sizing:border-box;
 }
 .split-materials-list .mat-btn{
-  flex:0 0 auto;
+  flex:1 1 0;
   min-width:0;
-  min-height:36px;
+  min-height:60px;
   justify-content:center;
   align-items:center;
-  padding:8px 13px;
+  padding-left:10px;
+  padding-right:10px;
   box-sizing:border-box;
-  text-align:left;
+  text-align:center;
 }
-.split-materials-list .mat-btn i{display:inline-flex;color:#1A73E8;font-size:14px!important;flex:0 0 auto}
-.split-materials-wrap .split-ia-note{margin-top:4px;padding:14px 0 0;border:0;border-top:1px solid #E0E0E0;border-radius:0;background:transparent;background-image:none;min-height:0}
-.split-materials-wrap .split-ia-note .ia-note-sub{margin-top:5px;padding-left:0;border-left:0;font-size:12.5px;font-weight:600;line-height:1.45;color:#3C4043}
 .split-video-tools{
   display:flex;
   align-items:center;
@@ -2388,6 +2463,36 @@ textarea::placeholder{color:#BDC1C6}
   overscroll-behavior-y:none;
   -webkit-overflow-scrolling:auto;
 }
+#view-avaliacao.active{
+  position:fixed;
+  inset:0;
+  z-index:80;
+  display:flex!important;
+  flex-direction:column;
+  padding:0;
+  background:var(--bg);
+}
+#view-avaliacao.active .aval-header-shell{display:none!important}
+#view-avaliacao .ficha-original-topnav{
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  padding:0 28px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  height:52px;
+  min-height:52px;
+  z-index:100;
+}
+#view-avaliacao .ficha-original-brand{display:flex;align-items:center;gap:10px;font-size:13.5px;font-weight:600;color:var(--text-primary)}
+#view-avaliacao .ficha-original-sep{width:1px;height:18px;background:var(--border);margin:0 4px}
+#view-avaliacao .ficha-original-right{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--text-tertiary)}
+#view-avaliacao .role-badge{font-size:10px;font-weight:600;padding:3px 9px;border-radius:10px;letter-spacing:.04em;text-transform:uppercase;background:var(--accent-bg);color:var(--accent)}
+#view-avaliacao.active #avalWrap{max-width:100%;width:100%;height:calc(100vh - 52px);padding:10px 24px 0;margin:0;overflow:hidden}
+#view-avaliacao.active #layoutSplit{height:100%}
+body:has(#view-avaliacao.active) #footerBar{background:var(--surface);border-top:1px solid var(--border);padding:11px 28px;align-items:center;justify-content:flex-end;z-index:190;pointer-events:auto}
+body:has(#view-avaliacao.active) #footerBar .footer-actions{width:auto;max-width:none;margin:0;display:flex;align-items:center;gap:16px}
+body:has(#view-avaliacao.active) #adminAccessFab{display:none!important}
 #view-avaliacao.is-edit-locked #layoutSeq,
 #view-avaliacao.is-edit-locked #layoutSplit{
   opacity:.3;
@@ -2601,7 +2706,6 @@ textarea::placeholder{color:#BDC1C6}
   line-height:1.35;
   overflow:visible;
   display:block;
-  white-space:nowrap;
 }
 #layoutSplit.legacy-view .crit-desc{
   font-size:12px;
@@ -2923,9 +3027,7 @@ textarea::placeholder{color:#BDC1C6}
 #view-avaliacao.banca-evaluation-mode .split-materials-list{
   min-height:0;
   justify-content:flex-start;
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:12px;
+  gap:22px;
 }
 #view-avaliacao.banca-evaluation-mode .split-materials-wrap{
   padding:22px 18px;
@@ -2935,29 +3037,24 @@ textarea::placeholder{color:#BDC1C6}
   border-bottom:1px solid var(--banca-panel-divider);
 }
 #view-avaliacao.banca-evaluation-mode .split-materials-list .mat-btn{
-  width:100%;
-  min-width:0;
+  flex:0 0 auto;
   min-height:0;
-  padding:8px 10px;
+  padding:2px 0;
   border:0;
   border-radius:0;
-  background:#fff;
-  background-image:none;
+  background:transparent;
   justify-content:flex-start;
   color:#1A73E8;
   font-size:13.2px;
   font-weight:400;
   text-transform:uppercase;
   text-align:left;
-  overflow:hidden;
 }
-#view-avaliacao.banca-evaluation-mode .split-materials-list .mat-btn-label{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #view-avaliacao.banca-evaluation-mode .split-materials-list .mat-btn:hover{
   background:transparent;
   color:#1558B0;
 }
 #view-avaliacao.banca-evaluation-mode .split-materials-list .mat-btn i{
-  display:inline-flex;
   font-size:18.7px !important;
 }
 #view-avaliacao.banca-evaluation-mode .banca-project-summary .split-copy-title{
@@ -3036,23 +3133,41 @@ textarea::placeholder{color:#BDC1C6}
   background:var(--surface);
   box-shadow:0 2px 8px rgba(32,33,36,.18),0 0 0 1px rgba(26,115,232,.22);
 }
-#layoutSplit.legacy-view .aval-main-card{
-  border:0;
-  background:#E9EFF5;
-  background-image:none;
-  box-shadow:none;
-}
-#layoutSplit.legacy-view .aval-main-scroll,
-#layoutSplit.legacy-view .aval-main-card .aval-panel-head{
-  background:#E9EFF5;
-  background-image:none;
-}
 #layoutSplit{
   flex:1 1 auto;
   min-height:0;
   display:flex;
   flex-direction:column;
 }
+#layoutSplit .crit-compact{display:flex;flex-direction:column;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:14px}
+#layoutSplit .crit-compact-row{display:grid;grid-template-columns:277px 346px 1fr;border-bottom:1px solid var(--border);min-height:50px}
+#layoutSplit .crit-compact-row:last-child{border-bottom:none}
+#layoutSplit .crit-compact-row:nth-child(even){background:#F6F7F9}
+#layoutSplit .crit-compact-row:nth-child(even) .cc-label,
+#layoutSplit .crit-compact-row:nth-child(even) .cc-escala,
+#layoutSplit .crit-compact-row:nth-child(even) .cc-obs{background:#F6F7F9}
+#layoutSplit .crit-compact-row.is-missing{box-shadow:inset 3px 0 #D93025}
+#layoutSplit .cc-label{padding:12px 16px;background:var(--surface);display:flex;flex-direction:column;gap:4px}
+#layoutSplit .cc-nome{font-size:12px;font-weight:600;color:var(--text-primary);line-height:1.3}
+#layoutSplit .cc-desc{font-size:10px;color:var(--text-tertiary);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#layoutSplit .cc-escala{padding:10px 12px;display:flex;flex-direction:column;justify-content:center;gap:4px;background:var(--surface)}
+#layoutSplit .cc-radio-row{display:flex;align-items:center;cursor:pointer}
+#layoutSplit .cc-radio-row input[type=radio]{display:none}
+#layoutSplit .cc-pill{font-size:11px;font-weight:500;padding:2px 8px;border-radius:10px;border:1.5px solid var(--border);color:var(--text-secondary);cursor:pointer;transition:all .1s;user-select:none;white-space:nowrap;flex-shrink:0}
+#layoutSplit .cc-radio-row:hover .cc-pill{border-color:var(--accent);color:var(--accent-text)}
+#layoutSplit .cc-radio-row input[value="Insuficiente"]:checked~.cc-pill{background:#FEE2E2;border-color:#DC2626;color:#991B1B}
+#layoutSplit .cc-radio-row input[value="Regular"]:checked~.cc-pill{background:#FEF3C7;border-color:#D97706;color:#92400E}
+#layoutSplit .cc-radio-row input[value="Bom"]:checked~.cc-pill{background:#DBEAFE;border-color:#2563EB;color:#1E40AF}
+#layoutSplit .cc-radio-row input[value="Ótimo"]:checked~.cc-pill{background:#D1FAE5;border-color:#059669;color:#065F46}
+#layoutSplit .cc-obs{padding:8px 10px;display:flex;background:var(--surface)}
+#layoutSplit .cc-obs textarea{width:100%;font-family:var(--font-body);font-size:11.5px;padding:7px 9px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text-primary);resize:none;outline:none;line-height:1.55;min-height:68px}
+#layoutSplit .cc-obs textarea:focus{border-color:var(--accent)}
+#layoutSplit .cc-obs textarea::placeholder{color:var(--text-muted)}
+#layoutSplit .resize-handle{width:6px;cursor:col-resize;background:transparent;flex-shrink:0;position:relative;z-index:10;transition:background .15s}
+#layoutSplit .resize-handle::after{content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:2px;height:32px;border-radius:2px;background:var(--border);transition:background .15s,height .15s}
+#layoutSplit .resize-handle:hover::after,#layoutSplit .resize-handle.dragging::after{background:var(--accent);height:48px}
+#layoutSplit .mat-btn{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:var(--accent);background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:var(--radius-sm);padding:6px 13px;text-decoration:none;cursor:pointer;box-shadow:none}
+#layoutSplit .mat-btn:hover{filter:brightness(.95);background:var(--accent-bg)}
 .aval-header-shell{
   position:fixed;
   left:18px;
@@ -3086,7 +3201,6 @@ textarea::placeholder{color:#BDC1C6}
 .aval-action-group + .aval-action-group{
   margin-top:8px;
 }
-.aval-action-group-layout{display:none!important}
 .aval-action-group-tools + .aval-action-group-layout{
   margin-top:18px;
 }
@@ -3102,7 +3216,7 @@ textarea::placeholder{color:#BDC1C6}
   width:38px;
   box-sizing:border-box;
 }
-.aval-split-grid{display:grid;grid-template-columns:minmax(0,11fr) minmax(0,9fr);gap:20px;align-items:stretch;padding-top:8px;padding-bottom:44px;flex:1 1 auto;min-height:0;height:100%;overflow:hidden}
+.aval-split-grid{display:grid;grid-template-columns:450px minmax(0,1fr);gap:26px;align-items:stretch;padding-top:8px;padding-bottom:44px;flex:1 1 auto;min-height:0;height:100%;overflow:hidden}
 .aval-side-panel,.aval-main-panel{position:relative;top:auto;height:100%;min-height:0}
 .aval-side-card,.aval-main-card{
   height:calc(100% - 20px);
@@ -3290,6 +3404,12 @@ textarea::placeholder{color:#BDC1C6}
 
 @media (max-width: 1100px) {
   #view-avaliacao { padding:0 16px 100px; }
+  #layoutSplit .goup-split-shell{height:auto;min-height:100%;flex-direction:column;gap:12px;overflow-y:auto;padding-bottom:100px}
+  #layoutSplit .goup-split-left{width:100%;min-width:0;max-width:none;min-height:420px;max-height:65vh}
+  #layoutSplit .goup-resize-handle{display:none}
+  #layoutSplit .goup-split-right{overflow:visible;padding:0}
+  #layoutSplit .crit-compact-row{grid-template-columns:1fr}
+  #layoutSplit .cc-escala,#layoutSplit .cc-obs{border-left:none;border-top:1px solid var(--border-light)}
   .aval-header-shell{
     position:static;
     padding:12px 0 14px;
@@ -3335,6 +3455,234 @@ textarea::placeholder{color:#BDC1C6}
   .escala{grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid #F1F3F4}
   .escala label{min-height:108px}
 }
+
+/* Ficha copiada de AvaliacaoGoUp/index.html. */
+#view-avaliacao{--ls-purple:#32105F;--ls-soft:#F5F2F8;--ls-line:#D9D2E2;--ls-muted:#77707F;height:100%;padding:0 0 0 52px;background:#fff;font-family:'IBM Plex Sans',sans-serif}
+#view-avaliacao.active{position:relative;inset:auto;z-index:auto;display:block!important;padding:0 0 0 52px;background:#fff}
+#view-avaliacao.active:not(.reviewer-direct-mode) .aval-header-shell{display:block!important}
+#view-avaliacao #avalWrap,#view-avaliacao.active #avalWrap{max-width:none;width:100%;height:100%;margin:0;padding:0;overflow:visible}
+#view-avaliacao .ficha-original-topnav{display:none!important}
+#view-avaliacao .aval-header-shell{position:fixed;left:8px;top:78px;z-index:35}
+#view-avaliacao .aval-header{gap:8px}
+#view-avaliacao .aval-header-actions{gap:6px}
+#view-avaliacao .aval-action-group{width:36px;gap:6px}
+#view-avaliacao .aval-action-group+.aval-action-group{margin-top:0}
+#view-avaliacao .aval-action-group-layout,#view-avaliacao .aval-action-group-scale{display:none}
+#view-avaliacao .aval-back-btn,#view-avaliacao #btnEditarAvaliacao,#view-avaliacao #btnReportarVideo{width:36px;height:36px;min-height:36px;padding:0;border:1px solid var(--ls-line);border-radius:3px;background:#fff;color:var(--ls-purple);box-shadow:none}
+#view-avaliacao #layoutSplit{height:100%;min-height:0}
+#view-avaliacao .aval-split-grid{grid-template-columns:minmax(0,3fr) minmax(410px,2fr);gap:28px;height:100%;padding:24px 24px 0 0;overflow:hidden}
+#view-avaliacao .aval-side-panel,#view-avaliacao .aval-main-panel{height:100%;min-height:0}
+#view-avaliacao .aval-side-card,#view-avaliacao .aval-main-card{height:100%;margin:0;border:0;border-radius:0;background:#fff;box-shadow:none;overflow:hidden}
+#view-avaliacao .aval-main-card{background:var(--ls-soft)}
+#view-avaliacao .aval-side-scroll,#view-avaliacao .aval-main-scroll{height:100%;max-height:100%;scrollbar-gutter:stable;overscroll-behavior:contain}
+#view-avaliacao .aval-side-scroll{padding:0 0 40px}
+#view-avaliacao .aval-main-scroll{padding:0 24px 96px}
+#view-avaliacao .aval-panel-head{position:sticky;top:0;z-index:8;display:flex;align-items:flex-start;justify-content:space-between;min-height:62px;margin:0;padding:0 0 12px;background:var(--ls-soft);border-bottom:1px solid var(--ls-line)}
+#view-avaliacao .aval-panel-head::after{content:'';position:absolute;left:0;bottom:-1px;width:34px;height:2px;background:var(--ls-purple)}
+#view-avaliacao .aval-criteria-title{margin:0;color:#55515E;font-size:15px!important;font-weight:700;line-height:22px;letter-spacing:.085em;text-transform:uppercase}
+#view-avaliacao .aval-ls-intro{margin-top:5px;color:var(--ls-muted);font-size:12px;line-height:1.35}
+#view-avaliacao .aval-progress-card{min-width:145px;padding-top:1px}
+#view-avaliacao .prog-label-sm{color:var(--ls-muted);font-size:10.5px!important;font-weight:500;text-align:right}
+#view-avaliacao .prog-bar-sm{height:3px;margin-top:6px;border-radius:0;background:#DDD7E3}
+#view-avaliacao .prog-fill-sm{border-radius:0;background:var(--ls-purple)}
+#view-avaliacao #critGridSplit{padding:0;background:transparent}
+#view-avaliacao #layoutSplit .criterio{display:block;height:auto;min-height:0;max-height:none;margin:0 0 10px;padding:10px 0;border:0;border-bottom:1px solid var(--ls-line);border-radius:0;background:transparent;box-shadow:none}
+#view-avaliacao #layoutSplit .criterio:focus-within{border-color:var(--ls-line);box-shadow:none}
+#view-avaliacao #layoutSplit .criterio.is-missing{border-left:3px solid #C5221F;padding-left:10px}
+#view-avaliacao #layoutSplit .escala{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;width:auto;height:40px;min-height:40px;max-height:40px;margin:0}
+#view-avaliacao #layoutSplit .escala label{display:grid;place-items:center;height:40px;min-height:40px;max-height:40px;padding:0 5px;border:1px solid var(--ls-purple);border-radius:0;background:transparent;color:var(--ls-purple);box-shadow:none;text-align:center}
+#view-avaliacao #layoutSplit .escala label:hover{background:#EEE8F5;border-color:var(--ls-purple)}
+#view-avaliacao #layoutSplit .escala-title{min-height:0;color:inherit;font-size:12px!important;font-weight:700;line-height:1.1}
+#view-avaliacao #layoutSplit .escala-desc{display:none}
+#view-avaliacao #layoutSplit .escala input:checked+label{background:var(--ls-purple)!important;border-color:var(--ls-purple)!important;color:#fff!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.2)!important}
+#view-avaliacao #layoutSplit .escala input:checked+label .escala-title{color:#fff!important}
+#view-avaliacao #layoutSplit .parecer-box{margin:12px 0 0;padding:0 0 18px;border:0;border-radius:0;background:transparent;box-shadow:none}
+#view-avaliacao #layoutSplit .parecer-box .section-label{color:var(--ls-purple);font-size:12px;letter-spacing:.02em}
+#view-avaliacao #layoutSplit .parecer-box textarea{width:100%;height:72px;min-height:72px;max-height:72px;padding:10px 12px;resize:none;border:1px solid #fff;border-radius:0;background:#fff;color:#2F2B35;box-shadow:none;font-size:13px}
+#view-avaliacao #layoutSplit .parecer-box textarea:focus{border-color:var(--ls-purple);box-shadow:0 0 0 1px var(--ls-purple)}
+#view-avaliacao .aval-progress-meta{display:none}
+#view-avaliacao .ls-proposal-title{position:relative;display:flex;align-items:center;min-height:30px;margin:0 0 20px;padding:0 0 8px;border-bottom:1px solid var(--ls-line);color:#55515E;font-size:15px;font-weight:700;line-height:22px;letter-spacing:.085em;text-transform:uppercase}
+#view-avaliacao .ls-proposal-title::after{content:'';position:absolute;left:0;bottom:-1px;width:34px;height:2px;background:#77727F}
+#view-avaliacao .ls-team-profile{margin:0 0 20px;border:0;background:#fff;overflow:hidden}
+#view-avaliacao .ls-team-profile>summary{position:relative;display:flex;align-items:center;gap:12px;height:42px;padding:0 40px 0 14px;border:1px solid #CEC1DB;background:#E9E1F1;color:#302A38;cursor:pointer;list-style:none}
+#view-avaliacao .ls-team-profile>summary::-webkit-details-marker{display:none}
+#view-avaliacao .ls-team-profile>summary::after{content:'';position:absolute;right:16px;top:50%;width:9px;height:9px;border-right:1px solid #77737E;border-bottom:1px solid #77737E;transform:translateY(-70%) rotate(45deg);transition:transform .15s}
+#view-avaliacao .ls-team-profile[open]>summary::after{transform:translateY(-30%) rotate(225deg)}
+#view-avaliacao .ls-team-profile>summary span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:16px;font-weight:700;text-transform:uppercase}
+#view-avaliacao .ls-team-profile>summary small{flex:none;margin-left:auto;color:#6F6B76;font-size:12px;font-weight:500}
+#view-avaliacao .ls-profile-subtitle{padding:8px 12px;border-left:3px solid #8B8791;border-bottom:1px solid var(--ls-line);background:#F1F1F3;color:#55515E;font-size:12px;font-weight:600}
+#view-avaliacao .ls-profile-grid{display:block;margin:0;border-left:1px solid var(--ls-line);border-right:1px solid var(--ls-line)}
+#view-avaliacao .ls-profile-grid>div{display:grid;grid-template-columns:220px minmax(0,1fr);min-height:34px;border-bottom:1px solid #F0EDF4}
+#view-avaliacao .ls-profile-grid dt,#view-avaliacao .ls-profile-grid dd{margin:0;padding:7px 12px;font-size:12px;line-height:1.4}
+#view-avaliacao .ls-profile-grid dt{color:var(--ls-muted)}
+#view-avaliacao .ls-profile-grid dd{border-left:1px solid var(--ls-line);color:#302D36}
+#view-avaliacao .ls-profile-grid dd small{display:block;margin-top:2px;color:var(--ls-muted);font-size:11px}
+#view-avaliacao .ls-profile-materials{display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--ls-line);border-top:0;background:#fff}
+#view-avaliacao .ls-profile-materials .mat-btn{flex:0 0 auto;min-height:34px;padding:7px 12px;border:1px solid var(--ls-purple);border-radius:0;background:#fff;color:var(--ls-purple);font-size:12px;font-weight:600}
+#view-avaliacao .ls-profile-materials .mat-btn:hover{background:#EEE8F5}
+#view-avaliacao .ls-proposal-narrative{padding-bottom:36px}
+#view-avaliacao .ls-proposal-block{max-width:none;margin:0 0 26px}
+#view-avaliacao .ls-question-block{margin:0 0 14px;padding:12px 14px;border-top:1px solid #D8D6DC;border-bottom:1px solid #D8D6DC;background:#F1F1F3}
+#view-avaliacao .ls-question-block h3{margin:0 0 7px;color:#44414B;font-size:17px;font-weight:600}
+#view-avaliacao .ls-question-block p{margin:0;color:#45424C;font-size:15px;font-weight:600;line-height:1.55}
+#view-avaliacao .ls-answer-block{padding:4px 0 4px 16px;border-left:3px solid #55515E;color:#302D36;font-size:15px;line-height:1.7}
+#view-avaliacao .ls-answer-block>span{display:block;margin-bottom:5px;color:#55515E;font-size:12px;font-weight:600}
+#view-avaliacao .ls-criterion-details{display:block;margin:0 0 7px;color:var(--ls-muted)}
+#view-avaliacao .ls-criterion-details summary{display:grid;grid-template-columns:minmax(0,1fr) 16px;align-items:center;gap:8px;min-height:24px;cursor:pointer;list-style:none}
+#view-avaliacao .ls-criterion-details summary::-webkit-details-marker{display:none}
+#view-avaliacao .ls-criterion-details summary i{display:block;width:7px;height:7px;border-right:2px solid var(--ls-purple);border-bottom:2px solid var(--ls-purple);transform:rotate(45deg);transition:transform .15s}
+#view-avaliacao .ls-criterion-details[open] summary i{transform:rotate(225deg)}
+#view-avaliacao .ls-criterion-details .crit-desc{margin-top:8px;padding:10px 12px;border-left:2px solid var(--ls-purple);background:#fff;color:var(--ls-muted);font-size:12px!important;line-height:1.45}
+.reviewer-eval-topbar,.reviewer-eval-queue{display:none}
+#view-avaliacao.reviewer-direct-mode{position:relative;inset:auto;z-index:auto;display:block!important;padding:58px 0 0;height:100%;background:#fff;font-size:15px;line-height:1.5}
+#view-avaliacao.reviewer-direct-mode .reviewer-eval-topbar{position:absolute;z-index:50;left:0;right:0;top:0;display:flex;align-items:center;justify-content:space-between;height:58px;padding:7px 24px 6px;border-bottom:3px solid #3E3B47;background:#fff;color:#2F2C38;box-sizing:border-box;box-shadow:0 2px 8px rgba(26,21,51,.06)}
+#view-avaliacao.reviewer-direct-mode .reviewer-eval-topbar strong{font-size:19px;font-weight:600;line-height:26px}
+#view-avaliacao.reviewer-direct-mode #reviewerEvalIdentity{display:flex;align-items:center;gap:8px;color:#716A7B;font-size:13px}
+#view-avaliacao.reviewer-direct-mode .aval-header-shell{display:none!important}
+#view-avaliacao.reviewer-direct-mode #avalWrap{height:100%}
+#view-avaliacao.reviewer-direct-mode .aval-split-grid{grid-template-columns:19% minmax(0,49%) minmax(0,32%);gap:0;height:100%;padding:0;overflow:hidden}
+#view-avaliacao.reviewer-direct-mode .reviewer-eval-queue{display:flex;flex-direction:column;min-width:0;height:100%;border-right:1px solid #D8D5DC;background:#F7F7FA;overflow:hidden}
+#view-avaliacao .reviewer-queue-title{position:relative;margin:24px 24px 0;padding:0 0 8px;border-bottom:1px solid #E4E1EC;color:#55515E;font-size:15px;font-weight:700;line-height:22px;letter-spacing:.085em;text-transform:uppercase}
+#view-avaliacao .reviewer-queue-title::after{content:'';position:absolute;left:0;bottom:-1px;width:30px;height:2px;background:#77727F}
+#view-avaliacao .reviewer-queue-progress{display:flex;align-items:center;height:28px;padding:0 24px;color:#6B6880;font-size:12px;font-weight:500;line-height:18px}
+#view-avaliacao .reviewer-queue-list{flex:1;overflow-y:auto;overflow-x:hidden}
+#view-avaliacao .reviewer-queue-item{display:flex;align-items:center;gap:10px;width:100%;min-height:38px;padding:7px 24px;border:0;border-left:3px solid transparent;background:transparent;color:#1A1533;text-align:left;cursor:pointer}
+#view-avaliacao .reviewer-queue-item:hover{background:#EEEAF2}
+#view-avaliacao .reviewer-queue-item.active{border-left-color:var(--ls-purple);background:#E9E1F1;color:var(--ls-purple)}
+#view-avaliacao .reviewer-queue-item.completed{background:#EAF5EF;color:#276647}
+#view-avaliacao .reviewer-queue-item.completed.active{border-left-color:#238A5B;background:#DDF0E6}
+#view-avaliacao .reviewer-queue-status{display:grid;place-items:center;width:18px;height:18px;border:1.5px solid #8E8797;border-radius:50%;font-size:11px;font-weight:700;color:#fff}
+#view-avaliacao .reviewer-queue-item.completed .reviewer-queue-status{border-color:#238A5B;background:#238A5B}
+#view-avaliacao .reviewer-queue-name{display:block;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;font-weight:500}
+#view-avaliacao .reviewer-queue-score{flex:none;margin-left:auto;font-size:13px;font-variant-numeric:tabular-nums}
+#view-avaliacao.reviewer-direct-mode .aval-side-panel{height:100%;padding:24px 24px 0;box-sizing:border-box;background:#fff;overflow:hidden}
+#view-avaliacao.reviewer-direct-mode .aval-main-panel{height:100%;background:var(--ls-soft);overflow:hidden}
+#view-avaliacao.reviewer-direct-mode .aval-side-card,#view-avaliacao.reviewer-direct-mode .aval-main-card{height:100%;margin:0}
+#view-avaliacao.reviewer-direct-mode .aval-side-scroll{padding:0 12px 40px 0}
+#view-avaliacao.reviewer-direct-mode .aval-main-scroll{padding:24px 24px 96px}
+body:has(#view-avaliacao.reviewer-direct-mode.active) .footer-bar{left:auto;right:0;bottom:0;width:32%;padding:14px 30px 16px;border-top:1px solid var(--ls-line);background:var(--ls-soft);z-index:90}
+body:has(#view-avaliacao.reviewer-direct-mode.active) .footer-actions{display:grid;grid-template-columns:1fr auto;gap:10px;max-width:none}
+body:has(#view-avaliacao.reviewer-direct-mode.active) .footer-note{grid-column:1/-1;grid-row:2;min-height:18px}
+body:has(#view-avaliacao.reviewer-direct-mode.active) #btnSalvarAvaliacao{grid-column:1/-1;grid-row:1;width:100%;min-height:48px;justify-content:center;border-color:#32105F;background:#32105F;color:#fff;font-size:14px;font-weight:600}
+
+/* Ficha do parecerista: cópia estrutural de AvaliacaoGoUp/avaliador-goup.html */
+#view-avaliacao.reviewer-direct-mode{padding-top:64px;color:#1A1533;font-family:"IBM Plex Sans",Arial,sans-serif}
+#view-avaliacao.reviewer-direct-mode .reviewer-eval-topbar{height:64px;padding:0 28px;border:0;background:linear-gradient(102deg,#251049 0%,#351567 55%,#6C2ED0 100%);color:#fff;box-shadow:0 3px 12px rgba(36,16,77,.18)}
+#view-avaliacao.reviewer-direct-mode .reviewer-eval-topbar::before{content:"GO\A UP";white-space:pre;display:grid;place-content:center;width:36px;height:36px;flex:none;margin-right:16px;background:#F4EA28;color:#7130D8;box-shadow:-4px 4px 0 #FF7F3F;font-size:11px;font-weight:700;line-height:.88;text-align:center;letter-spacing:-.03em}
+#view-avaliacao.reviewer-direct-mode .reviewer-eval-topbar strong{margin-right:auto;font-size:18px;font-weight:600;line-height:26px}
+#view-avaliacao.reviewer-direct-mode #reviewerEvalIdentity{color:#E2D9F3;font-size:13px;font-weight:500}
+#view-avaliacao.reviewer-direct-mode .aval-split-grid{grid-template-columns:290px minmax(0,3fr) minmax(390px,2fr)}
+#view-avaliacao.reviewer-direct-mode .reviewer-eval-queue{background:#F8F8FA;border-right:1px solid #DADBE0}
+#view-avaliacao .reviewer-queue-title{margin:24px 24px 0}
+#view-avaliacao .reviewer-queue-progress{height:40px;padding:0 24px}
+#view-avaliacao .reviewer-queue-item{gap:7px;min-height:38px;padding:7px 24px;border-left:3px solid transparent;color:#1A1533}
+#view-avaliacao .reviewer-queue-item.active{border-left-color:#4A4653;background:#E5E4E9;color:#272330}
+#view-avaliacao .reviewer-queue-item.completed{background:#EEF8F3;color:#145C3A}
+#view-avaliacao .reviewer-queue-item.completed.active{border-left-color:#1E7F4F;background:#E3F3EA}
+#view-avaliacao .reviewer-queue-status{width:18px;height:18px;border-color:#6B6880}
+#view-avaliacao .reviewer-queue-code{min-width:25px;color:#6B6880;font-size:13px;font-variant-numeric:tabular-nums}
+#view-avaliacao .reviewer-queue-name{text-transform:uppercase;font-size:13px;font-weight:400}
+#view-avaliacao .reviewer-queue-item.active .reviewer-queue-name{font-weight:650}
+#view-avaliacao.reviewer-direct-mode .aval-side-panel{padding:24px;background:#fff}
+#view-avaliacao.reviewer-direct-mode .aval-side-scroll{padding:0 16px 40px 0}
+#view-avaliacao.reviewer-direct-mode .aval-main-panel{background:#F6F4FA}
+#view-avaliacao.reviewer-direct-mode .aval-main-scroll{padding:24px 24px 116px}
+#view-avaliacao .ls-proposal-title{margin:0;padding:0 0 8px}
+#view-avaliacao .goup-proposal-info{margin:40px 0 20px;background:#fff}
+#view-avaliacao .goup-proposal-head{display:flex;align-items:center;gap:14px;min-height:40px;padding:5px 10px 5px 14px;border:1px solid #E4E1EC;background:#fff}
+#view-avaliacao .goup-candidate-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#241B31;font-size:17px;font-weight:750;line-height:22px;letter-spacing:.01em;text-transform:uppercase}
+#view-avaliacao .goup-proposal-actions{display:flex;align-items:center;justify-content:flex-end;gap:6px;flex:none}
+#view-avaliacao .goup-proposal-actions .mat-btn,#view-avaliacao .goup-profile-toggle{display:inline-flex;align-items:center;gap:5px;min-height:30px;padding:3px 8px;border:1px solid #CFC8DA;border-radius:3px;background:#fff;color:#2B0A5A;font-size:11px;font-weight:600;text-decoration:none}
+#view-avaliacao .goup-proposal-actions .mat-btn:hover,#view-avaliacao .goup-profile-toggle:hover{background:#F4F0F8}
+#view-avaliacao .goup-profile-toggle::after{content:"";width:7px;height:7px;margin:-3px 1px 0 3px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg);transition:transform .15s}
+#view-avaliacao .goup-profile-toggle[aria-expanded="true"]::after{margin-top:3px;transform:rotate(225deg)}
+#view-avaliacao .goup-profile-content[hidden]{display:none}
+#view-avaliacao .goup-profile-content{border:1px solid #E4E1EC;border-top:0}
+#view-avaliacao .goup-profile-content .ls-profile-grid{border:0}
+#view-avaliacao .goup-profile-content .ls-profile-subtitle{border-left:3px solid #8B8791;background:#F1F1F3}
+#view-avaliacao .ls-proposal-narrative{padding-bottom:36px}
+#view-avaliacao .goup-narr-section{max-width:78ch;margin:0 0 26px}
+#view-avaliacao .goup-narr-section h3{display:flex;align-items:center;gap:7px;margin:0 0 10px;padding:0 0 8px;border-bottom:1px solid #E4E1EC;color:#44414B;font-size:17px;font-weight:600}
+#view-avaliacao .goup-answer-block{padding:4px 0 4px 16px;border-left:3px solid #55515E;color:#1A1533;font-size:15px;font-weight:400;line-height:1.7;white-space:pre-wrap}
+#view-avaliacao.reviewer-direct-mode .aval-panel-head{min-height:auto;margin:0 0 4px;padding:0 0 8px;border-bottom:1px solid #E4E1EC;background:#F6F4FA}
+#view-avaliacao.reviewer-direct-mode .aval-panel-head::after{background:#77727F}
+#view-avaliacao.reviewer-direct-mode .aval-ls-intro{margin-top:10px;color:#4F4B57;font-size:13px;line-height:1.45}
+#view-avaliacao #layoutSplit .goup-criterion{display:block;margin:0 0 10px;padding:10px 0;border:0;border-top:1px solid #E4E1EC;background:transparent}
+#view-avaliacao #layoutSplit .goup-criterion.is-missing{padding-left:0;border-left:0}
+#view-avaliacao .goup-criterion-visible{margin:0 0 8px}
+#view-avaliacao .goup-criterion-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+#view-avaliacao #layoutSplit .goup-criterion .crit-nome{margin:0;color:#2B0A5A;font-size:15px!important;font-weight:600;line-height:1.3}
+#view-avaliacao .goup-criterion-weight{flex:none;color:#6B6880;font-size:11px;font-weight:500;white-space:nowrap}
+#view-avaliacao #layoutSplit .goup-criterion .crit-desc{display:block;margin:3px 0 0;color:#6B6880;font-size:13px!important;font-weight:400;line-height:1.45}
+#view-avaliacao #layoutSplit .goup-criterion .escala{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;width:100%;height:40px;min-height:40px;max-height:40px;margin:0}
+#view-avaliacao #layoutSplit .goup-criterion .escala label{height:40px;min-height:40px;max-height:40px;border:1px solid #2B0A5A;border-radius:0;background:transparent;color:#2B0A5A}
+#view-avaliacao #layoutSplit .goup-criterion .escala input:checked+label{background:#2B0A5A!important;border-color:#2B0A5A!important;color:#fff!important}
+#view-avaliacao #layoutSplit .goup-criterion .escala-title{font-size:12px!important;font-weight:700}
+#view-avaliacao #layoutSplit .parecer-box{margin:0;padding:0;border-top:1px solid #E4E1EC}
+#view-avaliacao #layoutSplit .parecer-box .section-label{display:none}
+#view-avaliacao #layoutSplit .parecer-box textarea{height:76px;min-height:76px;max-height:76px;margin-top:16px;padding:12px;border:1px solid #DDD9E3;background:#fff}
+.goup-loading-state{padding:40px 0;color:#6B6880;font-size:14px}
+body:has(#view-avaliacao.reviewer-direct-mode.active) .footer-bar{right:0;width:calc(40% - 116px);min-width:390px;padding:10px 24px 8px;border-top:1px solid #E4E1EC;background:#F6F4FA;box-shadow:0 -6px 14px rgba(26,21,51,.06)}
+body:has(#view-avaliacao.reviewer-direct-mode.active) .footer-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+body:has(#view-avaliacao.reviewer-direct-mode.active) .footer-note{display:none!important}
+body:has(#view-avaliacao.reviewer-direct-mode.active) #btnSalvarAvaliacao{width:100%;min-height:48px;border-radius:4px;border-color:#2B0A5A;background:#2B0A5A;color:#fff}
+body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{display:inline-flex;width:100%;min-height:48px;justify-content:center;border-radius:4px;border-color:#2B0A5A;background:#fff;color:#2B0A5A;font-weight:600}
+#btnProximaPendente{display:none}
+
+/* Estrutura literal do avaliador-goup.html, isolada na ficha direta */
+#view-avaliacao.reviewer-direct-mode .titulo-coluna{position:relative;display:flex;align-items:center;min-height:30px;margin:0;padding:0 0 8px;color:#55515E!important;font:700 15px/22px "IBM Plex Sans",system-ui,sans-serif!important;letter-spacing:.085em;text-transform:uppercase;border-bottom:1px solid #E4E1EC}
+#view-avaliacao.reviewer-direct-mode .titulo-coluna::after{content:"";position:absolute;left:0;bottom:-1px;width:34px;height:2px;background:#77727F}
+#view-avaliacao.reviewer-direct-mode .fila{padding:24px 0;overflow-y:auto;background:#F8F8FA;border-right:1px solid #DADBE0}
+#view-avaliacao.reviewer-direct-mode .fila .titulo-coluna{margin:0 24px}
+#view-avaliacao.reviewer-direct-mode .fila .prog{display:flex;align-items:center;height:40px;padding:0 24px;color:#6B6880;font-size:12px;font-weight:500;line-height:18px}
+#view-avaliacao.reviewer-direct-mode .fila button{display:flex;align-items:center;gap:7px;width:100%;min-height:38px;padding:7px 24px;border:0;border-left:3px solid transparent;background:none;color:#1A1533;text-align:left}
+#view-avaliacao.reviewer-direct-mode .fila button:hover{background:#F6F4FA}
+#view-avaliacao.reviewer-direct-mode .fila button.active{border-left-color:#4A4653;background:#E5E4E9;color:#272330}
+#view-avaliacao.reviewer-direct-mode .fila button.completed{background:#EEF8F3;color:#145C3A}
+#view-avaliacao.reviewer-direct-mode .fila button.completed.active{border-left-color:#1E7F4F;background:#E3F3EA}
+#view-avaliacao.reviewer-direct-mode .fila .reviewer-queue-status{display:grid;place-items:center;width:18px;height:18px;margin:0;flex:none;border:1.5px solid #6B6880;border-radius:50%;color:#fff}
+#view-avaliacao.reviewer-direct-mode .fila .reviewer-queue-code{min-width:25px;color:#6B6880;font-variant-numeric:tabular-nums}
+#view-avaliacao.reviewer-direct-mode .fila .reviewer-queue-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-transform:uppercase}
+#view-avaliacao.reviewer-direct-mode .fila button.active .reviewer-queue-name{font-weight:650}
+#view-avaliacao.reviewer-direct-mode .informacoes{margin:40px 0 20px;border:0;background:#fff}
+#view-avaliacao.reviewer-direct-mode .projeto-cabecalho{display:flex;align-items:center;gap:14px;min-height:40px;padding:5px 10px 5px 14px;border:1px solid #E4E1EC;background:#fff;color:#241B31}
+#view-avaliacao.reviewer-direct-mode .projeto-cabecalho .nome-time{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:17px;font-weight:750;line-height:22px;letter-spacing:.01em;text-transform:uppercase}
+#view-avaliacao.reviewer-direct-mode .anexos-projeto{display:flex;align-items:center;justify-content:flex-end;gap:6px;flex:none;background:#fff}
+#view-avaliacao.reviewer-direct-mode .anexos-projeto .mat-btn,#view-avaliacao.reviewer-direct-mode .perfil-toggle{display:inline-flex;align-items:center;gap:5px;min-height:30px;padding:3px 8px;border:1px solid #CFC8DA;border-radius:3px;background:#fff;color:#2B0A5A;font-size:10px;font-weight:600;text-decoration:none}
+#view-avaliacao.reviewer-direct-mode .anexos-projeto .mat-btn:hover,#view-avaliacao.reviewer-direct-mode .perfil-toggle:hover{background:#F4F0F8}
+#view-avaliacao.reviewer-direct-mode .perfil-toggle::after{content:"";width:6px;height:6px;margin:-3px 1px 0 2px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg);transition:transform .15s}
+#view-avaliacao.reviewer-direct-mode .perfil-toggle[aria-expanded="true"]::after{margin-top:3px;transform:rotate(225deg)}
+#view-avaliacao.reviewer-direct-mode .perfil-conteudo[hidden]{display:none}
+#view-avaliacao.reviewer-direct-mode .perfil-conteudo{border:1px solid #E4E1EC;border-top:0;background:#fff}
+#view-avaliacao.reviewer-direct-mode .info-subtitulo{margin:0;padding:8px 12px;border-left:3px solid #8B8791;border-top:1px solid #E4E1EC;border-bottom:1px solid #E4E1EC;background:#F1F1F3;color:#55515E;font-size:12px;font-weight:600}
+#view-avaliacao.reviewer-direct-mode .meta{display:block;margin:0}
+#view-avaliacao.reviewer-direct-mode .meta>div{display:grid;grid-template-columns:280px minmax(0,1fr);align-items:start;min-height:34px;border-bottom:1px solid #F0EDF4}
+#view-avaliacao.reviewer-direct-mode .meta dt{padding:5px 12px;color:#6B6880;font-size:12px;line-height:1.3;white-space:nowrap}
+#view-avaliacao.reviewer-direct-mode .meta dd{margin:0;padding:5px 12px;border-left:1px solid #E4E1EC;color:#1A1533;font-size:12px;line-height:1.3}
+#view-avaliacao.reviewer-direct-mode .narr{margin:0}
+#view-avaliacao.reviewer-direct-mode .narr-bloco{max-width:78ch}
+#view-avaliacao.reviewer-direct-mode .narr-secao{margin-bottom:26px}
+#view-avaliacao.reviewer-direct-mode .narr-secao h3{display:flex;align-items:center;gap:7px;margin:0 0 10px;padding:0 0 8px;border-bottom:1px solid #E4E1EC;color:#44414B;font-size:17px;font-weight:600}
+#view-avaliacao.reviewer-direct-mode .resposta-bloco{padding:4px 0 4px 16px;border-left:3px solid #55515E}
+#view-avaliacao.reviewer-direct-mode .resposta-bloco p{margin:0;white-space:pre-wrap;color:#1A1533;font-size:15px;font-weight:400;line-height:1.7}
+#view-avaliacao.reviewer-direct-mode .avaliacao-panel{position:relative;display:flex;flex-direction:column;height:100%;min-height:0;max-height:none;margin:0;padding:0;background:#F6F4FA;border:0;border-radius:0;overflow:hidden;color:#1A1533}
+#view-avaliacao.reviewer-direct-mode .avaliacao-panel .aval-main-scroll{height:100%;padding:24px 24px 116px;overflow-y:auto}
+#view-avaliacao.reviewer-direct-mode .avaliacao-panel .aval-panel-head{position:static;display:block;min-height:0;margin:0;padding:0;background:#F6F4FA;border:0}
+#view-avaliacao.reviewer-direct-mode .avaliacao-panel .aval-panel-head::after{display:none}
+#view-avaliacao.reviewer-direct-mode .avaliacao-panel .intro-avaliacao{margin:0 0 14px;opacity:.68}
+#view-avaliacao.reviewer-direct-mode .avaliacao-panel .intro-avaliacao p{display:flex;align-items:center;height:28px;margin:0;color:#4F4B57;font-size:13px;font-weight:500}
+#view-avaliacao.reviewer-direct-mode .avaliacao-panel .crit{display:block;width:100%!important;min-width:0!important;max-width:none!important;height:auto;min-height:0;max-height:none;margin:0 0 10px;padding:10px 0;border:0;border-top:1px solid #E4E1EC;border-radius:0;background:transparent;box-shadow:none;color:#1A1533;text-align:left;text-transform:none;letter-spacing:normal}
+#view-avaliacao.reviewer-direct-mode .avaliacao-panel .crit.is-missing{padding-left:0;border-left:0}
+#view-avaliacao.reviewer-direct-mode .criterio-visivel{margin:0 0 8px}
+#view-avaliacao.reviewer-direct-mode .criterio-visivel-cab{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+#view-avaliacao.reviewer-direct-mode .avaliacao-panel .crit-nome{min-width:0;margin:0;color:#2B0A5A;font-size:15px!important;font-weight:600;line-height:1.3}
+#view-avaliacao.reviewer-direct-mode .criterio-peso{flex:none;color:#6B6880;font-size:11px;font-weight:500;white-space:nowrap}
+#view-avaliacao.reviewer-direct-mode .avaliacao-panel .crit-desc{display:block;margin:3px 0 0;color:#6B6880;font-size:13px!important;font-weight:400;line-height:1.45}
+#view-avaliacao.reviewer-direct-mode .avaliacao-panel .escala{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));width:100%;height:40px;min-height:40px;max-height:40px;margin:0;gap:6px}
+#view-avaliacao.reviewer-direct-mode .avaliacao-panel .escala label{display:grid;place-items:center;width:100%;height:40px;min-height:40px;max-height:40px;padding:0;border:1px solid #2B0A5A;border-radius:0;background:transparent;color:#2B0A5A;font-size:12px;font-weight:700;line-height:1;box-shadow:none}
+#view-avaliacao.reviewer-direct-mode .avaliacao-panel .escala input:checked+label{background:#2B0A5A!important;border-color:#2B0A5A!important;color:#fff!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.22)!important}
+#view-avaliacao.reviewer-direct-mode .avaliacao-panel .parecer-box{margin:0;padding:10px 0 0;border:0;border-top:1px solid #E4E1EC;background:transparent}
+#view-avaliacao.reviewer-direct-mode .avaliacao-panel .parecer-box textarea{display:block;width:100%;height:76px;min-height:76px;max-height:76px;margin:6px 0 0;padding:12px;border:1px solid #DDD9E3;border-radius:0;background:#fff;color:#1A1533;font:13px/1.5 "IBM Plex Sans",system-ui,sans-serif;resize:none}
 
 /* ── PARECERES MODAL ── */
 .par-bloco { border: 1px solid #E0E0E0; border-radius: 8px; background: #fff; padding: 14px 16px; margin-bottom: 14px; }
@@ -3759,6 +4107,11 @@ textarea::placeholder{color:#BDC1C6}
         <select class="finput" id="resFiltroUf" onchange="renderResultados()" style="width:150px;min-width:150px"><option value="">Todos os estados</option></select>
         <select class="finput" id="resFiltroGenero" onchange="renderResultados()" style="width:175px;min-width:175px"><option>Todos os gêneros</option><option>Feminino</option><option>Masculino</option><option>Prefiro não indicar</option></select>
         <select class="finput" id="resFiltroRaca" onchange="renderResultados()" style="width:135px;min-width:135px"><option value="">Todas as raças</option></select>
+        <select class="finput" id="resFiltroDuracao" onchange="renderResultados()" style="width:185px;min-width:185px">
+          <option value="0">Todos os vídeos</option>
+          <option value="10">Menos de 10 segundos</option>
+          <option value="30">Menos de 30 segundos</option>
+        </select>
         <select class="finput" id="resFiltroRanking" onchange="renderResultados()" style="width:225px;min-width:225px">
           <option>Ranking normal</option>
           <option value="Ranking sem a pior nota">SPN · Ranking sem pior nota</option>
@@ -3805,34 +4158,34 @@ textarea::placeholder{color:#BDC1C6}
 
   <div class="tbl-card">
     <div class="tbl-scroll" id="resultsBodyScroll">
+      <div class="results-criteria-floating-label"><span>Critérios da Maratona IA</span></div>
       <table class="results-table" style="width:max-content;min-width:100%">
         <colgroup>
-          <col style="width:6%">
-          <col style="width:7%">
-          <col style="width:21%">
+          <col style="width:5%">
+          <col class="res-id-number-col" style="width:5%">
+          <col style="width:31%">
           <col class="res-project-summary-col" style="width:320px">
           <col style="width:10%">
-          <col style="width:18%">
+          <col style="width:10%">
+          <col style="width:22%">
           <col style="width:8%">
-          <col style="width:10%">
-          <col style="width:10%">
-          <col style="width:10%">
+          <col style="width:9%">
+          <col style="width:9%">
+          <col style="width:9%">
         </colgroup>
         <thead>
           <tr>
-            <th class="sticky s0 rank-col-head" rowspan="2">Ranking</th>
-            <th class="res-actions-col" rowspan="2" style="text-align:center">Ações</th>
-            <th class="sticky s5" rowspan="2"><div class="results-team-head"><span>Candidato(a)</span><button class="results-summary-toggle" id="resultsSummaryToggle" type="button" onclick="toggleResultsSummaryColumn()" title="Mostrar apresentação" aria-label="Mostrar apresentação" aria-expanded="false"><span class="results-summary-toggle-sign">+</span><span class="results-summary-toggle-label">Ver apresentação</span></button></div></th>
-            <th class="res-project-summary-col res-project-summary-head" rowspan="2">Apresentação pessoal</th>
-            <th class="res-state-col" rowspan="2">Estado</th>
-            <th class="res-university-col" rowspan="2">Universidade</th>
-            <th class="s7" rowspan="2" style="text-align:center">Nota geral</th>
-            <th class="crit crit-group" colspan="3" style="text-align:center;border-left:1px solid #E0E0E0">Critérios da Maratona IA</th>
-          </tr>
-          <tr>
-            <th class="crit">Comunicação<span class="peso">Peso 33,33%</span></th>
-            <th class="crit">Criatividade<span class="peso">33,33%</span></th>
-            <th class="crit"><span>Habilidade no uso<br>da IA</span><span class="peso">33,34%</span></th>
+            <th class="sticky s0 rank-col-head"><span class="results-header-label">Ranking</span></th>
+            <th class="res-id-number-col"><span class="results-header-label">ID</span></th>
+            <th class="sticky s5"><div class="results-team-head"><div class="results-team-title"><span class="results-header-label">Candidato(a)</span><button class="results-id-toggle" id="resultsIdToggle" type="button" onclick="toggleResultsIdColumn()" title="Mostrar coluna de ID" aria-label="Mostrar coluna de ID" aria-expanded="false"><span class="results-id-toggle-sign">+</span><span class="results-id-toggle-label">Mostrar ID</span></button></div><button class="results-summary-toggle" id="resultsSummaryToggle" type="button" onclick="toggleResultsSummaryColumn()" title="Mostrar apresentação" aria-label="Mostrar apresentação" aria-expanded="false"><span class="results-summary-toggle-sign">+</span><span class="results-summary-toggle-label">Ver apresentação</span></button></div></th>
+            <th class="res-project-summary-col res-project-summary-head"><span class="results-header-label">Apresentação pessoal</span></th>
+            <th class="res-gender-col"><span class="results-header-label">Gênero</span></th>
+            <th class="res-race-col"><span class="results-header-label">Raça</span></th>
+            <th class="res-university-col"><span class="results-header-label">Universidade</span></th>
+            <th class="s7" style="text-align:center"><span class="results-header-label">Nota geral</span></th>
+            <th class="crit"><span class="results-header-label">Comunicação</span><span class="peso">Peso 33%</span></th>
+            <th class="crit"><span class="results-header-label">Criatividade</span><span class="peso">Peso 33%</span></th>
+            <th class="crit"><span class="results-header-label">Uso de IA</span><span class="peso">Peso 34%</span></th>
           </tr>
         </thead>
         <tbody id="tblResultados"></tbody>
@@ -3980,7 +4333,7 @@ textarea::placeholder{color:#BDC1C6}
               <th class="crit crit-group" colspan="3" style="text-align:center">Critérios da Maratona IA</th>
             </tr>
             <tr>
-              <th class="crit">Comunicação<span class="peso">33,33%</span></th><th class="crit">Criatividade<span class="peso">33,33%</span></th><th class="crit"><span>Habilidade no uso<br>da IA</span><span class="peso">33,34%</span></th>
+              <th class="crit">Comunicação<span class="peso">33%</span></th><th class="crit">Criatividade<span class="peso">33%</span></th><th class="crit"><span>Uso de IA</span><span class="peso">34%</span></th>
             </tr>
           </thead>
           <tbody id="portalList"></tbody>
@@ -4007,6 +4360,10 @@ textarea::placeholder{color:#BDC1C6}
      VIEW 4: FICHA DE AVALIAÇÃO
 ════════════════════════════════════════════════ -->
 <div class="view" id="view-avaliacao">
+<header class="reviewer-eval-topbar topo">
+  <strong>MARATONA IA 2026 · Avaliação das candidaturas</strong>
+  <span class="quem" id="reviewerEvalIdentity"><i class="ti ti-user"></i><b></b></span>
+</header>
 <div id="avalWrap">
 
   <!-- topo fixo -->
@@ -4079,9 +4436,12 @@ textarea::placeholder{color:#BDC1C6}
   <!-- MODO PAINEL DIVIDIDO -->
   <div id="layoutSplit">
     <div class="aval-split-grid">
-
-      <!-- painel esquerdo: resumo fixo -->
-      <div id="splitLeft" class="aval-side-panel">
+      <nav class="reviewer-eval-queue fila" aria-label="Fila de avaliações">
+        <div class="reviewer-queue-title titulo-coluna">Fila</div>
+        <div class="reviewer-queue-progress prog" id="reviewerQueueProgress"></div>
+        <div class="reviewer-queue-list" id="reviewerQueueList"></div>
+      </nav>
+      <div id="splitLeft" class="aval-side-panel conteudo-ins">
         <div class="split-attachment-workspace" id="splitAttachmentWorkspace">
           <div class="split-attachment-head">
             <div class="split-attachment-copy">
@@ -4102,14 +4462,13 @@ textarea::placeholder{color:#BDC1C6}
           </div>
         </div>
       </div>
-
-      <!-- painel direito: formulário -->
-      <div class="aval-main-panel">
+      <div class="aval-main-panel avaliacao-panel">
         <div class="aval-main-card">
-            <div class="aval-main-scroll" data-panel="main">
+          <div class="aval-main-scroll" data-panel="main">
             <div class="aval-panel-head">
               <div class="aval-form-head-copy">
-                <div class="section-label aval-criteria-title">Ficha de avaliação</div>
+                <div class="section-label aval-criteria-title titulo-coluna">Avaliação</div>
+                <div class="aval-ls-intro intro-avaliacao"><p>Selecione uma nota para cada critério.</p></div>
               </div>
               <div class="aval-progress-meta">
                 <div class="aval-progress-card">
@@ -4600,7 +4959,8 @@ textarea::placeholder{color:#BDC1C6}
 <div class="footer-bar" id="footerBar" style="display:none">
   <div class="footer-actions">
     <div class="footer-note" id="footerAvaliacaoNote"></div>
-    <button class="btn btn-primary btn-sm" id="btnSalvarAvaliacao" onclick="salvarAvaliacao()"><i class="ti ti-device-floppy"></i>Salvar avaliação</button>
+    <button class="btn btn-primary btn-sm" id="btnSalvarAvaliacao" onclick="salvarAvaliacao()">Salvar avaliação</button>
+    <button class="btn btn-secondary btn-sm" id="btnProximaPendente" onclick="abrirProximaPendenteDireta()">Próxima pendente</button>
   </div>
 </div>
 
@@ -4615,9 +4975,9 @@ textarea::placeholder{color:#BDC1C6}
 const INSCRICOES = [];
 
 const CRITERIOS = [
-  { nome:'Comunicação', desc:'A clareza e a consistência com que a pessoa candidata expõe sua ideia, sustenta a própria candidatura e sintetiza seus argumentos.' },
-  { nome:'Criatividade', desc:'A inventividade, o conceito, a originalidade e a coerência com que a resposta à convocatória se transforma em peça audiovisual.' },
-  { nome:'Habilidade no uso da IA', desc:'O domínio técnico, a complexidade dos elementos gerados, a integração de formatos e a competência no uso das ferramentas de IA.' },
+  { nome:'Comunicação', desc:'A clareza e a consistência com que o(a) proponente expõe sua ideia e sustenta a própria candidatura. Compreende a formulação da mensagem, a pertinência das razões apresentadas e a capacidade de síntese, correspondendo, assim, à dimensão da expressão, entendida aqui como a maneira pela qual o(a) participante apresenta seu conteúdo e fundamenta os argumentos para a sua seleção.' },
+  { nome:'Criatividade', desc:'A inventividade com que a resposta à convocatória se converte em peça audiovisual. Compreende conceito, originalidade e também a coerência entre a premissa da Maratona e o material entregue, correspondendo, assim, à dimensão da materialização, entendida aqui como o processo pelo qual o(a) participante executa àquilo que pretende comunicar.' },
+  { nome:'Habilidade no uso da IA', desc:'O domínio técnico com que o(a) participante emprega a IA na produção do vídeo de submissão. Compreende a complexidade dos elementos gerados, a integração entre diferentes formatos e a competência que o uso de ferramentas de IA evidencia, correspondendo, assim, à dimensão basal da Maratona de identificar talentos versados nessa tecnologia.' },
 ];
 const CRITERIOS_ORIGINAIS = CRITERIOS.map(item => ({ ...item }));
 const BANCA_MODEL_DEFS = {
@@ -4700,6 +5060,11 @@ let avaliacoes = {};
 let videoIssueReports = [];
 let projectSummaries = new Map();
 let resultsSummaryColumnOpen = false;
+let resultsIdColumnOpen = false;
+const videoDurationCache = new Map();
+const videoDurationPromises = new Map();
+let videoDurationHydrationRun = 0;
+let videoDurationManifestPromise = null;
 
 let currentParId = null;
 let currentInscId = null;
@@ -4814,11 +5179,16 @@ function persistAccessRole() {
 }
 
 function hasViewerAccess() {
-  return accessRole === 'viewer' || accessRole === 'admin';
+  return isLocalRuntime() || accessRole === 'viewer' || accessRole === 'admin';
 }
 
 function hasAdminAccess() {
-  return accessRole === 'admin';
+  return isLocalRuntime() || accessRole === 'admin';
+}
+
+function isLocalRuntime() {
+  const host = String(window.location.hostname || '').toLowerCase();
+  return window.location.protocol === 'file:' || host === 'localhost' || host === '127.0.0.1' || host === '::1' || host === '[::1]';
 }
 
 function currentActiveViewName() {
@@ -4848,7 +5218,7 @@ function applyAccessUi() {
   const subnav = document.getElementById('mainSubnav');
   const footer = document.getElementById('footerBar');
 
-  if (topnav) topnav.style.display = viewerReady ? '' : 'none';
+  if (topnav) topnav.style.display = viewerReady && !reviewerBootMode ? '' : 'none';
   if (subnav) subnav.style.display = viewerReady && !reviewerBootMode ? 'flex' : 'none';
   if (footer && !viewerReady) footer.style.display = 'none';
 
@@ -5004,7 +5374,7 @@ function submitViewerLogin() {
   const afterSuccess = viewerLoginAfterSuccess;
   viewerLoginAfterSuccess = null;
   if (typeof afterSuccess === 'function') afterSuccess();
-  else showView((requestedParId || requestedBancaParId) ? 'portal' : 'resultados');
+  else showView((requestedParId || requestedBancaParId) ? 'avaliacao' : 'resultados');
 }
 
 // ═══ NAV ══════════════════════════════════════════════════
@@ -5043,6 +5413,15 @@ function showView(v, opts = {}) {
       if (selParId && atribuida.length) {
         const proxima = atribuida.find(id => !isEvaluationConcluded(selParId, id)) || atribuida[0];
         abrirFicha(selParId, proxima);
+        return;
+      }
+      if (reviewerBootMode) {
+        const proposal = document.getElementById('avalGridSplit');
+        const queue = document.getElementById('reviewerQueueList');
+        const progress = document.getElementById('reviewerQueueProgress');
+        if (proposal) proposal.innerHTML = '<div class="goup-loading-state">Carregando candidatura…</div>';
+        if (queue) queue.innerHTML = '';
+        if (progress) progress.textContent = 'Carregando avaliações…';
         return;
       }
       showView('portal');
@@ -5979,11 +6358,27 @@ function formatCriterionWeight(weight) {
   return Number(weight || 0).toLocaleString('pt-BR', { minimumFractionDigits:1, maximumFractionDigits:2 });
 }
 
+function integerCriterionWeights(weights = CRITERIO_PESOS) {
+  const normalized = normalizeCriterionWeights(weights);
+  const integers = normalized.map(Math.floor);
+  let remainder = 100 - integers.reduce((sum, weight) => sum + weight, 0);
+  normalized
+    .map((weight, index) => ({ index, fraction:weight - integers[index] }))
+    .sort((a, b) => b.fraction - a.fraction || a.index - b.index)
+    .forEach(({ index }) => {
+      if (remainder <= 0) return;
+      integers[index] += 1;
+      remainder -= 1;
+    });
+  return integers;
+}
+
 function syncCriterionWeightLabels() {
+  const displayWeights = integerCriterionWeights(CRITERIO_PESOS);
   document.querySelectorAll('.results-table thead').forEach(head => {
     head.querySelectorAll('.peso').forEach((label, index) => {
       const criterionIndex = index % CRITERIOS.length;
-      label.textContent = `${criterionIndex === 0 ? 'Peso ' : ''}${formatCriterionWeight(CRITERIO_PESOS[criterionIndex])}%`;
+      label.textContent = `Peso ${displayWeights[criterionIndex]}%`;
     });
   });
 }
@@ -6097,7 +6492,7 @@ function notaNumericaCriterioHTML(valor, critIdx) {
   const pesoPercentual = CRITERIO_PESOS[critIdx] ?? (100 / CRITERIOS.length);
   const contribuicao = valor * (pesoPercentual / 100);
   const notaLabel = Number(valor).toFixed(2).replace('.', ',');
-  const pesoLabel = Number(pesoPercentual).toLocaleString('pt-BR', { maximumFractionDigits:2 });
+  const pesoLabel = [33, 33, 34][critIdx] ?? Math.round(Number(pesoPercentual));
   const contribuicaoLabel = Number(contribuicao).toFixed(2).replace('.', ',');
   return `<div class="res-criterion-result"><span class="res-criterion-score">${contribuicaoLabel}</span><span class="res-criterion-calc">${notaLabel} × ${pesoLabel}%</span></div>`;
 }
@@ -6293,11 +6688,11 @@ function formatResultadoLeaderName(value) {
   const text = String(value || '').trim();
   if (!text) return 'N/D';
   const upper = text.toUpperCase();
-  return upper.length > 25 ? `${upper.slice(0, 25).trimEnd()}...` : upper;
+  return upper.length > 35 ? `${upper.slice(0, 35).trimEnd()}...` : upper;
 }
 function formatResultadoMemberName(value) {
   const text = displayPersonName(value);
-  return text.length > 25 ? `${text.slice(0, 25).trimEnd()}...` : text;
+  return text.length > 35 ? `${text.slice(0, 35).trimEnd()}...` : text;
 }
 function formatEvaluationPersonName(value, max = 40) {
   const text = displayPersonName(value);
@@ -6434,6 +6829,108 @@ function materialLinks(e) {
     raw['Faça o upload do roteiro de uma campanha publicitária multiplataforma sobre o tema O PAPEL DA EDUCAÇÃO NA TRANSFORMAÇÃO SOCIAL'] ||
     '';
   return { video, roteiro30, campanha };
+}
+function formatVideoDuration(seconds) {
+  const total = Math.max(0, Math.round(Number(seconds) || 0));
+  const hours = Math.floor(total / 3600);
+  const minutes = Math.floor((total % 3600) / 60);
+  const remainingSeconds = total % 60;
+  if (hours) return `${hours}:${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+  return `${minutes}:${String(remainingSeconds).padStart(2, '0')}`;
+}
+function probeVideoDuration(url) {
+  return new Promise(resolve => {
+    const video = document.createElement('video');
+    let settled = false;
+    const finish = value => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timeoutId);
+      video.removeAttribute('src');
+      try { video.load(); } catch {}
+      resolve(value);
+    };
+    const readDuration = () => {
+      const duration = Number(video.duration);
+      if (Number.isFinite(duration) && duration > 0) finish(duration);
+    };
+    const timeoutId = setTimeout(() => finish(null), 15000);
+    video.preload = 'metadata';
+    video.muted = true;
+    video.playsInline = true;
+    video.addEventListener('loadedmetadata', readDuration);
+    video.addEventListener('durationchange', readDuration);
+    video.addEventListener('error', () => finish(null), { once:true });
+    video.src = url;
+    try { video.load(); } catch { finish(null); }
+  });
+}
+function getVideoDuration(url) {
+  if (videoDurationCache.has(url)) return Promise.resolve(videoDurationCache.get(url));
+  if (!videoDurationPromises.has(url)) {
+    videoDurationPromises.set(url, probeVideoDuration(url).then(duration => {
+      videoDurationCache.set(url, duration);
+      videoDurationPromises.delete(url);
+      return duration;
+    }));
+  }
+  return videoDurationPromises.get(url);
+}
+function loadVideoDurationManifest() {
+  if (videoDurationManifestPromise) return videoDurationManifestPromise;
+  videoDurationManifestPromise = fetch('./video-durations.json', { cache:'no-store' })
+    .then(response => {
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return response.json();
+    })
+    .then(data => {
+      Object.entries(data?.durationsByUrl || {}).forEach(([url, duration]) => {
+        const numericDuration = Number(duration);
+        if (url && Number.isFinite(numericDuration) && numericDuration > 0) {
+          videoDurationCache.set(url, numericDuration);
+        }
+      });
+      return true;
+    })
+    .catch(error => {
+      console.warn('Mapa pré-calculado de durações indisponível; usando leitura dos vídeos.', error);
+      return false;
+    });
+  return videoDurationManifestPromise;
+}
+async function hydrateVisibleVideoDurations() {
+  const hydrationRun = ++videoDurationHydrationRun;
+  const urls = [...new Set(INSCRICOES.map(item => materialLinks(item).video || '').filter(Boolean))];
+  const needsFilterRefresh = Number(document.getElementById('resFiltroDuracao')?.value || 0) > 0
+    && urls.some(url => !videoDurationCache.has(url));
+  await loadVideoDurationManifest();
+  if (hydrationRun !== videoDurationHydrationRun) return;
+  const cells = [...document.querySelectorAll('#tblResultados .res-video-duration-value[data-video-url]')];
+  const cellsByUrl = new Map();
+  cells.forEach(cell => {
+    const url = cell.dataset.videoUrl || '';
+    if (!cellsByUrl.has(url)) cellsByUrl.set(url, []);
+    cellsByUrl.get(url).push(cell);
+  });
+  const paintDuration = (url, duration) => {
+    (cellsByUrl.get(url) || []).forEach(cell => {
+      if (!cell.isConnected) return;
+      cell.classList.remove('is-loading');
+      cell.textContent = duration ? formatVideoDuration(duration) : '—';
+      cell.title = duration ? `Duração do vídeo: ${formatVideoDuration(duration)}` : 'Duração indisponível';
+    });
+  };
+  urls.filter(url => videoDurationCache.has(url)).forEach(url => paintDuration(url, videoDurationCache.get(url)));
+  const queue = urls.filter(url => !videoDurationCache.has(url));
+  const worker = async () => {
+    while (queue.length && hydrationRun === videoDurationHydrationRun) {
+      const url = queue.shift();
+      const duration = await getVideoDuration(url);
+      paintDuration(url, duration);
+    }
+  };
+  await Promise.all(Array.from({ length:Math.min(4, queue.length) }, worker));
+  if (needsFilterRefresh && hydrationRun === videoDurationHydrationRun) renderResultados();
 }
 function escapeHtmlAttr(value) {
   return String(value || '')
@@ -6833,8 +7330,7 @@ function proceedAfterVideoIssueReport() {
   }
 
   currentParId = context.parId;
-  currentInscId = null;
-  showView('portal');
+  abrirFicha(context.parId, context.reportedInscId);
 }
 
 function confirmVideoIssueReport() {
@@ -7079,11 +7575,8 @@ function buildAbsoluteRankingById(rankingMode) {
     rankByScore.set(key, consumed + 1);
     consumed += countByScore[key] || 0;
   });
-  const nullRows = scored.filter(item => item.score === null || !Number.isFinite(item.score))
-    .sort((a, b) => compareInscIdAsc(a.e, b.e));
-  const nullRankById = new Map(nullRows.map((item, index) => [String(item.e.id), validScores.length + index + 1]));
   return new Map(scored.map(({ e, score }) => {
-    if (score === null || !Number.isFinite(score)) return [String(e.id), { rank:rankingMode === 'Ranking ajustado por parecerista' ? '—' : nullRankById.get(String(e.id)), tied:false }];
+    if (score === null || !Number.isFinite(score)) return [String(e.id), { rank:'—', tied:false }];
     const key = score.toFixed(2);
     return [String(e.id), { rank:rankByScore.get(key), tied:(countByScore[key] || 0) > 1 }];
   }));
@@ -7162,6 +7655,7 @@ function filtrarResultados() {
   const uf = document.getElementById('resFiltroUf')?.value || '';
   const genero = document.getElementById('resFiltroGenero')?.value || 'Todos os gêneros';
   const raca = document.getElementById('resFiltroRaca')?.value || '';
+  const duracaoMaxima = Number(document.getElementById('resFiltroDuracao')?.value || 0);
   return INSCRICOES.map((e, idx) => ({ e, idx })).filter(({ e }) => {
     const c = avalCount(e.id);
     const statusAtual = c.done === 0 ? 'Não iniciadas' : c.done === c.total ? 'Finalizadas' : 'Parciais';
@@ -7170,6 +7664,11 @@ function filtrarResultados() {
     if (uf && ufDisplayLabel(e.uf) !== uf) return false;
     if (genero !== 'Todos os gêneros' && !generosTimeInscricao(e).has(genero)) return false;
     if (raca && !racasTimeInscricao(e).has(raca)) return false;
+    if (duracaoMaxima > 0) {
+      const videoUrl = materialLinks(e).video || '';
+      const duration = videoDurationCache.get(videoUrl);
+      if (!Number.isFinite(duration) || duration >= duracaoMaxima) return false;
+    }
     return true;
   });
 }
@@ -7181,6 +7680,7 @@ function zerarFiltrosResultados() {
     resFiltroUf: '',
     resFiltroGenero: 'Todos os gêneros',
     resFiltroRaca: '',
+    resFiltroDuracao: '0',
     resFiltroRanking: 'Ranking normal',
     resFiltroTop: '0',
     resFiltroVariacao: '0'
@@ -7237,6 +7737,26 @@ function syncResultsSummaryColumn() {
   toggle.setAttribute('aria-expanded', String(resultsSummaryColumnOpen));
 }
 
+function syncResultsIdColumn() {
+  const view = document.getElementById('view-resultados');
+  const toggle = document.getElementById('resultsIdToggle');
+  view?.classList.toggle('results-id-open', resultsIdColumnOpen);
+  if (!toggle) return;
+  const sign = toggle.querySelector('.results-id-toggle-sign');
+  const label = toggle.querySelector('.results-id-toggle-label');
+  if (sign) sign.textContent = resultsIdColumnOpen ? '−' : '+';
+  if (label) label.textContent = resultsIdColumnOpen ? 'Ocultar ID' : 'Mostrar ID';
+  toggle.title = resultsIdColumnOpen ? 'Ocultar coluna de ID' : 'Mostrar coluna de ID';
+  toggle.setAttribute('aria-label', toggle.title);
+  toggle.setAttribute('aria-expanded', String(resultsIdColumnOpen));
+}
+
+function toggleResultsIdColumn(forceOpen) {
+  resultsIdColumnOpen = typeof forceOpen === 'boolean' ? forceOpen : !resultsIdColumnOpen;
+  renderResultados();
+  requestAnimationFrame(syncResultadosStickyLayout);
+}
+
 function toggleResultsSummaryColumn(forceOpen) {
   resultsSummaryColumnOpen = typeof forceOpen === 'boolean' ? forceOpen : !resultsSummaryColumnOpen;
   renderResultados();
@@ -7272,6 +7792,7 @@ function renderResultados() {
   syncCriterionWeightLabels();
   syncResultadosFilters();
   syncResultsSummaryColumn();
+  syncResultsIdColumn();
   const rankingMode = document.getElementById('resFiltroRanking')?.value || 'Ranking normal';
   const topLimit = Number(document.getElementById('resFiltroTop')?.value || 0);
   const anyTopField = document.getElementById('resFiltroAnyTop');
@@ -7347,6 +7868,7 @@ function renderResultados() {
     !!(document.getElementById('resFiltroUf')?.value || '') ||
     (document.getElementById('resFiltroGenero')?.value || 'Todos os gêneros') !== 'Todos os gêneros' ||
     !!(document.getElementById('resFiltroRaca')?.value || '') ||
+    Number(document.getElementById('resFiltroDuracao')?.value || 0) > 0 ||
     topLimit > 0 || variacaoPct > 0 || anyTopActive || rankingMode !== 'Ranking normal';
   document.getElementById('view-resultados')?.classList.toggle('results-has-filters', hasActiveFilters);
   const summaryBar = document.getElementById('resSummaryBar');
@@ -7395,6 +7917,10 @@ function renderResultados() {
         </div>`
       : '';
     const projectSummary = projectSummaries.get(String(shortInscId(e.id))) || e.defesa || '';
+    const videoUrl = materialLinks(e).video || '';
+    const candidateState = ufDisplayLabel(e.uf) || 'Não informado';
+    const candidateGenders = [...generosTimeInscricao(e)].join(' · ') || 'Não informado';
+    const candidateRaces = [...racasTimeInscricao(e)].join(' · ') || 'Não informada';
     const rowClass = [
       isAnyTopMarginOnly ? 'res-near-row' : isOfficialTop ? 'res-top-row' : isNearCut ? 'res-near-row' : '',
       isOutsideBaseTop ? 'res-outside-base-top' : '',
@@ -7406,13 +7932,14 @@ function renderResultados() {
       const notaGeralParecerista = parecerConcluido ? notaGeralAvaliacao(av) : null;
       return `<tr class="sub-row sub-res-${i} ${rowClass}">
         <td class="sticky s0"></td>
-        <td class="res-actions-col"></td>
+        <td class="res-id-number-col"></td>
         <td class="sticky s5" style="padding-left:22px">
           <div style="font-size:11px;font-weight:500;color:#5F6368">${p.nome}</div>
           <div class="res-faint" style="font-size:10px">Parecerista</div>
         </td>
         <td class="res-project-summary-col"></td>
-        <td class="res-state-col"></td>
+        <td class="res-gender-col"></td>
+        <td class="res-race-col"></td>
         <td class="res-university-col"></td>
         <td class="s7" style="text-align:center">${parecerConcluido ? `<span style="font-size:13px;font-weight:600;color:#202124">${fmtNotaGeral(notaGeralParecerista)}</span>` : '<span style="color:#E0E0E0">—</span>'}</td>
         ${CRITERIOS.map((_,ci) => `<td class="crit-td">${nc(parecerConcluido ? av.notas[ci] : null)}</td>`).join('')}
@@ -7421,11 +7948,10 @@ function renderResultados() {
 
     return `<tr class="${rowClass}">
       <td class="sticky s0">${isBaseOfficialTop ? `<span class="res-cut-label rank-top-label">Top ${topLimit}</span>` : ''}<div class="res-rank-line"><span class="res-primary-rank ${rankingModeClass}">${ranking.rank}</span><span class="res-rank-axis">${primaryRankingCode || bancaToggleHTML(e.id)}</span>${primaryRankingCode ? bancaToggleHTML(e.id) : ''}</div>${baseRankingLabel}${isVisibleTie ? `<div class="res-faint" style="font-size:10px;margin-top:3px">(empate)</div>` : ''}${isAnyTopMarginOnly || (!isBaseOfficialTop && isNearCut) ? `<span class="res-cut-label res-near-label">Margem ${variacaoPct}%</span>` : ''}${isConvergentTop ? '<span class="res-convergence-label">Convergência</span>' : ''}${comparisonRankLabel}</td>
-      <td class="res-actions-col"><div class="res-id-actions" style="justify-content:center"><button class="icon-btn" onclick="openModal(${idx})" title="Ver inscrição"><i class="ti ti-eye"></i></button><button class="icon-btn" onclick="openModalPar(${idx})" title="Ver notas dos pareceristas"><i class="ti ti-notes"></i></button></div></td>
+      <td class="res-id-number-col">${escapeHtmlAttr(shortInscId(e.id))}</td>
       <td class="sticky s5">
         <div class="leader-cell">
-          <div style="font-size:12.5px;font-weight:600;color:#202124">${formatResultadoLeaderName(e.lider)}</div>
-          <div class="res-muted" style="font-size:10px;margin-top:4px">ID ${shortInscId(e.id)}</div>
+          <div class="res-leader-head"><div class="res-leader-name">${formatResultadoLeaderName(e.lider)}</div><div class="res-name-actions"><button class="icon-btn" onclick="openModalPar(${idx})" title="Ver notas dos pareceristas" aria-label="Ver notas dos pareceristas"><i class="ti ti-notes"></i></button><div class="res-video-action"><button class="icon-btn" onclick="openModal(${idx})" title="Abrir vídeo da inscrição" aria-label="Abrir vídeo da inscrição"><i class="ti ti-player-play"></i></button>${videoUrl ? `<span class="res-video-duration-value is-loading" data-video-url="${escapeHtmlAttr(videoUrl)}" title="Carregando duração do vídeo">…</span>` : '<span class="res-video-duration-value" title="Vídeo não informado">—</span>'}</div></div></div>
           ${e.p2 ? `<div class="team-members">
           <div class="team-member-line" title="${escapeHtmlAttr(displayPersonName(e.p2))}">${formatResultadoMemberName(e.p2)}</div>
           ${e.p3 ? `<div class="team-member-line" title="${escapeHtmlAttr(displayPersonName(e.p3))}">${formatResultadoMemberName(e.p3)}</div>` : ''}
@@ -7433,8 +7959,9 @@ function renderResultados() {
         </div>
       </td>
       <td class="res-project-summary-col">${projectSummary ? `<div class="res-project-summary-text">${escapeHtmlAttr(projectSummary)}</div>` : '<span class="res-project-summary-empty">Resumo não disponível</span>'}</td>
-      <td class="res-state-col" style="font-size:12.5px;font-weight:500;color:#5F6368;line-height:1.4">${escapeHtmlAttr(ufDisplayLabel(e.uf))}</td>
-      <td class="res-university-col"><div class="res-muted" style="font-size:12.5px;line-height:1.4">${escapeHtmlAttr(compactInstitutionLabel(e.inst) || 'Instituição não informada')}</div></td>
+      <td class="res-gender-col">${escapeHtmlAttr(candidateGenders)}</td>
+      <td class="res-race-col">${escapeHtmlAttr(candidateRaces)}</td>
+      <td class="res-university-col"><div class="res-muted">${escapeHtmlAttr(compactInstitutionLabel(e.inst) || 'Instituição não informada')}</div><div class="res-university-location">${escapeHtmlAttr(candidateState)}</div></td>
       <td class="s7" style="text-align:center;vertical-align:top">
         <div class="nota-cell">
           <div class="nota-main">${pt !== null ? fmtResultadoFinal(pt) : '<span style="color:#E0E0E0;font-size:15px">—</span>'}</div>
@@ -7446,7 +7973,7 @@ function renderResultados() {
       </td>
       ${CRITERIOS.map((_,ci) => `<td class="crit-td">${notaNumericaCriterioHTML(mediaNumericaPorCrit(e.id,ci), ci)}</td>`).join('')}
     </tr>${subRows}`;
-  }).join('') : `<tr><td colspan="${7 + CRITERIOS.length}" style="padding:22px 14px;text-align:center;color:#9AA0A6">Nenhum registro encontrado para os filtros aplicados.</td></tr>`;
+  }).join('') : `<tr><td colspan="${8 + CRITERIOS.length}" style="padding:22px 14px;text-align:center;color:#9AA0A6">Nenhum registro encontrado para os filtros aplicados.</td></tr>`;
 
   requestAnimationFrame(() => {
     const scroll = document.getElementById('resultsBodyScroll');
@@ -7455,6 +7982,7 @@ function renderResultados() {
       if (resultsSummaryColumnOpen) scroll.scrollLeft = 0;
     }
     syncResultadosStickyLayout();
+    hydrateVisibleVideoDurations();
     requestAnimationFrame(() => {
       syncResultadosStickyLayout();
       if (resultsSummaryColumnOpen && scroll) scroll.scrollLeft = 0;
@@ -8226,9 +8754,8 @@ function cancelNextEvaluation() {
   pendingNextEvaluation = null;
   closeNextEvaluationModal();
   if (!data) return;
-  currentParId = data.parId;
-  currentInscId = null;
-  showView('portal');
+  const anterior = lastReviewedPortalInscId || data.inscId;
+  abrirFicha(data.parId, anterior);
 }
 
 function confirmNextEvaluation() {
@@ -8760,8 +9287,8 @@ function exportAuditoria() {
 
 // ═══ FICHA DE AVALIAÇÃO ═══════════════════════════════════
 
-function setLayout() {
-  currentAvaliacaoView = 'seq';
+function setLayout(mode) {
+  currentAvaliacaoView = mode === 'seq' ? 'seq' : 'split';
   const seq = document.getElementById('layoutSeq');
   const split = document.getElementById('layoutSplit');
   if (seq) seq.style.display = 'none';
@@ -8777,8 +9304,42 @@ function setLayout() {
   updateFooter();
 }
 
+function initFichaOriginalResize() {
+  const handleP = document.getElementById('handlePanels');
+  const leftEl = document.getElementById('splitLeft');
+  const shell = document.getElementById('splitShell');
+  if (!handleP || !leftEl || !shell || handleP.dataset.resizeBound === '1') return;
+  handleP.dataset.resizeBound = '1';
+  let drag = false;
+  let startX = 0;
+  let startW = 0;
+  handleP.addEventListener('mousedown', event => {
+    drag = true;
+    startX = event.clientX;
+    startW = leftEl.offsetWidth;
+    handleP.classList.add('dragging');
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    event.preventDefault();
+  });
+  document.addEventListener('mousemove', event => {
+    if (!drag) return;
+    const width = Math.max(200, Math.min(shell.offsetWidth * .65, startW + event.clientX - startX));
+    leftEl.style.width = `${width}px`;
+    leftEl.style.minWidth = `${width}px`;
+    leftEl.style.maxWidth = `${width}px`;
+  });
+  document.addEventListener('mouseup', () => {
+    if (!drag) return;
+    drag = false;
+    handleP.classList.remove('dragging');
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+  });
+}
+
 let currentLayout = 'split';
-let currentAvaliacaoView = 'seq';
+let currentAvaliacaoView = 'split';
 
 function avalGridHTML(e, mode, context = 'avaliacao') {
   // mode: 'seq' = 3 colunas | 'split' = 1 coluna (painel lateral)
@@ -8798,83 +9359,73 @@ function avalGridHTML(e, mode, context = 'avaliacao') {
 
   if (isSplit) {
     const curso = e.curso || firstRawValue(e._raw || {}, ['Curso de graduação que você cursa', 'Curso no qual você tem matrícula ativa?', 'Curso', 'curso']) || 'Curso não informado';
+    if (!bancaReviewerBootMode && context === 'avaliacao') {
+      const genero = e.genero || firstRawValue(e._raw || {}, ['Gênero', 'Genero', 'gênero', 'genero']) || 'Não informado';
+      const raca = e.raca || firstRawValue(e._raw || {}, ['Raça', 'Raca', 'Cor ou raça', 'raça', 'raca']) || 'Não informada';
+      const blocoNarrativa = (titulo, resposta) => `
+        <section class="narr-secao">
+          <h3>${escapeHtmlAttr(titulo)}</h3>
+          <div class="resposta-bloco"><p>${escapeHtmlAttr(resposta || 'Não informado.')}</p></div>
+        </section>`;
+      return `
+        <div class="ls-proposal-title titulo-coluna">Proposta</div>
+        <div class="informacoes">
+          <div class="projeto-cabecalho">
+            <span class="nome-time">${escapeHtmlAttr(displayPersonName(e.lider).toUpperCase())}</span>
+            <div class="anexos-projeto">
+              ${materialButtonHTML({ url: links.video, label: 'Vídeo', icon: 'ti-player-play', tipo: 'video_criativo', inscricaoId: e.id, openInModal: useAttachmentViewer })}
+              ${materialButtonHTML({ url: links.roteiro30, label: 'Comprovante acadêmico', icon: 'ti-file', tipo: 'comprovante_academico', inscricaoId: e.id, openInModal: useAttachmentViewer })}
+              <button class="perfil-toggle" type="button" aria-expanded="false" onclick="toggleReviewerCandidateProfile(this)">Perfil da candidatura</button>
+            </div>
+          </div>
+          <div class="perfil-conteudo" hidden>
+          <div class="info-subtitulo">Dados gerais</div>
+          <dl class="meta ls-profile-grid">
+            <div><dt>Universidade</dt><dd>${escapeHtmlAttr(e.inst || 'Não informada')}</dd></div>
+            <div><dt>Candidato(a)</dt><dd>${escapeHtmlAttr(displayPersonName(e.lider) || 'Não informado')}${e.le ? `<small>${escapeHtmlAttr(e.le)}</small>` : ''}</dd></div>
+            <div><dt>Curso</dt><dd>${escapeHtmlAttr(curso)}</dd></div>
+            <div><dt>Estado</dt><dd>${escapeHtmlAttr(e.uf || 'Não informado')}</dd></div>
+            <div><dt>Gênero</dt><dd>${escapeHtmlAttr(genero)}</dd></div>
+            <div><dt>Raça</dt><dd>${escapeHtmlAttr(raca)}</dd></div>
+          </dl>
+          </div>
+        </div>
+        <div class="ls-proposal-narrative narr narr-bloco">
+          ${blocoNarrativa('Apresentação pessoal', e.defesa || projectSummary)}
+          ${blocoNarrativa('Ferramentas de IA utilizadas', e.ia || 'Não informadas.')}
+          ${blocoNarrativa('Etapas e finalidades do uso de IA', objetivos)}
+          ${blocoNarrativa('Supervisão humana e verificações', estrategia)}
+        </div>`;
+    }
     const instituicaoResumo = compactInstitutionLabel(e.inst);
     const cursoResumo = compactCourseLabel(curso);
     const localResumo = compactInstitutionLocation(e.inst, e.uf);
-    const bancaHeroNameStyle = bancaReviewerBootMode ? ' style="font-size:15.2px!important;font-weight:600!important"' : '';
-    const bancaHeroFontStyle = bancaReviewerBootMode ? ' style="font-size:13.2px!important"' : '';
-    const kicker = `
-      <span class="split-kicker-id">MARATONA-${e.id}</span>`;
-    const p2 = e.p2 ? `
-      <div class="split-meta-row">
-        <div class="split-person-line">
-          ${bancaReviewerBootMode ? '' : '<span class="split-person-badge">P2</span>'}
-          <div class="split-meta-value" title="${escapeHtmlAttr(displayPersonName(e.p2))}">${escapeHtmlAttr(bancaReviewerBootMode ? formatBancaPersonName(e.p2) : formatEvaluationPersonName(e.p2))}</div>
-        </div>
-        ${!bancaReviewerBootMode && e.p2e ? `<div class="split-meta-subline">${e.p2e}</div>` : ''}
-      </div>` : '';
-    const p3 = e.p3 ? `
-      <div class="split-meta-row">
-        <div class="split-person-line">
-          ${bancaReviewerBootMode ? '' : '<span class="split-person-badge">P3</span>'}
-          <div class="split-meta-value" title="${escapeHtmlAttr(displayPersonName(e.p3))}">${escapeHtmlAttr(bancaReviewerBootMode ? formatBancaPersonName(e.p3) : formatEvaluationPersonName(e.p3))}</div>
-        </div>
-        ${!bancaReviewerBootMode && e.p3e ? `<div class="split-meta-subline">${e.p3e}</div>` : ''}
-      </div>` : '';
-    const mentor = (e.mentor || e.me) ? `
-      <div class="split-meta-row">
-        <div class="split-meta-value-line">
-          <div class="split-person-line">
-            ${bancaReviewerBootMode ? '' : '<span class="split-person-badge">M</span>'}
-            <div class="split-meta-value" title="${escapeHtmlAttr(displayPersonName(e.mentor))}">${escapeHtmlAttr(bancaReviewerBootMode ? formatBancaPersonName(e.mentor) : formatEvaluationPersonName(e.mentor))}</div>
-          </div>
-          <span class="split-mentor-badge">Mentor(a)</span>
-        </div>
-        ${!bancaReviewerBootMode && e.me ? `<div class="split-meta-subline">${e.me}</div>` : ''}
-      </div>` : '';
+    const marker = teamMarker(e.mod);
+    const memberRow = (label, name, email = '') => name ? `
+      <span style="font-size:9.5px;font-weight:600;color:var(--text-muted);text-transform:uppercase">${label}</span>
+      <span style="font-size:11px;color:var(--text-secondary);min-width:0">
+        <strong style="font-weight:500;color:var(--text-primary)">${escapeHtmlAttr(formatEvaluationPersonName(name))}</strong>${email ? `<span style="color:var(--text-muted)"> · ${escapeHtmlAttr(email)}</span>` : ''}
+      </span>` : '';
     return `
-      ${bancaReviewerBootMode ? `
-        <div class="split-side-panel-head">
-          <div class="split-side-panel-title">Informações da candidatura</div>
-        </div>` : ''}
-      <div class="split-hero">
-        ${context === 'modal' ? '<button class="close-btn split-hero-close" type="button" onclick="closeModal()" aria-label="Fechar"><i class="ti ti-x"></i></button>' : ''}
-        ${bancaReviewerBootMode ? '' : `
-          <div class="split-hero-top">
-            <div class="split-kicker">${kicker}</div>
-          </div>`}
-        <div class="split-leader-line">
-          <div class="split-leader"${bancaHeroNameStyle} title="${escapeHtmlAttr(displayPersonName(e.lider))}">${escapeHtmlAttr(bancaReviewerBootMode ? formatBancaPersonName(e.lider) : formatEvaluationPersonName(e.lider))}</div>
+      <div style="padding:12px 16px;border-bottom:1px solid var(--border);background:var(--surface2);flex-shrink:0">
+        <div style="display:flex;align-items:center;gap:6px;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:3px">
+          <span>MARATONA-${e.id}</span><span>·</span><span>${marker}</span>
         </div>
-        ${bancaReviewerBootMode && (e.p2 || e.p3 || e.mentor) ? `
-          <div class="split-hero-members">
-            ${p2}
-            ${p3}
-            ${mentor}
-          </div>` : ''}
-        ${bancaReviewerBootMode ? `
-          <div class="split-inst"${bancaHeroFontStyle}>${instituicaoResumo}</div>
-          <div class="split-hero-course"${bancaHeroFontStyle}>${cursoResumo}</div>
-          <div class="split-hero-location"${bancaHeroFontStyle}>${localResumo}</div>
-        ` : `
-          <div class="split-profile-grid">
-            <div class="split-profile-item split-profile-item-wide"><span class="split-profile-label">Instituição</span><span class="split-profile-value">${instituicaoResumo}</span></div>
-            <div class="split-profile-item"><span class="split-profile-label">Curso</span><span class="split-profile-value">${cursoResumo}</span></div>
-            <div class="split-profile-item"><span class="split-profile-label">Localização</span><span class="split-profile-value">${localResumo}</span></div>
-          </div>
-        `}
+        <div style="font-size:14px;font-weight:600;color:var(--text-primary);line-height:1.25" title="${escapeHtmlAttr(displayPersonName(e.lider))}">${escapeHtmlAttr(formatEvaluationPersonName(e.lider))}</div>
+        <div style="font-size:11px;color:var(--text-tertiary);margin-top:3px">${escapeHtmlAttr(instituicaoResumo)} · ${escapeHtmlAttr(cursoResumo)} · ${escapeHtmlAttr(localResumo)}</div>
       </div>
 
-      ${!bancaReviewerBootMode && (e.p2 || e.p3 || e.mentor) ? `
-        <div class="split-meta-rows">
-          ${p2}
-          ${p3}
-          ${mentor}
+      ${(e.p2 || e.p3 || e.mentor) ? `
+        <div style="padding:10px 16px;border-bottom:1px solid var(--border-light);flex-shrink:0">
+          <div style="display:grid;grid-template-columns:48px 1fr;gap:3px 10px;align-items:baseline">
+            ${memberRow('P2', e.p2, e.p2e)}
+            ${memberRow('P3', e.p3, e.p3e)}
+            ${memberRow('Mentor', e.mentor, e.me)}
+          </div>
         </div>` : ''}
 
-      <div class="split-materials-wrap">
-        <div class="split-materials-title">Materiais da candidatura</div>
-        <div class="split-materials-list">
+      <div style="padding:10px 16px;border-bottom:1px solid var(--border-light);flex-shrink:0">
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
           ${materialButtonHTML({ url: links.video, label: 'Vídeo criativo', icon: bancaReviewerBootMode ? 'ti-video' : 'ti-player-play', tipo: 'video_criativo', inscricaoId: e.id, openInModal: useAttachmentViewer })}
           ${materialButtonHTML({ url: links.roteiro30, label: 'Comprovante acadêmico', icon: 'ti-file-text', tipo: 'comprovante_academico', inscricaoId: e.id, openInModal: useAttachmentViewer })}
         </div>
@@ -8888,34 +9439,30 @@ function avalGridHTML(e, mode, context = 'avaliacao') {
               <strong>Pendência resolvida.</strong> O vídeo foi verificado pela equipe e esta ficha voltou para a sua fila para <strong>avaliar novamente</strong>.
             </div>
           ` : ''}
-          ${(activeVideoIssue || resolvedVideoIssue) ? `
-            <div class="split-video-tools">
-              <div class="split-video-tools-note">${activeVideoIssue ? 'O reporte registra uma pausa técnica, mantém esta ficha na sua lista e reposiciona a avaliação para o final da fila.' : 'Agora a avaliação pode seguir normalmente, com o vídeo já liberado para análise.'}</div>
-            </div>
-          ` : ''}
+          ${(activeVideoIssue || resolvedVideoIssue) ? `<div style="font-size:10px;color:var(--text-muted);margin-top:6px">${activeVideoIssue ? 'O reporte mantém esta ficha na sua lista e a posiciona ao final da fila.' : 'O vídeo foi liberado e a avaliação pode seguir normalmente.'}</div>` : ''}
         ` : ''}
-        <div class="ia-note split-ia-note" id="avalIASplit"></div>
       </div>
 
-      ${bancaReviewerBootMode ? `
-        <div class="split-copy-section last banca-project-summary">
-          <div class="split-copy-title">Apresentação pessoal</div>
-          <div class="split-copy-body">${escapeHtmlAttr(projectSummary)}</div>
+      <div class="goup-split-texts" style="flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:14px">
+        <div>
+          <div class="section-label" style="margin-bottom:5px">Apresentação pessoal</div>
+          <div style="font-size:11.5px;line-height:1.58;color:var(--text-secondary)">${escapeHtmlAttr(bancaReviewerBootMode ? projectSummary : (e.defesa || projectSummary))}</div>
         </div>
-      ` : `
-        <div class="split-copy-section">
-          <div class="split-copy-title">Apresentação pessoal</div>
-          <div class="split-copy-body">${e.defesa}</div>
+        <div>
+          <div class="section-label" style="margin-bottom:5px">Ferramentas de IA utilizadas</div>
+          <div style="font-size:11.5px;line-height:1.58;color:var(--text-secondary)">${escapeHtmlAttr(e.ia || 'Não informadas.')}</div>
         </div>
-        <div class="split-copy-section">
-          <div class="split-copy-title">Etapas e finalidades do uso de IA</div>
-          <div class="split-copy-body">${objetivos}</div>
+        <div>
+          <div class="section-label" style="margin-bottom:5px">Etapas e finalidades do uso de IA</div>
+          <div style="font-size:11.5px;line-height:1.58;color:var(--text-secondary)">${escapeHtmlAttr(objetivos)}</div>
         </div>
-        <div class="split-copy-section last">
-          <div class="split-copy-title">Supervisão humana e verificações</div>
-          <div class="split-copy-body">${estrategia}</div>
+        <div>
+          <div class="section-label" style="margin-bottom:5px">Supervisão humana e verificações</div>
+          <div style="font-size:11.5px;line-height:1.58;color:var(--text-secondary)">${escapeHtmlAttr(estrategia)}</div>
         </div>
-      `}`;
+      </div>
+
+      <div id="avalIASplit" style="padding:7px 16px;border-top:1px solid var(--border-light);font-size:10px;color:var(--text-muted);flex-shrink:0"></div>`;
   }
 
   // modo sequencial — grid 3 colunas
@@ -8942,37 +9489,100 @@ function avalGridHTML(e, mode, context = 'avaliacao') {
          <div class="field s3 last"><div class="mfl">Supervisão humana e verificações</div><div class="mfv-light">${estrategia}</div></div>`}`;
 }
 
-function critGridHTML(av, prefix) {
-  const numericBancaScale = bancaReviewerBootMode && bancaModeloAtivo !== 'grade_completa';
-  const ESCALA_DESC = {
-    'Insuficiente': 'Abaixo do esperado',
-    'Regular': 'Atende parcialmente',
-    'Bom': 'Atende bem ao que se propõe',
-    'Ótimo': 'Supera as expectativas',
-  };
-  return CRITERIOS.map((c,i) => {
-    const ESCALA = numericBancaScale
-      ? (c.escala || []).map((_, scaleIndex) => String(scaleIndex + 1))
-      : ['Insuficiente','Regular','Bom','Ótimo'];
-    const nota = av?.notas[i] || null;
-    return `<div class="criterio${numericBancaScale ? ' numeric-scale' : ''}" id="${prefix}crit-card-${i}">
-      <div class="criterio-main">
-        <div class="crit-num">${String(i+1).padStart(2,'0')}</div>
-        <div class="criterio-copy">
-          <div class="crit-nome">${c.nome}</div>
-          <div class="crit-desc">${c.desc}</div>
-        </div>
+function preencherFichaSplitOriginal(e) {
+  const links = materialLinks(e);
+  const curso = e.curso || firstRawValue(e._raw || {}, ['Curso de graduação que você cursa', 'Curso no qual você tem matrícula ativa?', 'Curso', 'curso']) || 'Curso não informado';
+  const objetivos = e.objetivos || e._raw?.['Em quais etapas e com qual finalidade?'] || 'Não informado.';
+  const estrategia = e.estrategia || e._raw?.['Como ocorreu a supervisão humana e quais verificações foram feitas?'] || 'Não informado.';
+
+  document.getElementById('splitHdrId').textContent = `MARATONA-${e.id} · ${e.mod || ''} · ${e.uf || ''}`;
+  document.getElementById('splitHdrNome').textContent = displayPersonName(e.lider);
+  document.getElementById('splitHdrSub').textContent = `${e.inst || 'Instituição não informada'} · ${curso}`;
+
+  const membros = [
+    e.p2 ? { role:'P2', nome:e.p2 } : null,
+    e.p3 ? { role:'P3', nome:e.p3 } : null,
+    e.mentor ? { role:'Mentor', nome:e.mentor } : null,
+  ].filter(Boolean);
+  document.getElementById('splitMembros').innerHTML = membros.map(m =>
+    `<span style="font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--text-muted);line-height:1.8">${escapeHtmlAttr(m.role)}</span>
+     <span style="font-size:12px;font-weight:500;color:var(--text-primary);line-height:1.8">${escapeHtmlAttr(formatEvaluationPersonName(m.nome))}</span>`
+  ).join('');
+
+  document.getElementById('splitMateriais').innerHTML = [
+    links.video ? { label:'▶ Vídeo', url:links.video, tipo:'video_criativo' } : null,
+    links.roteiro30 ? { label:'📄 Comprovante acadêmico', url:links.roteiro30, tipo:'comprovante_academico' } : null,
+  ].filter(Boolean).map(m =>
+    `<a href="${escapeHtmlAttr(m.url)}" target="_blank" rel="noopener noreferrer" class="mat-btn" style="font-size:11px;padding:4px 10px" data-anexo="${m.tipo}" data-origem="ficha_avaliacao" data-inscricao="${escapeHtmlAttr(e.id)}" onclick="return registrarCliqueAnexoFromLink(this,event)">${m.label}</a>`
+  ).join('');
+
+  const textos = [
+    { label:'Apresentação pessoal', val:e.defesa || 'Não informada.' },
+    { label:'Etapas e finalidades do uso de IA', val:objetivos },
+    { label:'Supervisão humana e verificações', val:estrategia },
+  ];
+  document.getElementById('splitTextos').innerHTML = textos.map(t =>
+    `<div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:6px;padding-bottom:4px;border-bottom:1.5px solid var(--border)">${escapeHtmlAttr(t.label)}</div>
+      ${String(t.val || '').split(/\n\s*\n/).map(p => `<p style="font-size:12px;color:var(--text-secondary);line-height:1.65;margin-bottom:6px">${escapeHtmlAttr(p)}</p>`).join('')}
+    </div>`
+  ).join('');
+
+  document.getElementById('iaSplit').textContent = `IA na criação: ${e.ia || 'Não informada.'}`;
+}
+
+function critSplitHTMLOriginal(av) {
+  const LINHA1 = ['Insuficiente','Regular'];
+  const LINHA2 = ['Bom','Ótimo'];
+  return `<div class="crit-compact">` + CRITERIOS.map((c,i) => {
+    const nota = av?.notas?.[i] || null;
+    const just = av?.justificativas?.[i] || '';
+    const pills = [...LINHA1,...LINHA2].map(v =>
+      `<label class="cc-radio-row"><input type="radio" name="spl_${i}" value="${v}" ${nota===v?'checked':''} onchange="updateFooter()"><span class="cc-pill">${v}</span></label>`
+    ).join('');
+    return `<div class="crit-compact-row" id="spl_crit-card-${i}" style="display:grid;grid-template-columns:277px 346px 1fr">
+      <div class="cc-label">
+        <span class="cc-nome"><span style="color:var(--text-muted);font-weight:400;margin-right:4px">${String(i+1).padStart(2,'0')}</span>${escapeHtmlAttr(c.nome)}</span>
+        <span class="cc-desc">${escapeHtmlAttr(c.desc)}</span>
       </div>
-      <div class="escala">
-        ${ESCALA.map(v => `
-          <input type="radio" name="${prefix}crit_${i}" id="${prefix}cr_${i}_${v}" value="${v}" ${nota===v?'checked':''} onchange="updateFooter()">
-          <label for="${prefix}cr_${i}_${v}">
-            <span class="escala-title">${v}</span>
-            <span class="escala-desc">${numericBancaScale ? escapeHtmlAttr(c.escala?.[Number(v) - 1] || '') : ESCALA_DESC[v]}</span>
-          </label>`).join('')}
+      <div class="cc-escala" style="flex-direction:row;flex-wrap:nowrap;gap:4px;align-items:center;border-left:1px solid var(--border-light)">${pills}</div>
+      <div class="cc-obs" style="border-left:1px solid var(--border-light)">
+        <textarea id="spl_just_${i}" placeholder="Observação…" oninput="updateFooter()">${escapeHtmlAttr(just)}</textarea>
       </div>
     </div>`;
+  }).join('') + `</div>`;
+}
+
+function critGridHTML(av, prefix) {
+  const labels = ['Insuficiente','Regular','Bom','Ótimo'];
+  return CRITERIOS.map((c,i) => {
+    const nota = av?.notas[i] || null;
+    return `<section class="criterio crit" id="${prefix}crit-card-${i}">
+      <div class="criterio-visivel">
+        <div class="criterio-visivel-cab">
+          <span class="crit-nome">${escapeHtmlAttr(c.nome)}</span>
+          <span class="criterio-peso">Peso ${Math.round(Number(CRITERIO_PESOS[i] || 0))}%</span>
+        </div>
+        <p class="crit-desc">${escapeHtmlAttr(c.desc)}</p>
+      </div>
+      <div class="escala">
+        ${labels.map((value, scaleIndex) => `
+          <input type="radio" name="${prefix}crit_${i}" id="${prefix}cr_${i}_${scaleIndex + 1}" value="${value}" ${nota===value?'checked':''} onchange="updateFooter()">
+          <label for="${prefix}cr_${i}_${scaleIndex + 1}" title="${escapeHtmlAttr(value)}">
+            <span class="escala-title">${scaleIndex + 1}</span>
+          </label>`).join('')}
+      </div>
+    </section>`;
   }).join('');
+}
+
+function toggleReviewerCandidateProfile(button) {
+  const container = button?.closest('.informacoes');
+  const content = container?.querySelector('.perfil-conteudo');
+  if (!content) return;
+  const opening = content.hidden;
+  content.hidden = !opening;
+  button.setAttribute('aria-expanded', String(opening));
 }
 
 function scrollAppTop() {
@@ -9042,6 +9652,33 @@ function resetAvaliacaoSplitScroll() {
   });
 }
 
+function renderReviewerEvaluationQueue(parId, activeInscId) {
+  const list = document.getElementById('reviewerQueueList');
+  const progress = document.getElementById('reviewerQueueProgress');
+  const identity = document.querySelector('#reviewerEvalIdentity b');
+  if (!list || !progress) return;
+  const par = pareceristas.find(item => item.id === parId);
+  if (identity) identity.textContent = par?.nome || 'Parecerista';
+  const ids = getAtribVisiveisNoPortal(parId);
+  const done = ids.filter(id => isEvaluationConcluded(parId, id)).length;
+  progress.textContent = `${done} de ${ids.length} avaliadas`;
+  list.innerHTML = ids.map((inscId, index) => {
+    const item = INSCRICOES.find(entry => entry.id === inscId);
+    if (!item) return '';
+    const completed = isEvaluationConcluded(parId, inscId);
+    const active = String(inscId) === String(activeInscId);
+    const evaluation = avaliacoes[parId]?.[inscId];
+    const score = completed ? notaExibida(notaGeralAvaliacao(evaluation)) : null;
+    return `<button type="button" class="reviewer-queue-item${active ? ' active ativa' : ''}${completed ? ' completed avaliada' : ''}" onclick="abrirFicha('${escapeHtmlAttr(parId)}','${escapeHtmlAttr(inscId)}'${completed ? ',true' : ''})">
+      <span class="reviewer-queue-status st${completed ? ' feita' : active ? ' em-andamento' : ''}">${completed ? '✓' : ''}</span>
+      <span class="reviewer-queue-code cod">${String(index + 1).padStart(2, '0')}</span>
+      <span class="reviewer-queue-name nome">${escapeHtmlAttr(displayPersonName(item.lider).toUpperCase() || 'CANDIDATURA')}</span>
+      ${completed && score !== null ? `<span class="reviewer-queue-score nota-time">${fmtNotaGeral(score)}</span>` : ''}
+    </button>`;
+  }).join('');
+  requestAnimationFrame(() => list.querySelector('.reviewer-queue-item.active')?.scrollIntoView({ block:'nearest' }));
+}
+
 function alinharAberturaAvaliacao() {
   resetAvaliacaoSplitScroll();
   requestAnimationFrame(() => {
@@ -9081,17 +9718,16 @@ function abrirFicha(parId, inscId, abrirEmEdicao = false) {
   const av = avaliacoes[parId]?.[inscId];
   const effectiveDone = isEvaluationConcluded(parId, inscId);
   avaliacaoOriginalConcluida = effectiveDone;
+  renderReviewerEvaluationQueue(parId, inscId);
 
   updateAvaliacaoStatus(effectiveDone);
   atualizarBotoesEdicao(av);
 
   document.getElementById('avalGridSeq').innerHTML = avalGridHTML(e, 'seq');
-  document.getElementById('avalIASeq').innerHTML = iaNoteHTML(e.ia);
   document.getElementById('critGridSeq').innerHTML = critGridHTML(av, 'seq_');
   document.getElementById('parecerGeralSeq').value = av?.parecer || '';
 
   document.getElementById('avalGridSplit').innerHTML = avalGridHTML(e, 'split');
-  document.getElementById('avalIASplit').innerHTML = iaNoteHTML(e.ia);
   document.getElementById('critGridSplit').innerHTML = critGridHTML(av, 'spl_');
   document.getElementById('parecerGeralSplit').value = av?.parecer || '';
 
@@ -9134,28 +9770,7 @@ function updateFooter() {
   });
 
   const footerNote = document.getElementById('footerAvaliacaoNote');
-  if (footerNote && currentParId) {
-    const atribuicoesParecerista = getAtribAtivas(currentParId);
-    const pendenciasTecnicas = getVideoIssueReportsByReviewer(currentParId).length;
-    const totalAtribuidas = atribuicoesParecerista.length;
-    const concluidas = atribuicoesParecerista.filter(id => isEvaluationConcluded(currentParId, id)).length;
-    const atualConcluida = isEvaluationConcluded(currentParId, currentInscId);
-    const restante = atribuicoesParecerista.filter(id => !isEvaluationConcluded(currentParId, id)).length;
-    const percentual = totalAtribuidas ? Math.round((concluidas / totalAtribuidas) * 100) : 0;
-    const avaliacaoAtual = totalAtribuidas ? Math.min(totalAtribuidas, Math.max(1, concluidas + (atualConcluida ? 0 : 1))) : 0;
-    footerNote.innerHTML = totalAtribuidas
-      ? `<div class="footer-note-line">
-          <span class="footer-note-chunk">Avaliação <strong>${avaliacaoAtual}/${totalAtribuidas}</strong></span>
-          <span class="footer-note-sep">·</span>
-          <span class="footer-note-chunk"><strong>${percentual}%</strong> concluído</span>
-          <span class="footer-note-sep">·</span>
-          <span class="footer-note-chunk">${atualConcluida ? 'Restam' : 'Faltam'} <strong>${restante}</strong> ${restante === 1 ? 'avaliação' : 'avaliações'}</span>
-          ${pendenciasTecnicas ? `<span class="footer-note-sep">·</span><span class="footer-note-chunk"><strong>${pendenciasTecnicas}</strong> pendência${pendenciasTecnicas === 1 ? '' : 's'} técnica${pendenciasTecnicas === 1 ? '' : 's'}</span>` : ''}
-        </div>`
-      : (pendenciasTecnicas
-          ? `<div class="footer-note-line"><span class="footer-note-chunk"><strong>${pendenciasTecnicas}</strong> pendência${pendenciasTecnicas === 1 ? '' : 's'} técnica${pendenciasTecnicas === 1 ? '' : 's'} aguardando verificação do vídeo</span></div>`
-          : '');
-  }
+  if (footerNote) footerNote.innerHTML = '';
 }
 
 function destacarCriteriosPendentes(prefix, notas) {
@@ -9185,6 +9800,16 @@ function proximaInscricaoDoParecerista(parId, inscIdAtual) {
   if (qualquerPendente) return qualquerPendente;
 
   return null;
+}
+
+function abrirProximaPendenteDireta() {
+  if (!currentParId) return;
+  const proxima = proximaInscricaoDoParecerista(currentParId, currentInscId);
+  if (!proxima) {
+    notify('Não há outra avaliação pendente.');
+    return;
+  }
+  abrirFicha(currentParId, proxima);
 }
 
 function isEditingPreviouslyCompletedEvaluation(parId = currentParId, inscId = currentInscId) {
@@ -9285,9 +9910,7 @@ async function executarSalvarAvaliacao(forcarAntesDoTempo = false) {
   renderPortal();
 
   if (editingConcluded) {
-    currentParId = parId;
-    currentInscId = null;
-    showView('portal');
+    abrirFicha(parId, inscId);
     hideLoadingNudge(150);
     return;
   }
@@ -9302,9 +9925,7 @@ async function executarSalvarAvaliacao(forcarAntesDoTempo = false) {
     return;
   }
 
-  currentParId = parId;
-  currentInscId = null;
-  showView('portal');
+  abrirFicha(parId, inscId);
   hideLoadingNudge(150);
 }
 
@@ -9326,6 +9947,11 @@ function voltarPortal() {
   const emAvaliacao = document.getElementById('view-avaliacao')?.classList.contains('active');
   if (emAvaliacao && currentInscId) {
     tentarSair('portal');
+    return;
+  }
+  if (reviewerBootMode) {
+    const alvo = getAtribAtivas(currentParId).find(id => !isEvaluationConcluded(currentParId, id)) || currentInscId;
+    if (alvo) abrirFicha(currentParId, alvo);
     return;
   }
   currentInscId = null;
@@ -12097,8 +12723,7 @@ async function tentarCarregarArquivoPadrao(opts = {}) {
       baseLoadRetryTimer = null;
     }
     if (!forceAdmin && currentParId) {
-      renderPortal();
-      showView('portal');
+      showView(reviewerBootMode ? 'avaliacao' : 'portal');
       return false;
     }
     showView(forceAdmin ? successView : 'dashboard');
@@ -13337,8 +13962,13 @@ function applyReviewerShellMode(enabled) {
   });
   const subnav = document.getElementById('mainSubnav');
   if (subnav) subnav.style.display = enabled ? 'none' : '';
+  const topnav = document.getElementById('mainTopnav');
+  if (topnav) topnav.style.display = enabled ? 'none' : '';
+  document.getElementById('view-avaliacao')?.classList.toggle('reviewer-direct-mode', enabled);
   const simulator = document.getElementById('portalSimulatorCard');
   if (simulator) simulator.style.display = enabled ? 'none' : '';
+  const backButton = document.querySelector('#view-avaliacao .aval-back-btn');
+  if (backButton) backButton.style.display = enabled ? 'none' : '';
   if (!enabled) applyAccessUi();
 }
 
@@ -13352,7 +13982,8 @@ function applyStartupRouteState() {
     currentParId = portalParId;
     currentInscId = null;
     applyReviewerShellMode(true);
-    return 'portal';
+    const atribuicoesDiretas = getAtribAtivas(portalParId);
+    return 'avaliacao';
   }
   reviewerBootMode = false;
   bancaReviewerBootMode = false;

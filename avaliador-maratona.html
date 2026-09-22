@@ -1,0 +1,706 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maratona IA 2026 · Avaliação das candidaturas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="./vendor/supabase.js"></script>
+<style>
+:root{
+  --roxo:#2B0A5A; --vermelho:#D8102E; --tinta:#1A1533; --cinza:#6B6880;
+  --linha:#E4E1EC; --leve:#F6F4FA; --fundo:#FFFFFF; --ok:#1E7F4F; --topo-h:64px;
+  --regua-controle-h:40px; --regua-pre-controle:28px;
+}
+*{box-sizing:border-box}
+html{scrollbar-gutter:stable}
+html,body{margin:0;background:var(--fundo);color:var(--tinta);font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:15px;line-height:1.5;overscroll-behavior-y:none}
+body{padding-top:var(--topo-h)}
+a{color:var(--roxo)}
+button{font:inherit;cursor:pointer}
+.topo{position:fixed;z-index:30;top:0;left:0;right:0;height:var(--topo-h);padding:0 28px;display:flex;flex-wrap:nowrap;gap:16px;align-items:center;background:linear-gradient(102deg,#251049 0%,#351567 55%,#6C2ED0 100%);box-shadow:0 3px 12px rgba(36,16,77,.18)}
+.topo::before{content:none;display:none}
+.topo-identidade{display:flex;min-width:0;align-items:center}
+.topo h1{margin:0;font-size:18px;font-weight:600;line-height:26px;color:#fff}
+.topo .quem{display:flex;align-items:center;gap:7px;margin:0 0 0 auto;color:#E2D9F3;font-size:13px;font-weight:500;line-height:20px}
+.topo .quem::before{content:"";width:14px;height:14px;flex:none;background:no-repeat center/14px 14px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23E2D9F3' stroke-width='1.35' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='8' cy='5' r='2.5'/%3E%3Cpath d='M3.5 14c.25-3 1.72-4.5 4.5-4.5s4.25 1.5 4.5 4.5'/%3E%3C/svg%3E")}
+.fila-cab{position:sticky;z-index:3;top:-24px;margin-top:-24px;padding:24px 24px 0;background:#F8F8FA;border-bottom:1px solid var(--linha);box-shadow:0 5px 10px rgba(26,21,51,.035)}
+.fila-cab .titulo-coluna{margin-left:0;margin-right:0;margin-bottom:0}
+.fila-cab .prog{display:flex;align-items:center;height:28px;color:var(--cinza);font-size:12px;font-weight:500;line-height:18px}
+.app{display:grid;grid-template-columns:290px minmax(0,1fr);min-height:calc(100vh - var(--topo-h))}
+.fila{border-right:1px solid #DADBE0;padding:24px 0;overflow-y:auto;max-height:calc(100vh - var(--topo-h));position:sticky;top:var(--topo-h);background:#F8F8FA}
+.fila h2{margin-left:24px;margin-right:24px}
+.fila button{display:flex;align-items:center;gap:7px;width:100%;min-height:38px;text-align:left;border:0;background:none;padding:7px 24px;color:var(--tinta);border-left:3px solid transparent}
+.fila button:hover{background:var(--leve)}
+.fila button.ativa{border-left-color:#4A4653;background:#E5E4E9;color:#272330}
+.fila button.ativa .nome{font-weight:650}
+.fila button.avaliada{background:#EEF8F3;color:#145C3A}
+.fila button.avaliada:hover{background:#E3F3EA}
+.fila button.avaliada.ativa{background:#E3F3EA;border-left-color:var(--ok)}
+.fila button.bloqueada{opacity:.48;cursor:not-allowed;background:transparent;color:var(--cinza)}
+.fila button.bloqueada:hover{background:transparent}
+.fila .cod{color:var(--cinza);font-variant-numeric:tabular-nums;min-width:25px}
+.fila .nome{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-transform:uppercase}
+.fila .nota-time{display:inline-flex;align-items:center;justify-content:flex-end;gap:4px;flex:none;min-width:48px;margin-left:auto;margin-right:-4px;text-align:right;color:#3E6A54;font-size:13px;font-weight:400;line-height:18px;font-variant-numeric:tabular-nums}
+.fila .nota-time::before{content:"";width:10px;height:10px;flex:none;opacity:.72;background:no-repeat center/10px 10px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='%233E6A54' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m2 8.2-.4 2.2 2.2-.4 5.8-5.8-1.8-1.8L2 8.2Z'/%3E%3Cpath d='m6.9 3.3 1.8 1.8'/%3E%3C/svg%3E")}
+.fila .st{display:grid;place-items:center;width:18px;height:18px;border-radius:50%;border:1.5px solid var(--cinza);margin:0;flex:none;font-size:12px;font-weight:600;color:#fff}
+.fila .st.feita{background:var(--ok);border-color:var(--ok)}
+.fila .st.feita::after{content:"✓"}
+.fila .st.em-andamento{border-color:#5C5267;background:#5C5267;box-shadow:0 0 0 0 rgba(92,82,103,.3);animation:pulso-andamento 2.2s ease-in-out infinite}
+@keyframes pulso-andamento{0%,100%{opacity:.5;box-shadow:0 0 0 0 rgba(92,82,103,.24)}50%{opacity:1;box-shadow:0 0 0 4px rgba(92,82,103,0)}}
+@media (prefers-reduced-motion:reduce){.fila .st.em-andamento{animation:none;opacity:.85}}
+.fila .st.trancada{position:relative;border:0;border-radius:0;color:#77727F}
+.fila .st.trancada::before{content:"";position:absolute;left:5px;top:1px;width:8px;height:8px;border:1.5px solid currentColor;border-bottom:0;border-radius:5px 5px 0 0;box-sizing:border-box}
+.fila .st.trancada::after{content:"";position:absolute;left:3px;top:8px;width:12px;height:9px;border:1.5px solid currentColor;border-radius:2px;box-sizing:border-box;background:#F8F8FA}
+.sel-mobile{display:none;margin:12px 24px 0}
+.sel-mobile select{width:100%;font:inherit;padding:8px}
+main{padding:24px;width:100%;max-width:none;min-width:0}
+.ins{display:grid;grid-template-columns:minmax(0,1fr) calc(40% - 2px);gap:28px;align-items:stretch}
+.conteudo-ins{min-width:0}
+.coluna-titulo{margin-left:0;margin-right:0}
+.titulo-coluna{position:relative;display:flex;align-items:center;min-height:30px;margin-top:0;margin-bottom:0;padding:0 0 8px;color:#55515E!important;font-size:15px!important;font-weight:700!important;line-height:22px!important;letter-spacing:.085em;text-transform:uppercase;border-bottom:1px solid var(--linha)}
+.titulo-coluna::after{content:"";position:absolute;left:0;bottom:-1px;width:34px;height:2px;background:#77727F}
+.avaliacao-panel{position:sticky;top:var(--topo-h);display:flex;flex-direction:column;min-height:calc(100vh - var(--topo-h));max-height:calc(100vh - var(--topo-h));margin:-24px -24px -24px 0;padding:24px;background:var(--leve);border:0;border-radius:0;overflow-y:auto;color:var(--tinta)}
+.avaliacao-panel>h2{margin-left:0;margin-right:0}
+.avaliacao-panel>.intro-avaliacao{margin:0 0 14px;opacity:.68}
+.intro-avaliacao>p{display:flex;align-items:center;height:var(--regua-pre-controle);margin:0;color:#4F4B57;font-size:13px;font-weight:500}
+.referencia-escala{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;width:100%;margin-left:0;color:var(--cinza);font-size:11px}
+.referencia-escala b{display:grid;place-items:center;width:100%;height:var(--regua-controle-h);border:1px solid #BDB9C4;color:var(--roxo);font-size:12px}
+.referencia-escala .ref-inicio{grid-column:1/3;text-align:left;white-space:nowrap}
+.referencia-escala .ref-fim{grid-column:4/6;text-align:right;white-space:nowrap}
+.avaliacao-panel .crit{padding-top:10px;margin-bottom:10px}
+.avaliacao-panel .crit>.explicacao{margin-bottom:6px}
+.avaliacao-panel .crit .cab{min-height:24px}
+.avaliacao-panel .crit .desc{font-size:13px;line-height:1.45}
+.avaliacao-panel .escala{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));width:100%;gap:6px}
+.avaliacao-panel .escala button{display:grid;place-items:center;width:100%;max-width:none;height:var(--regua-controle-h);border:1px solid var(--roxo);border-radius:0;background:transparent;color:var(--roxo);font-size:12px;font-weight:700;line-height:1;transform:none;box-shadow:none}
+.avaliacao-panel .acoes{margin-top:auto;margin-bottom:-24px;background:var(--leve);border-top-color:var(--linha)}
+.avaliacao-panel .crit{border-top-color:var(--linha)}
+.avaliacao-panel .criterio-nome{color:var(--roxo)}
+.avaliacao-panel .cab .seta::before{border-color:var(--roxo)}
+.avaliacao-panel .escala button{background:transparent;border-color:var(--roxo);color:var(--roxo)}
+.avaliacao-panel .escala button:hover{border-color:var(--roxo)}
+.avaliacao-panel .escala button.on{background:var(--roxo);border-color:var(--roxo);color:#fff;transform:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.22)}
+.avaliacao-panel .escala button.on::after{display:none}
+.avaliacao-panel .explicacao-conteudo{background:#fff;border-left-color:var(--roxo);color:var(--cinza)}
+.avaliacao-panel .explicacao-conteudo h4,.avaliacao-panel .peso-explicacao{color:var(--roxo)}
+.avaliacao-panel textarea{background:#fff;border-color:#fff;color:var(--tinta)}
+.avaliacao-panel .btn{background:var(--roxo);border-color:var(--roxo);color:#fff}
+.avaliacao-panel .btn.sec{background:#fff;color:var(--roxo)}
+.avaliacao-panel .aviso{color:var(--cinza)}
+.ins h2{margin:0 0 4px;font-size:24px;font-weight:600;color:#2F2C38;line-height:1.2;text-transform:uppercase}
+.ins .sub{color:var(--cinza);margin-bottom:20px}
+.dados-inscricao{margin:12px 0 7px;border:1px solid var(--linha);border-radius:6px;background:#fff;overflow:hidden}
+.dados-inscricao h3{margin:0!important;padding:9px 12px;background:#F1EDF6;font-size:12px!important}
+.meta{display:block;margin:0}
+.meta-item{display:grid;grid-template-columns:30% minmax(0,70%);align-items:start;min-height:34px;border-bottom:1px solid #F0EDF4}
+.meta-item:last-child{border-bottom:0}
+.meta dt{padding:5px 12px;color:var(--cinza);font-size:12px;line-height:1.3;white-space:nowrap}
+.meta dd{margin:0;padding:5px 12px;border-left:1px solid var(--linha);font-size:12px;line-height:1.3;max-width:none}
+.perfil-equipe{margin:0 0 18px;border:1px solid var(--linha);border-radius:6px;background:#fff;overflow:hidden}
+.perfil-equipe h3{margin:0!important;padding:9px 12px;background:#F1EDF6;font-size:12px!important}
+.perfil-subtitulo{padding:7px 12px;background:#F8F6FA;color:var(--roxo);font-size:12px;font-weight:600;border-top:1px solid var(--linha);border-bottom:1px solid var(--linha)}
+.perfil-linha{display:grid;grid-template-columns:280px minmax(0,1fr);align-items:start;min-height:34px;border-bottom:1px solid #F0EDF4}
+.perfil-linha:last-child{border-bottom:0}
+.perfil-rotulo{padding:5px 12px;color:var(--cinza);font-size:12px;line-height:1.3;white-space:nowrap}
+.perfil-valor{padding:5px 12px;border-left:1px solid var(--linha);font-size:12px;line-height:1.3}
+.resposta{display:inline-flex;align-items:center;justify-content:center;min-width:48px;padding:2px 7px;border-radius:999px;font-size:11px;font-weight:600;white-space:nowrap}
+.resposta.sim{background:#E4F4EB;color:#176B43}
+.resposta.nao{background:#FBE8EB;color:#A60F27}
+.resposta.neutra{background:#EEEAF3;color:#625D70}
+.informacoes{margin:var(--regua-pre-controle) 0 20px;border:0;background:#fff}
+.projeto-cabecalho{display:flex;align-items:center;gap:14px;min-height:var(--regua-controle-h);padding:5px 10px 5px 14px;background:#fff;border:1px solid var(--linha);color:#241B31}
+.projeto-cabecalho .nome-time{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:17px;font-weight:750;line-height:22px;letter-spacing:.01em;text-transform:uppercase}
+.anexos-projeto{display:flex;align-items:center;justify-content:flex-end;gap:6px;flex:none;background:#fff}
+.anexo-toggle,.perfil-toggle{display:inline-flex;align-items:center;gap:5px;min-height:27px;padding:3px 8px;border:1px solid #CFC8DA;border-radius:3px;background:#fff;color:var(--roxo);font-size:10px;font-weight:600;text-decoration:none}
+.anexo-toggle:hover,.perfil-toggle:hover{background:#F4F0F8}
+.anexos-projeto svg{width:12px;height:12px;flex:none}
+.anexos-projeto-vazio{color:var(--cinza);font-size:11px;white-space:nowrap}
+.perfil-toggle::after{content:"";width:6px;height:6px;margin:-3px 1px 0 2px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg);transition:transform .15s}
+.perfil-toggle[aria-expanded="true"]::after{margin-top:3px;transform:rotate(225deg)}
+.perfil-conteudo[hidden]{display:none}
+.anexo-viewer{margin-top:8px;border:1px solid var(--linha);background:#fff}
+.anexo-viewer[hidden]{display:none}
+.anexo-viewer-topo{display:flex;align-items:center;justify-content:space-between;min-height:34px;padding:4px 8px 4px 12px;border-bottom:1px solid var(--linha);color:#45414D;font-size:12px;font-weight:600}
+.anexo-fechar{width:26px;height:26px;border:0;background:transparent;color:var(--cinza);font-size:18px;line-height:1}
+.anexo-fechar:hover{background:#F1EEF4}
+.anexo-frame{display:block;width:100%;height:min(58vh,560px);border:0;background:#F5F4F7}
+.bloco-colapsavel{margin:8px 0 0;border:0;border-bottom:1px solid #E5E3E8;border-radius:0;background:#fff;overflow:hidden}
+.bloco-colapsavel:last-child{border-bottom:0}
+.bloco-colapsavel summary{position:relative;padding:14px 38px 14px 14px;border-bottom:1px solid transparent;cursor:pointer;color:#302D36;font-size:15px;font-weight:600;list-style:none;background:#EFEFF1}
+.resumo-time{display:flex;align-items:baseline;gap:10px;min-width:0}
+.resumo-time .nome-time{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#241B31;font-size:17px;font-weight:750;line-height:22px;letter-spacing:.01em;text-transform:uppercase}
+.resumo-time .tipo-bloco{flex:none;margin-left:auto;color:#6F6B76;font-size:12px;font-weight:500;line-height:20px;letter-spacing:.01em;white-space:nowrap}
+.informacoes .bloco-colapsavel>summary{display:inline-flex;align-items:center;width:auto;height:30px;min-height:30px;padding:0 29px 0 10px;border:1px solid #CFC8DA;border-radius:3px}
+.informacoes .resumo-time{width:auto;align-items:center}
+.bloco-colapsavel summary::-webkit-details-marker{display:none}
+.bloco-colapsavel summary::after{content:"";position:absolute;right:16px;top:50%;width:10px;height:10px;border-right:1px solid #77737E;border-bottom:1px solid #77737E;transform:translateY(-70%) rotate(45deg);transform-origin:center;transition:transform .15s}
+.bloco-colapsavel[open] summary::after{transform:translateY(-30%) rotate(225deg)}
+.bloco-colapsavel[open] summary{border-bottom:1px solid var(--linha);background:#F5F5F6}
+.bloco-colapsavel .meta{margin:0}
+.bloco-colapsavel .meta dt,.bloco-colapsavel .perfil-rotulo{font-size:13px}
+.bloco-colapsavel .meta dd,.bloco-colapsavel .perfil-valor{font-size:14px}
+.bloco-colapsavel .resposta{font-size:11px;padding:2px 7px}
+.informacoes .bloco-colapsavel>summary,.informacoes .bloco-colapsavel[open]>summary{background:#fff;color:var(--roxo);font-size:12px;border-color:#CFC8DA}
+.informacoes .bloco-colapsavel>summary:hover{background:#F4F0F8}
+.informacoes .bloco-colapsavel>summary::after{right:10px;width:7px;height:7px;color:#5F5B66}
+.info-subtitulo{margin:0;padding:8px 12px;border-left:3px solid #8B8791;background:#F1F1F3;color:#55515E;font-size:12px;font-weight:600;border-top:1px solid var(--linha);border-bottom:1px solid var(--linha)}
+.meta+.info-subtitulo,.perfil-linha+.info-subtitulo{margin-top:14px;border-top:1px solid #C9C7CE}
+.narr h3{display:flex;align-items:center;gap:7px;font-size:17px;font-weight:600;color:#44414B;margin:0 0 9px;padding:0}
+.narr h3::after{content:"";width:15px;height:15px;flex:none;opacity:.68;background:no-repeat center/15px 15px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%2344414B' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 2.5h7l3 3v8H3z'/%3E%3Cpath d='M10 2.5v3h3M5.5 8h5M5.5 10.5h5'/%3E%3C/svg%3E")}
+.crit h3{font-size:15px;font-weight:600;line-height:1.3;color:var(--roxo);margin:0 0 8px}
+.narr p{white-space:pre-wrap;margin:0;font-size:16px;line-height:1.65}
+.narr-bloco{max-width:78ch}
+.pergunta-bloco{margin:0 0 14px;padding:12px 14px;background:#F1F1F3;border-top:1px solid #D8D6DC;border-bottom:1px solid #D8D6DC}
+.resposta-bloco{padding:4px 0 4px 16px;border-left:3px solid #55515E}
+.narr-rotulo{display:block;margin-bottom:5px;color:#55515E;font-size:12px;font-weight:600}
+.pergunta-bloco p{color:#45424C;font-size:15px;font-weight:600;line-height:1.55}
+.resposta-bloco p{color:var(--tinta);font-size:15px;font-weight:400;line-height:1.7}
+.resposta-bloco p+p{margin-top:14px}
+.narr-secao{margin-bottom:26px}
+.narr-secao h3{margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--linha)}
+.idioma-conteudo{display:flex;align-items:center;justify-content:flex-end;gap:5px;margin:0 0 14px;color:var(--cinza);font-size:10px}
+.idioma-conteudo span{margin-right:2px;font-weight:500}
+.idioma-btn{min-height:25px;padding:3px 8px;border:1px solid #CFC8DA;background:#fff;color:var(--roxo);font-size:10px;font-weight:600}
+.idioma-btn.ativa{background:var(--roxo);border-color:var(--roxo);color:#fff}
+.idioma-btn:disabled{cursor:not-allowed;opacity:.42}
+.crit{border-top:1px solid var(--linha);padding-top:18px;margin-bottom:18px}
+.crit[data-k]{padding-left:0}
+.crit .cab{display:grid;grid-template-columns:minmax(0,1fr) 16px;gap:8px;align-items:center;width:100%;list-style:none}
+.crit .cab::-webkit-details-marker{display:none}
+.crit .criterio-nome{min-width:0;color:var(--roxo);font-size:15px;font-weight:600;line-height:1.3}
+.peso-explicacao{margin-bottom:8px;color:var(--roxo);font-size:12px;font-weight:600}
+.crit .desc{max-width:72ch;margin:6px 0 10px}
+.crit details{max-width:72ch;margin-bottom:10px;color:var(--cinza);font-size:14px}
+.crit summary{cursor:pointer;color:var(--roxo)}
+.crit ul{margin:6px 0 0;padding-left:20px}
+.crit>.explicacao{display:block;margin:0 0 5px;padding:0;border:0;max-width:none;color:var(--cinza)}
+.crit .cab .seta{display:grid;place-items:center;width:14px;height:14px;transition:transform .15s}
+.crit .cab .seta::before{content:"";width:7px;height:7px;border-right:2px solid var(--roxo);border-bottom:2px solid var(--roxo);transform:rotate(45deg)}
+.crit>.explicacao[open] .seta{transform:rotate(180deg)}
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+.explicacao-conteudo{position:static;margin-top:8px;padding:10px 12px;border-left:2px solid var(--roxo);background:#fff;color:var(--cinza)}
+.crit .explicacao .desc{margin:0 0 7px;font-size:13px}
+.crit .explicacao h4{margin:8px 0 2px;font-size:12px;color:var(--tinta)}
+.criterio-visivel{margin:0 0 8px}
+.criterio-visivel-cab{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.criterio-visivel .criterio-peso{flex:none;color:var(--cinza);font-size:11px;font-weight:500;white-space:nowrap}
+.criterio-visivel .desc{margin:3px 0 0;color:var(--cinza);font-size:10px;line-height:1.35}
+.escala{display:flex;gap:6px}
+.escala button{width:52px;height:32px;border:1.5px solid var(--linha);background:#fff;border-radius:4px;font-size:15px;font-weight:500;color:var(--tinta);transition:transform .15s,box-shadow .15s,background .15s}
+.escala button:hover{border-color:var(--roxo)}
+.escala button.on{position:relative;background:var(--roxo);border-color:var(--roxo);color:#fff;transform:translateY(-2px) scale(1.06);box-shadow:0 0 0 3px #F4CCD3,0 5px 12px rgba(43,10,90,.24)}
+.escala button.on::after{content:"✓";position:absolute;top:-8px;right:-7px;display:grid;place-items:center;width:17px;height:17px;border-radius:50%;background:var(--vermelho);color:#fff;font-size:10px;font-weight:600;border:2px solid #fff}
+.escala button:focus-visible{outline:2px solid var(--vermelho);outline-offset:2px}
+textarea{width:100%;max-width:72ch;font:inherit;padding:10px;border:1.5px solid var(--linha);border-radius:4px;min-height:90px;resize:vertical}
+.comentario-campo{width:100%;border:1px solid #DDD9E3;background:#fff;padding:0 12px;transition:border-color .15s,box-shadow .15s}
+.comentario-campo:focus-within{border-color:var(--roxo);box-shadow:0 0 0 2px rgba(43,10,90,.08)}
+.comentario-campo textarea{display:block;max-width:none;min-height:72px;padding:12px 0;border:0;border-radius:0;background:transparent;outline:0}
+.acoes{position:sticky;z-index:4;bottom:-24px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:16px -24px -24px;padding:10px 24px 8px;border-top:1px solid var(--linha);background:var(--leve);box-shadow:0 -6px 14px rgba(26,21,51,.06)}
+.acoes .btn{flex:1;white-space:nowrap}
+.acoes .aviso{flex-basis:100%}
+.acoes .aviso:empty{display:none}
+.btn{padding:11px 20px;border-radius:4px;border:1.5px solid var(--roxo);background:var(--roxo);color:#fff;font-weight:500}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.sec{background:#fff;color:var(--roxo)}
+.aviso{color:var(--cinza)}
+.aviso.erro{color:var(--vermelho)}
+.aviso.ok{color:var(--ok)}
+.vazio{padding:48px 24px;max-width:60ch}
+.vazio h2{color:#2F2C38;font-size:20px;margin:0 0 8px}
+.acesso-dados{max-width:560px;margin:56px auto;padding:28px;border:1px solid var(--linha);background:#fff;box-shadow:0 12px 34px rgba(26,21,51,.09)}
+.acesso-dados h2{margin:0 0 7px;color:var(--roxo);font-size:22px}.acesso-dados p{margin:0 0 16px;color:var(--cinza)}
+.acesso-dados form{display:flex;gap:8px}.acesso-dados input{min-width:0;flex:1;padding:10px 12px;border:1px solid var(--linha);font:inherit}
+.acesso-dados .erro-acesso{min-height:20px;margin:8px 0 0;color:var(--vermelho);font-size:13px}
+.fim{padding:24px 0 40px}
+.fim h2{font-size:24px;color:#2F2C38;margin:0 0 6px}
+.fim .btn{margin-top:14px}
+dialog{width:min(420px,calc(100vw - 32px));border:0;padding:0;box-shadow:0 18px 60px rgba(26,21,51,.25);color:var(--tinta)}
+dialog::backdrop{background:rgba(26,21,51,.5)}
+.modal-incompleta{padding:22px}
+.modal-incompleta h2{margin:0 0 7px;font-size:19px;color:var(--roxo)}
+.modal-incompleta p{margin:0 0 18px;color:var(--cinza)}
+@media (max-width:820px){
+  :root{--topo-h:58px}
+  .topo{flex-wrap:nowrap;padding:7px 16px 6px}
+  .topo h1{font-size:17px;white-space:nowrap}
+  .topo .quem{font-size:13px;white-space:nowrap}
+  .app{grid-template-columns:1fr}
+  .fila{display:none}
+  .sel-mobile{display:block}
+  main{padding:16px}
+  .ins{grid-template-columns:1fr}
+  .avaliacao-panel{position:static;min-height:0;max-height:none;margin:0;padding:20px;overflow:visible}
+  .avaliacao-panel .acoes{position:static;margin:16px -20px -20px;padding:12px 20px 16px}
+  .meta-item{grid-template-columns:190px minmax(0,1fr)}
+  .perfil-linha,.meta-item{grid-template-columns:280px minmax(0,1fr)}
+}
+@media (max-width:520px){.perfil-linha,.meta-item{grid-template-columns:1fr}.perfil-rotulo,.meta dt{white-space:normal}.perfil-valor,.meta dd{border-left:0;padding-top:0}}
+</style>
+</head>
+<body>
+<script>
+// ------------------------------------------------------------- configuração
+const AMBIENTE_LOCAL = ["localhost", "127.0.0.1"].includes(location.hostname);
+const SUPABASE_URL = AMBIENTE_LOCAL ? location.origin : "https://rvdkcpgfyhowjmanztjf.supabase.co";
+const SUPABASE_ANON_KEY = AMBIENTE_LOCAL ? "local" : "sb_publishable_4PRuoQsXLmUbGzTGqqf7Fw_0Y4xHOcu";
+const CORTE = 20; // equipes selecionadas nesta etapa
+// ------------------------------------------------------------- dados (gerados por extrair.py, sem dados sensíveis)
+const INSCRICOES_PUBLICAS = [];
+const DADOS_PROTEGIDOS = "";
+let INSCRICOES = [];
+// ------------------------------------------------------------- critérios (regulamento 5.1.1)
+const CRITERIOS = [
+ {k:"comunicacao", nome:"Comunicação", peso:33, desc:"A clareza e a consistência com que o(a) proponente expõe sua ideia e sustenta a própria candidatura. Compreende a formulação da mensagem, a pertinência das razões apresentadas e a capacidade de síntese, correspondendo, assim, à dimensão da expressão, entendida aqui como a maneira pela qual o(a) participante apresenta seu conteúdo e fundamenta os argumentos para a sua seleção.", ex:[]},
+ {k:"criatividade", nome:"Criatividade", peso:33, desc:"A inventividade com que a resposta à convocatória se converte em peça audiovisual. Compreende conceito, originalidade e também a coerência entre a premissa da Maratona e o material entregue, correspondendo, assim, à dimensão da materialização, entendida aqui como o processo pelo qual o(a) participante executa àquilo que pretende comunicar.", ex:[]},
+ {k:"ia", nome:"Habilidade no uso da IA", peso:34, desc:"O domínio técnico com que o(a) participante emprega a IA na produção do vídeo de submissão. Compreende a complexidade dos elementos gerados, a integração entre diferentes formatos e a competência que o uso de ferramentas de IA evidencia, correspondendo, assim, à dimensão basal da Maratona de identificar talentos versados nessa tecnologia.", ex:[]},
+];
+</script>
+
+<header class="topo">
+  <div class="topo-identidade">
+    <h1>MARATONA IA 2026 · Avaliação das candidaturas</h1>
+  </div>
+  <span class="quem" id="quem"></span>
+</header>
+
+<div id="raiz"></div>
+<dialog id="modal-incompleta" aria-labelledby="modal-incompleta-titulo">
+  <div class="modal-incompleta">
+    <h2 id="modal-incompleta-titulo">Avaliação incompleta</h2>
+    <p>Preencha os três critérios antes de salvar a avaliação.</p>
+    <button class="btn" id="fechar-incompleta" type="button">Entendi</button>
+  </div>
+</dialog>
+<dialog id="modal-bloqueio" aria-labelledby="modal-bloqueio-titulo">
+  <div class="modal-incompleta">
+    <h2 id="modal-bloqueio-titulo">Próximo time ainda bloqueado</h2>
+    <p id="mensagem-bloqueio">Conclua e salve a avaliação em andamento para liberar o próximo time da fila.</p>
+    <button class="btn" id="fechar-bloqueio" type="button">Entendi</button>
+  </div>
+</dialog>
+
+<script>
+const $ = (s, el=document) => el.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let token = new URLSearchParams(location.search).get("par") || new URLSearchParams(location.search).get("token");
+let fila = [], TRADUCOES_PTBR = {};
+let cliente, eu, minhas = {}, atual = 0, rascunho = {};
+const AMBIENTE = "homolog";
+const NOTA_NUMERO = {Insuficiente:1, Regular:2, Bom:3, "Ótimo":4};
+const NOTA_TEXTO = [null,"Insuficiente","Regular","Bom","Ótimo"];
+
+async function configuracaoSupabase(){
+  let local = {};
+  try { local = JSON.parse(localStorage.getItem("maratonaia_supabase_settings_v1") || "{}"); } catch {}
+  try {
+    const compartilhada = await fetch(`supabase/client-config.json?t=${Date.now()}`, {cache:"no-store"}).then(r => r.ok ? r.json() : {});
+    local = {...local, ...compartilhada};
+  } catch {}
+  return {
+    url: local.url || "https://sdnrrzwrvbdnhdjypfub.supabase.co",
+    key: local.anonKey || "sb_publishable_7l084K9t4jUUdED07fOj8w_Oo4airGc"
+  };
+}
+
+async function todas(factory){
+  const saida=[]; let inicio=0;
+  while(true){
+    const {data,error}=await factory().range(inicio,inicio+999);
+    if(error) throw error;
+    if(!data?.length) break;
+    saida.push(...data);
+    if(data.length<1000) break;
+    inicio+=1000;
+  }
+  return saida;
+}
+
+function valorRaw(raw, nomes){
+  for(const nome of nomes){ const valor=raw?.[nome]; if(String(valor ?? "").trim()) return String(valor).trim(); }
+  return "";
+}
+
+async function carregarMaratona(){
+  const cfg=await configuracaoSupabase();
+  cliente=window.supabase.createClient(cfg.url,cfg.key);
+  const localSemSenha=location.protocol==="file:" || ["localhost","127.0.0.1","::1"].includes(location.hostname);
+  if(!token && localSemSenha){
+    const {data,error}=await cliente.from("pareceristas").select("id_externo").eq("environment",AMBIENTE).eq("ativo",true).order("nome").limit(1).maybeSingle();
+    if(error) throw error;
+    token=data?.id_externo||"";
+  }
+  if(!token) return vazio("Link incompleto", "Este endereço precisa do código do parecerista.");
+  const [parRes,atribuicoes,avaliacoes,criterios,inscricoes]=await Promise.all([
+    cliente.from("pareceristas").select("*").eq("environment",AMBIENTE).eq("id_externo",token).eq("ativo",true).maybeSingle(),
+    todas(()=>cliente.from("atribuicoes").select("*").eq("environment",AMBIENTE).eq("parecerista_id_externo",token).eq("ativo",true).order("ordem")),
+    todas(()=>cliente.from("avaliacoes").select("*").eq("environment",AMBIENTE).eq("parecerista_id_externo",token).order("id")),
+    todas(()=>cliente.from("avaliacao_criterios").select("*").eq("environment",AMBIENTE).eq("parecerista_id_externo",token).order("criterio_ordem")),
+    todas(()=>cliente.from("inscricoes").select("*").eq("environment",AMBIENTE).eq("ativo",true).order("id_curto"))
+  ]);
+  if(parRes.error) throw parRes.error;
+  if(!parRes.data) throw new Error("Parecerista não encontrado.");
+  const ordem=new Map(atribuicoes.map((a,i)=>[String(a.inscricao_id_externo),i]));
+  const permitidas=new Set(atribuicoes.map(a=>String(a.inscricao_id_externo)));
+  const linhas=inscricoes.filter(i=>permitidas.has(String(i.id_externo))).sort((a,b)=>ordem.get(String(a.id_externo))-ordem.get(String(b.id_externo)));
+  INSCRICOES=linhas.map(row=>{
+    const raw=row.raw_json||{};
+    return {
+      id:String(row.id_externo), codigo:String(row.id_curto||"").padStart(2,"0"), equipe:row.lider||"Candidatura",
+      elegibilidade:{status:"elegivel"}, video_url:row.video_url||"", relatorio_url:row.roteiro_30_url||"",
+      escola:row.instituicao||"", municipio:valorRaw(raw,["Cidade","Município","Municipio"]), uf:row.uf||"",
+      curso:row.curso||valorRaw(raw,["Curso de graduação que você cursa","Curso no qual você tem matrícula ativa?","Curso","curso"])||"Não informado",
+      genero:valorRaw(raw,["Como você se identifica?","Gênero","Genero","gênero","genero"])||"Não informado",
+      raca:valorRaw(raw,["Raça/etnia","Raça","Raca","Cor ou raça","raça","raca"])||"Não informado",
+      professor:row.lider||"", colider_nome:"", colider:false, componentes:[], estudantes:[], conhecimento_ti:row.ia_descricao||"Não informado",
+      autodeclaracao:{todos_perfis:"Não informado",genero:valorRaw(raw,["Gênero","Genero"])||"Não informado",cor_raca:valorRaw(raw,["Raça","Raca","Cor ou raça"])||"Não informado",deficiencia:"Não informado"},
+      descricao_prototipo:row.defesa_conceitual||"Não informado.", elementos_inovadores:row.ia_descricao||"Não informado.",
+      viabilidade_tecnica:row.objetivos_campanha||"Não informado.", impacto_goup:row.estrategia_distribuicao||"Não informado."
+    };
+  });
+  fila=[...INSCRICOES];
+  const criteriosPorAvaliacao={};
+  criterios.forEach(c=>{const k=String(c.inscricao_id_externo);(criteriosPorAvaliacao[k]??=[]).push(c)});
+  minhas={};
+  avaliacoes.forEach(a=>{
+    if(!a.concluida) return;
+    const cs=(criteriosPorAvaliacao[String(a.inscricao_id_externo)]||[]).sort((x,y)=>x.criterio_ordem-y.criterio_ordem);
+    const notas=cs.length?cs.map(c=>c.nota):(a.notas_json||[]);
+    minhas[String(a.inscricao_id_externo)]={comunicacao:NOTA_NUMERO[notas[0]]||Number(notas[0])||0,criatividade:NOTA_NUMERO[notas[1]]||Number(notas[1])||0,ia:NOTA_NUMERO[notas[2]]||Number(notas[2])||0,comentario:a.parecer_geral||"",criado_em:a.updated_at||new Date().toISOString()};
+  });
+  eu={nome:parRes.data.nome||"Parecerista"};
+  $("#quem").textContent=eu.nome;
+  atual=Math.max(0,fila.findIndex(i=>!minhas[i.id]));
+  render();
+}
+
+function vazio(t, sub){
+  $("#raiz").innerHTML = `<div class="vazio"><h2>${esc(t)}</h2><p>${esc(sub)}</p></div>`;
+}
+
+async function descriptografarInscricoes(senha){
+  const pacote = Uint8Array.from(atob(DADOS_PROTEGIDOS), c => c.charCodeAt(0));
+  const salt = pacote.slice(0,16), iv = pacote.slice(16,28), cifrado = pacote.slice(28);
+  const material = await crypto.subtle.importKey("raw", new TextEncoder().encode(senha), "PBKDF2", false, ["deriveKey"]);
+  const chave = await crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:250000,hash:"SHA-256"}, material, {name:"AES-GCM",length:256}, false, ["decrypt"]);
+  const aberto = await crypto.subtle.decrypt({name:"AES-GCM",iv}, chave, cifrado);
+  return JSON.parse(new TextDecoder().decode(aberto));
+}
+
+function solicitarAcesso(){
+  $("#raiz").innerHTML = `<section class="acesso-dados"><h2>Acesso às avaliações</h2><p>Digite a senha para continuar.</p><form id="form-acesso"><input id="senha-dados" type="password" autocomplete="current-password" placeholder="Senha de acesso" aria-label="Senha de acesso" required><button class="btn" type="submit">Acessar</button></form><p class="erro-acesso" id="erro-acesso" role="alert"></p></section>`;
+  $("#form-acesso").onsubmit = async e => {
+    e.preventDefault(); const erro = $("#erro-acesso"), botao = e.currentTarget.querySelector("button");
+    erro.textContent = ""; botao.disabled = true;
+    try {
+      if ($("#senha-dados").value !== "goup2026") throw new Error("senha");
+      await carregarBase();
+    }
+    catch { erro.textContent = "Senha incorreta."; botao.disabled = false; $("#senha-dados").select(); }
+  };
+}
+
+async function carregarBase(){
+  const [inscricoes, traducoes] = await Promise.all([
+    fetch("goup-inscricoes.json", {cache:"no-store"}).then(r => { if (!r.ok) throw new Error("base"); return r.json(); }),
+    fetch("goup-traducoes-ptbr.json", {cache:"no-store"}).then(r => r.ok ? r.json() : {}).catch(() => ({}))
+  ]);
+  INSCRICOES = inscricoes;
+  TRADUCOES_PTBR = traducoes;
+  fila = INSCRICOES.filter(i=>i.elegibilidade.status==="elegivel");
+  await iniciar();
+}
+
+async function prepararAcesso(){
+  try { await carregarMaratona(); }
+  catch (erro) { console.error(erro); vazio("Não foi possível carregar a base", erro.message || "Tente novamente."); }
+}
+
+async function iniciar(){
+  if (!token) return vazio("Link incompleto", "Este endereço precisa do seu código de acesso. Use o link que você recebeu por e-mail.");
+  const nomesPareceristas = {"p1789759444063":"fabio"};
+  eu = {nome: nomesPareceristas[token] || "Parecerista GOUP"};
+  $("#quem").textContent = eu.nome;
+  try { minhas = JSON.parse(localStorage.getItem(`goup_avaliacoes_${token}`) || "{}"); } catch { minhas = {}; }
+  atual = Math.max(0, fila.findIndex(i => !minhas[i.id]));
+  if (atual === -1) atual = 0;
+  render();
+}
+
+function progresso(){
+  const n = fila.filter(i => minhas[i.id]).length;
+  const el = $("#prog");
+  if (el) el.textContent = `${n} de ${fila.length} avaliadas`;
+}
+
+function mediaPonderada(a){
+  if (!a) return null;
+  return CRITERIOS.reduce((s,c) => s + Number(a[c.k]||0) * c.peso, 0) / 100;
+}
+
+function notaFila(a){
+  const n = mediaPonderada(a);
+  return n == null ? "" : n.toFixed(2).replace(".", ",");
+}
+
+function render(){
+  const ins = fila[atual];
+  const feitas = fila.filter(i => minhas[i.id]).length;
+  const primeiraPendente = fila.findIndex(i => !minhas[i.id]);
+  const limite = primeiraPendente < 0 ? fila.length - 1 : primeiraPendente;
+  const listaHtml = fila.map((i, ix) => `
+    <button data-ix="${ix}" ${ix>limite?'aria-disabled="true"':''} class="${ix===atual?"ativa":""} ${minhas[i.id]?"avaliada":""} ${ix>limite?'bloqueada':''}" aria-label="${esc(i.codigo)} ${esc(i.equipe)}${minhas[i.id]?' — avaliada':ix>limite?' — bloqueada':' — disponível'}">
+      <span class="st ${minhas[i.id]?"feita":ix>limite?'trancada':ix===atual?'em-andamento':''}"></span>
+      <span class="cod">${esc(i.codigo)}</span><span class="nome">${esc(i.equipe)}</span>${minhas[i.id]?`<span class="nota-time" title="Avaliação concluída — clique para revisar">${notaFila(minhas[i.id])}</span>`:""}
+    </button>`).join("");
+  const selHtml = `<select id="sel">${fila.map((i,ix)=>`<option value="${ix}" ${ix===atual?"selected":""} ${ix>limite?'disabled':''}>${minhas[i.id]?"✓ ":ix>limite?'— ':''}${esc(i.codigo)} · ${esc(i.equipe)}</option>`).join("")}</select>`;
+
+  $("#raiz").innerHTML = `
+  <div class="app">
+    <nav class="fila"><div class="fila-cab"><h2 class="titulo-coluna">Fila</h2><span class="prog" id="prog"></span></div>${listaHtml}</nav>
+    <main>
+      <div class="sel-mobile">${selHtml}</div>
+      ${ins ? inscricaoHtml(ins) : ""}
+    </main>
+  </div>`;
+
+  progresso();
+
+  document.querySelectorAll(".fila button").forEach(b => b.onclick = () => {
+    const ix = +b.dataset.ix;
+    if (b.classList.contains("bloqueada")) return abrirBloqueio(ix);
+    ir(ix);
+  });
+  $("#sel").onchange = e => ir(+e.target.value);
+  if (ins) ligarFormulario(ins);
+}
+
+function linkSeguro(valor){
+  const url = String(valor || "").trim();
+  return /^https?:\/\//i.test(url) ? url : "";
+}
+
+function anexosHtml(i){
+  const video = linkSeguro(i.video_url);
+  const relatorio = linkSeguro(i.relatorio_url);
+  const play = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m8 5 11 7-11 7z"/></svg>`;
+  const arquivo = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v5h5"/></svg>`;
+  const links = [
+    video ? `<button class="anexo-toggle" type="button" data-anexo="video" data-url="${esc(video)}">${play}Vídeo</button>` : "",
+    relatorio ? `<button class="anexo-toggle" type="button" data-anexo="relatorio" data-url="${esc(relatorio)}">${arquivo}Vínculo</button>` : ""
+  ].filter(Boolean).join("");
+  return `<div class="anexos-projeto">${links || '<span class="anexos-projeto-vazio">Nenhum anexo informado</span>'}<button class="perfil-toggle" id="perfil-toggle" type="button" aria-expanded="false" aria-controls="perfil-time">Perfil</button></div>`;
+}
+
+function urlIncorporada(tipo, valor){
+  const segura = linkSeguro(valor);
+  if (!segura) return "";
+  try {
+    const url = new URL(segura);
+    if (tipo === "video" && !/youtube\.com\/embed\//i.test(url)) {
+      let id = "";
+      if (url.hostname.includes("youtu.be")) id = url.pathname.split("/").filter(Boolean)[0] || "";
+      if (url.hostname.includes("youtube.com")) id = url.searchParams.get("v") || (url.pathname.match(/\/(?:shorts|embed)\/([^/?]+)/) || [])[1] || "";
+      if (id) return `https://www.youtube.com/embed/${encodeURIComponent(id)}`;
+    }
+    if (url.hostname.includes("drive.google.com")) return segura.replace(/\/view(?:\?.*)?$/i, "/preview");
+  } catch {}
+  return segura;
+}
+
+function secaoNarrativaHtml(campo, titulo, texto){
+  return `<section class="narr-secao" data-campo="${campo}"><h3>${esc(titulo)}</h3><div class="resposta-bloco">${paragrafos(texto)}</div></section>`;
+}
+
+function inscricaoHtml(i){
+  const a = minhas[i.id];
+  rascunho = a ? {...a, comentario:a.comentario||""} : {comentario:""};
+  return `
+  <article class="ins">
+    <div class="conteudo-ins">
+      <div class="coluna-titulo titulo-coluna">Proposta</div>
+      <div class="informacoes">
+      <div class="projeto-cabecalho"><span class="nome-time">${esc(i.equipe)}</span>${anexosHtml(i)}</div>
+      <div class="anexo-viewer" id="anexo-viewer" hidden><div class="anexo-viewer-topo"><span id="anexo-titulo"></span><button class="anexo-fechar" id="anexo-fechar" type="button" aria-label="Fechar anexo">×</button></div><div class="anexo-frame" id="anexo-frame" aria-live="polite"></div></div>
+      <div class="bloco-colapsavel perfil-conteudo" id="perfil-time" hidden>
+        <h4 class="info-subtitulo">Dados gerais</h4>
+        <dl class="meta">
+          <div class="meta-item"><dt>Universidade</dt><dd>${esc(i.escola || "Não informada")}</dd></div>
+          <div class="meta-item"><dt>Candidato(a)</dt><dd>${esc(i.equipe || "Não informado")}</dd></div>
+          <div class="meta-item"><dt>Curso</dt><dd>${esc(i.curso || "Não informado")}</dd></div>
+          <div class="meta-item"><dt>Estado</dt><dd>${esc(i.uf || "Não informado")}</dd></div>
+          <div class="meta-item"><dt>Gênero</dt><dd>${esc(i.genero || "Não informado")}</dd></div>
+          <div class="meta-item"><dt>Raça</dt><dd>${esc(i.raca || "Não informado")}</dd></div>
+        </dl>
+      </div>
+      </div>
+      <section class="narr">
+        <div class="narr-bloco">
+          ${secaoNarrativaHtml("descricao_prototipo", "Apresentação pessoal", i.descricao_prototipo)}
+          ${secaoNarrativaHtml("elementos_inovadores", "Ferramentas de IA utilizadas", i.elementos_inovadores)}
+          ${secaoNarrativaHtml("viabilidade_tecnica", "Etapas e finalidades do uso de IA", i.viabilidade_tecnica)}
+          ${secaoNarrativaHtml("impacto_goup", "Supervisão humana e verificações", i.impacto_goup)}
+        </div>
+      </section>
+    </div>
+    <aside class="avaliacao-panel" aria-label="Formulário de avaliação">
+    <h2 class="titulo-coluna">Avaliação</h2>
+    <div class="intro-avaliacao"><p>Selecione uma nota para cada critério.</p></div>
+    ${CRITERIOS.map(c => `
+    <section class="crit" data-k="${c.k}">
+      <div class="criterio-visivel">
+        <div class="criterio-visivel-cab"><span class="criterio-nome">${esc(c.nome)}</span><span class="criterio-peso">Peso ${c.peso}%</span></div>
+        <p class="desc">${esc(c.desc)}</p>
+      </div>
+      <div class="escala" role="radiogroup" aria-label="${esc(c.nome)}">
+        ${[1,2,3,4].map(n=>`<button type="button" data-n="${n}" class="${rascunho[c.k]===n?"on":""}" aria-pressed="${rascunho[c.k]===n}">${n}</button>`).join("")}
+      </div>
+    </section>`).join("")}
+    <section class="crit">
+      <div class="comentario-campo">
+        <label class="sr-only" for="coment">Comentário (opcional)</label>
+        <textarea id="coment" placeholder="Comentário (opcional) — destaque pontos fortes, dúvidas ou aspectos que influenciaram sua avaliação.">${esc(rascunho.comentario)}</textarea>
+      </div>
+    </section>
+    <div class="acoes">
+      <button class="btn" id="salvar">${a ? "Salvar nova versão" : "Salvar avaliação"}</button>
+      <button class="btn sec" id="prox">Próxima pendente</button>
+      <span class="aviso" id="aviso">${a ? "Última versão salva em " + fmt(a.criado_em) + "." : ""}</span>
+    </div>
+    </aside>
+  </article>`;
+}
+
+function fmt(d){ return new Date(d).toLocaleString("pt-BR", {dateStyle:"short", timeStyle:"short"}); }
+
+function respostaAuto(valor){
+  const v = String(valor || "Não informado");
+  const n = v.toLocaleLowerCase("pt-BR");
+  const classe = n === "sim" ? "sim" : n === "não" || n === "nao" ? "nao" : "neutra";
+  return `<span class="resposta ${classe}">${esc(v)}</span>`;
+}
+
+function paragrafos(texto){
+  return String(texto || "").replace(/\\n/g, "\n").split(/\n+/).map(x => x.trim()).filter(Boolean).map(x => `<p>${esc(x)}</p>`).join("");
+}
+
+function ligarFormulario(ins){
+  const perfilToggle = $("#perfil-toggle"), perfil = $("#perfil-time");
+  perfilToggle.onclick = () => {
+    const abrir = perfil.hidden;
+    perfil.hidden = !abrir;
+    perfilToggle.setAttribute("aria-expanded", String(abrir));
+  };
+  const viewer = $("#anexo-viewer"), frame = $("#anexo-frame"), titulo = $("#anexo-titulo");
+  document.querySelectorAll(".anexo-toggle").forEach(botao => botao.onclick = () => {
+    const tipo = botao.dataset.anexo;
+    const url = urlIncorporada(tipo, botao.dataset.url);
+    if (!url) return;
+    frame.replaceChildren();
+    let elemento;
+    if (tipo === "video") {
+      elemento = document.createElement("video");
+      elemento.controls = true;
+      elemento.autoplay = true;
+      elemento.playsInline = true;
+      elemento.preload = "metadata";
+      elemento.src = url;
+    } else if (/\.(?:png|jpe?g|gif|webp)(?:[?#].*)?$/i.test(url)) {
+      elemento = document.createElement("img");
+      elemento.src = url;
+      elemento.alt = "Comprovante de vínculo acadêmico";
+    } else {
+      elemento = document.createElement("iframe");
+      elemento.src = url;
+      elemento.title = "Comprovante de vínculo acadêmico";
+    }
+    elemento.style.width = "100%";
+    elemento.style.height = "100%";
+    elemento.style.border = "0";
+    if (elemento.tagName === "IMG" || elemento.tagName === "VIDEO") elemento.style.objectFit = "contain";
+    frame.appendChild(elemento);
+    titulo.textContent = tipo === "video" ? "Vídeo" : "Vínculo";
+    viewer.hidden = false;
+    viewer.scrollIntoView({behavior:"smooth", block:"nearest"});
+  });
+  $("#anexo-fechar").onclick = () => { frame.replaceChildren(); viewer.hidden = true; };
+  document.querySelectorAll(".crit[data-k]").forEach(sec => {
+    const k = sec.dataset.k;
+    sec.querySelectorAll(".escala button").forEach(b => b.onclick = () => {
+      rascunho[k] = +b.dataset.n;
+      sec.querySelectorAll(".escala button").forEach(x => {x.classList.toggle("on", x===b); x.setAttribute("aria-pressed", x===b);});
+      checar();
+    });
+  });
+  $("#coment").oninput = e => { rascunho.comentario = e.target.value; checar(); };
+  $("#salvar").onclick = () => salvar(ins);
+  $("#prox").onclick = () => { const ix = fila.findIndex((i,x) => x>atual && !minhas[i.id]); ir(ix>=0 ? ix : fila.findIndex(i=>!minhas[i.id])); };
+  $("#prox").disabled = !minhas[ins.id];
+  checar();
+}
+
+function completo(){ return CRITERIOS.every(c => rascunho[c.k] >= 1); }
+function checar(){ $("#salvar").setAttribute("aria-disabled", completo() ? "false" : "true"); }
+
+async function salvar(ins){
+  if (!completo()){ $("#modal-incompleta").showModal(); return; }
+  const btn = $("#salvar"), av = $("#aviso");
+  btn.disabled = true; av.className = "aviso"; av.textContent = "Salvando…";
+  const data = {...rascunho, inscricao_id:ins.id, criado_em:new Date().toISOString()};
+  const notas=CRITERIOS.map(c=>NOTA_TEXTO[data[c.k]]||null);
+  const {error:avaliacaoError}=await cliente.from("avaliacoes").upsert({
+    environment:AMBIENTE,inscricao_id_externo:ins.id,parecerista_id_externo:token,is_teste:false,
+    status:"concluida",parecer_geral:data.comentario||"",concluida:true,notas_json:notas,
+    justificativas_json:["","",""],updated_at:data.criado_em
+  },{onConflict:"environment,inscricao_id_externo,parecerista_id_externo"});
+  if(avaliacaoError){btn.disabled=false;av.className="aviso erro";av.textContent="Não foi possível salvar.";throw avaliacaoError;}
+  const {error:deleteError}=await cliente.from("avaliacao_criterios").delete().eq("environment",AMBIENTE).eq("inscricao_id_externo",ins.id).eq("parecerista_id_externo",token);
+  if(deleteError) throw deleteError;
+  const {error:criteriosError}=await cliente.from("avaliacao_criterios").insert(CRITERIOS.map((c,i)=>({
+    environment:AMBIENTE,inscricao_id_externo:ins.id,parecerista_id_externo:token,
+    criterio_ordem:i+1,criterio_nome:c.nome,criterio_grupo:"Maratona IA",nota:notas[i],justificativa:""
+  })));
+  if(criteriosError) throw criteriosError;
+  minhas[ins.id] = data;
+  av.className = "aviso ok"; av.textContent = "Avaliação salva às " + fmt(data.criado_em) + ".";
+  progresso();
+  const pend = fila.findIndex((i,x) => x>atual && !minhas[i.id]);
+  const qualquer = fila.findIndex(i => !minhas[i.id]);
+  setTimeout(() => {
+    if (pend >= 0) ir(pend);
+    else if (qualquer >= 0) ir(qualquer);
+    else fim();
+  }, 700);
+}
+
+function ir(ix){
+  const primeiraPendente = fila.findIndex(i => !minhas[i.id]);
+  const limite = primeiraPendente < 0 ? fila.length - 1 : primeiraPendente;
+  if (ix < 0 || ix >= fila.length || ix > limite) return;
+  atual = ix; render(); window.scrollTo({top:0});
+}
+
+function abrirBloqueio(ix){
+  const pendente = fila.find(i => !minhas[i.id]);
+  const destino = fila[ix];
+  $("#mensagem-bloqueio").textContent = pendente
+    ? `Conclua e salve a avaliação de ${pendente.equipe.toUpperCase()} para liberar ${destino.equipe.toUpperCase()} e os próximos times da fila.`
+    : "Conclua e salve a avaliação em andamento para liberar o próximo time da fila.";
+  $("#modal-bloqueio").showModal();
+}
+
+function fim(){
+  render();
+  $("main").insertAdjacentHTML("afterbegin", `<div class="fim"><h2>Todas as inscrições avaliadas</h2><p>Obrigado. Suas notas estão registradas. Até o fim do prazo você pode voltar a qualquer inscrição pela lista e salvar uma nova versão.</p></div>`);
+  window.scrollTo({top:0});
+}
+
+prepararAcesso();
+$("#fechar-incompleta").onclick = () => $("#modal-incompleta").close();
+$("#modal-incompleta").onclick = e => { if (e.target.id === "modal-incompleta") e.target.close(); };
+$("#fechar-bloqueio").onclick = () => $("#modal-bloqueio").close();
+$("#modal-bloqueio").onclick = e => { if (e.target.id === "modal-bloqueio") e.target.close(); };
+</script>
+</body>
+</html>
