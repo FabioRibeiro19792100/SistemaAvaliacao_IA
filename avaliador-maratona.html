@@ -382,15 +382,20 @@ async function carregarMaratona(){
     const raw=row.raw_json||{};
     return {
       id:String(row.id_externo), codigo:String(row.id_curto||"").padStart(2,"0"), equipe:row.lider||"Candidatura",
-      elegibilidade:{status:"elegivel"}, video_url:row.video_url||"", relatorio_url:row.roteiro_30_url||"",
-      escola:row.instituicao||"", municipio:valorRaw(raw,["Cidade","Município","Municipio"]), uf:row.uf||"",
+      elegibilidade:{status:"elegivel"},
+      video_url:row.video_url||valorRaw(raw,["Anexar vídeo criativo"]),
+      relatorio_url:row.roteiro_30_url||valorRaw(raw,["Comprovante de vínculo estudantil (matrícula ou declaração escolar)"]),
+      escola:row.instituicao||valorRaw(raw,["Nome da associação educacional/instituição de ensino em que você possui vínculo estudantil ativo"]),
+      municipio:valorRaw(raw,["Cidade","Município","Municipio"]), uf:row.uf||valorRaw(raw,["UF"]),
       curso:row.curso||valorRaw(raw,["Curso de graduação que você cursa","Curso no qual você tem matrícula ativa?","Curso","curso"])||"Não informado",
       genero:valorRaw(raw,["Como você se identifica?","Gênero","Genero","gênero","genero"])||"Não informado",
       raca:valorRaw(raw,["Raça/etnia","Raça","Raca","Cor ou raça","raça","raca"])||"Não informado",
       professor:row.lider||"", colider_nome:"", colider:false, componentes:[], estudantes:[], conhecimento_ti:row.ia_descricao||"Não informado",
       autodeclaracao:{todos_perfis:"Não informado",genero:valorRaw(raw,["Gênero","Genero"])||"Não informado",cor_raca:valorRaw(raw,["Raça","Raca","Cor ou raça"])||"Não informado",deficiencia:"Não informado"},
-      descricao_prototipo:row.defesa_conceitual||"Não informado.", elementos_inovadores:row.ia_descricao||"Não informado.",
-      viabilidade_tecnica:row.objetivos_campanha||"Não informado.", impacto_goup:row.estrategia_distribuicao||"Não informado."
+      descricao_prototipo:row.defesa_conceitual||valorRaw(raw,["Apresentação pessoal"])||"Não informado.",
+      elementos_inovadores:row.ia_descricao||valorRaw(raw,["Quais ferramentas de IA foram utilizadas?"])||"Não informado.",
+      viabilidade_tecnica:valorRaw(raw,["Em quais etapas e com qual finalidade?"])||row.objetivos_campanha||"Não informado.",
+      impacto_goup:valorRaw(raw,["Como ocorreu a supervisão humana e quais verificações foram feitas?"])||row.estrategia_distribuicao||"Não informado."
     };
   });
   fila=[...INSCRICOES];
