@@ -519,14 +519,11 @@ function linkSeguro(valor){
 
 function anexosHtml(i){
   const video = linkSeguro(i.video_url);
-  const relatorio = linkSeguro(i.relatorio_url);
   const play = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m8 5 11 7-11 7z"/></svg>`;
-  const arquivo = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v5h5"/></svg>`;
   const links = [
-    video ? `<button class="anexo-toggle" type="button" data-anexo="video" data-url="${esc(video)}">${play}Vídeo</button>` : "",
-    relatorio ? `<button class="anexo-toggle" type="button" data-anexo="relatorio" data-url="${esc(relatorio)}">${arquivo}Vínculo</button>` : ""
+    video ? `<button class="anexo-toggle" type="button" data-anexo="video" data-url="${esc(video)}">${play}Vídeo</button>` : ""
   ].filter(Boolean).join("");
-  return `<div class="anexos-projeto">${links || '<span class="anexos-projeto-vazio">Nenhum anexo informado</span>'}<button class="perfil-toggle" id="perfil-toggle" type="button" aria-expanded="false" aria-controls="perfil-time">Perfil</button></div>`;
+  return `<div class="anexos-projeto">${links || '<span class="anexos-projeto-vazio">Nenhum vídeo informado</span>'}<button class="perfil-toggle" id="perfil-toggle" type="button" aria-expanded="false" aria-controls="perfil-time">Perfil</button></div>`;
 }
 
 function urlIncorporada(tipo, valor){
@@ -551,6 +548,7 @@ function secaoNarrativaHtml(campo, titulo, texto){
 
 function inscricaoHtml(i){
   const a = minhas[i.id];
+  const vinculo = linkSeguro(i.relatorio_url);
   rascunho = a ? {...a, comentario:a.comentario||""} : {comentario:""};
   return `
   <article class="ins">
@@ -568,6 +566,7 @@ function inscricaoHtml(i){
           <div class="meta-item"><dt>Estado</dt><dd>${esc(i.uf || "Não informado")}</dd></div>
           <div class="meta-item"><dt>Gênero</dt><dd>${esc(i.genero || "Não informado")}</dd></div>
           <div class="meta-item"><dt>Raça</dt><dd>${esc(i.raca || "Não informado")}</dd></div>
+          ${vinculo ? `<div class="meta-item"><dt>Vínculo acadêmico</dt><dd><button class="anexo-toggle" type="button" data-anexo="relatorio" data-url="${esc(vinculo)}">Abrir comprovante</button></dd></div>` : ""}
         </dl>
       </div>
       </div>
@@ -623,16 +622,20 @@ function paragrafos(texto){
 
 function ligarFormulario(ins){
   const perfilToggle = $("#perfil-toggle"), perfil = $("#perfil-time");
+  const viewer = $("#anexo-viewer"), frame = $("#anexo-frame"), titulo = $("#anexo-titulo");
+  const fecharAnexo = () => { frame.replaceChildren(); viewer.hidden = true; };
   perfilToggle.onclick = () => {
     const abrir = perfil.hidden;
+    if (abrir) fecharAnexo();
     perfil.hidden = !abrir;
     perfilToggle.setAttribute("aria-expanded", String(abrir));
   };
-  const viewer = $("#anexo-viewer"), frame = $("#anexo-frame"), titulo = $("#anexo-titulo");
   document.querySelectorAll(".anexo-toggle").forEach(botao => botao.onclick = () => {
     const tipo = botao.dataset.anexo;
     const url = urlIncorporada(tipo, botao.dataset.url);
     if (!url) return;
+    perfil.hidden = true;
+    perfilToggle.setAttribute("aria-expanded", "false");
     if (tipo === "video") videosAbertos.add(ins.id);
     frame.replaceChildren();
     let elemento;
@@ -668,7 +671,7 @@ function ligarFormulario(ins){
     viewer.hidden = false;
     viewer.scrollIntoView({behavior:"smooth", block:"nearest"});
   });
-  $("#anexo-fechar").onclick = () => { frame.replaceChildren(); viewer.hidden = true; };
+  $("#anexo-fechar").onclick = fecharAnexo;
   document.querySelectorAll(".crit[data-k]").forEach(sec => {
     const k = sec.dataset.k;
     sec.querySelectorAll(".escala button").forEach(b => b.onclick = () => {
