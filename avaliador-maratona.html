@@ -73,7 +73,7 @@ main{padding:24px;width:100%;max-width:none;min-width:0}
 .avaliacao-panel .crit>.explicacao{margin-bottom:6px}
 .avaliacao-panel .crit .cab{min-height:24px}
 .avaliacao-panel .crit .desc{font-size:13px;line-height:1.45}
-.avaliacao-panel .escala{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));width:100%;gap:6px}
+.avaliacao-panel .escala{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));width:100%;gap:6px}
 .avaliacao-panel .escala button{display:grid;place-items:center;width:100%;max-width:none;height:var(--regua-controle-h);border:1px solid var(--roxo);border-radius:0;background:transparent;color:var(--roxo);font-size:12px;font-weight:700;line-height:1;transform:none;box-shadow:none}
 .avaliacao-panel .acoes{margin-top:auto;margin-bottom:-24px;background:var(--leve);border-top-color:var(--linha)}
 .avaliacao-panel .crit{border-top-color:var(--linha)}
@@ -115,6 +115,8 @@ main{padding:24px;width:100%;max-width:none;min-width:0}
 .anexos-projeto{display:flex;align-items:center;justify-content:flex-end;gap:6px;flex:none;background:#fff}
 .anexo-toggle,.perfil-toggle{display:inline-flex;align-items:center;gap:5px;min-height:27px;padding:3px 8px;border:1px solid #CFC8DA;border-radius:3px;background:#fff;color:var(--roxo);font-size:10px;font-weight:600;text-decoration:none}
 .anexo-toggle:hover,.perfil-toggle:hover{background:#F4F0F8}
+.problema-video-toggle{display:inline-grid;place-items:center;width:27px;height:27px;padding:0;border:1px solid #E8A9B2;border-radius:3px;background:#fff;color:var(--vermelho);font-size:14px;font-weight:700}
+.problema-video-toggle:hover{background:#FFF1F3}.problema-video-toggle:disabled{cursor:default;opacity:.48}
 .anexos-projeto svg{width:12px;height:12px;flex:none}
 .anexos-projeto-vazio{color:var(--cinza);font-size:11px;white-space:nowrap}
 .perfil-toggle::after{content:"";width:6px;height:6px;margin:-3px 1px 0 2px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg);transition:transform .15s}
@@ -221,6 +223,7 @@ dialog::backdrop{background:rgba(26,21,51,.5)}
 .modal-incompleta{padding:22px}
 .modal-incompleta h2{margin:0 0 7px;font-size:19px;color:var(--roxo)}
 .modal-incompleta p{margin:0 0 18px;color:var(--cinza)}
+.form-video-problema{display:grid;gap:13px;margin:16px 0}.form-video-problema label{display:grid;gap:5px;color:var(--tinta);font-size:12px;font-weight:600}.form-video-problema select,.form-video-problema textarea{width:100%;padding:9px 10px;border:1px solid var(--linha);border-radius:3px;background:#fff;color:var(--tinta);font:inherit}.form-video-problema textarea{min-height:82px;resize:vertical}.modal-acoes{display:flex;justify-content:flex-end;gap:8px}.modal-acoes .btn{padding:8px 14px}.erro-video-problema{min-height:18px;margin:0!important;color:var(--vermelho)!important;font-size:12px}.aviso-video-reportado{color:var(--vermelho);font-size:11px;font-weight:600}
 @media (max-width:820px){
   :root{--topo-h:58px}
   .topo{flex-wrap:nowrap;padding:7px 16px 6px}
@@ -280,6 +283,37 @@ const CRITERIOS = [
     <button class="btn" id="fechar-bloqueio" type="button">Entendi</button>
   </div>
 </dialog>
+<dialog id="modal-video-problema" aria-labelledby="modal-video-problema-titulo">
+  <form class="modal-incompleta" id="form-video-problema">
+    <h2 id="modal-video-problema-titulo">Problema com o vídeo</h2>
+    <p>A avaliação ficará sem nota e será enviada para o fim da fila enquanto o vídeo aguarda verificação.</p>
+    <div class="form-video-problema">
+      <label>Tipo do problema
+        <select id="video-problema-tipo">
+          <option>Vídeo não carregou</option>
+          <option>Link quebrado</option>
+          <option>Vídeo ficou carregando</option>
+          <option>Plataforma exigiu login</option>
+          <option>Outro</option>
+        </select>
+      </label>
+      <label>Quantidade de tentativas
+        <select id="video-problema-tentativas">
+          <option>Tentei uma vez</option>
+          <option>Tentei mais de uma vez</option>
+        </select>
+      </label>
+      <label>Comentário (opcional)
+        <textarea id="video-problema-comentario" placeholder="Descreva o que aconteceu..."></textarea>
+      </label>
+    </div>
+    <p class="erro-video-problema" id="video-problema-erro" role="alert"></p>
+    <div class="modal-acoes">
+      <button class="btn sec" id="cancelar-video-problema" type="button">Cancelar</button>
+      <button class="btn" id="confirmar-video-problema" type="submit">Confirmar reporte</button>
+    </div>
+  </form>
+</dialog>
 
 <script>
 const $ = (s, el=document) => el.querySelector(s);
@@ -287,13 +321,23 @@ const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;
 let token = new URLSearchParams(location.search).get("par") || new URLSearchParams(location.search).get("token");
 let fila = [], TRADUCOES_PTBR = {};
 let cliente, eu, minhas = {}, atual = 0, rascunho = {};
+let inscricaoProblemaAtual = null;
 let DURACOES_VIDEO = {};
 const inicioAvaliacaoPorInscricao = new Map();
 const videosAbertos = new Set();
+const videosComProblema = new Set();
 const AMBIENTE = "homolog";
 const SENHA_ACESSO = "maratonaia2026";
-const NOTA_NUMERO = {Insuficiente:1, Regular:2, Bom:3, "Ótimo":4};
-const NOTA_TEXTO = [null,"Insuficiente","Regular","Bom","Ótimo"];
+const NOTA_NUMERO = {"0":0, Insuficiente:1, Regular:2, Bom:3, "Ótimo":4};
+const NOTA_TEXTO = ["0","Insuficiente","Regular","Bom","Ótimo"];
+
+function notaParaNumero(valor){
+  if (valor === null || typeof valor === "undefined" || valor === "") return null;
+  const texto = String(valor);
+  if (Object.prototype.hasOwnProperty.call(NOTA_NUMERO,texto)) return NOTA_NUMERO[texto];
+  const numero = Number(valor);
+  return Number.isFinite(numero) && numero >= 0 && numero <= 4 ? numero : null;
+}
 
 function ambienteLocal(){
   return location.protocol === "file:" || ["localhost","127.0.0.1","::1"].includes(location.hostname);
@@ -366,18 +410,27 @@ async function carregarMaratona(){
     token=data?.id_externo||"";
   }
   if(!token) return vazio("Link incompleto", "Este endereço precisa do código do parecerista.");
-  const [parRes,atribuicoes,avaliacoes,criterios,inscricoes]=await Promise.all([
+  const [parRes,atribuicoes,avaliacoes,criterios,inscricoes,eventosVideo]=await Promise.all([
     cliente.from("pareceristas").select("*").eq("environment",AMBIENTE).eq("id_externo",token).eq("ativo",true).maybeSingle(),
     todas(()=>cliente.from("atribuicoes").select("*").eq("environment",AMBIENTE).eq("parecerista_id_externo",token).eq("ativo",true).order("ordem")),
     todas(()=>cliente.from("avaliacoes").select("*").eq("environment",AMBIENTE).eq("parecerista_id_externo",token).order("id")),
     todas(()=>cliente.from("avaliacao_criterios").select("*").eq("environment",AMBIENTE).eq("parecerista_id_externo",token).order("criterio_ordem")),
-    todas(()=>cliente.from("inscricoes").select("*").eq("environment",AMBIENTE).eq("ativo",true).order("id_curto"))
+    todas(()=>cliente.from("inscricoes").select("*").eq("environment",AMBIENTE).eq("ativo",true).order("id_curto")),
+    todas(()=>cliente.from("eventos_auditoria").select("*").eq("environment",AMBIENTE).eq("parecerista_id",token).in("event_type",["video_problema_reportado","video_problema_resolvido"]).order("created_at"))
   ]);
   if(parRes.error) throw parRes.error;
   if(!parRes.data) throw new Error("Parecerista não encontrado.");
+  videosComProblema.clear();
+  eventosVideo.forEach(evento=>{
+    const inscricaoId=String(evento.inscricao_id||evento.payload_json?.inscricao_id||"");
+    if(!inscricaoId) return;
+    if(evento.event_type==="video_problema_resolvido") videosComProblema.delete(inscricaoId);
+    else videosComProblema.add(inscricaoId);
+  });
   const ordem=new Map(atribuicoes.map((a,i)=>[String(a.inscricao_id_externo),i]));
   const permitidas=new Set(atribuicoes.map(a=>String(a.inscricao_id_externo)));
-  const linhas=inscricoes.filter(i=>permitidas.has(String(i.id_externo))).sort((a,b)=>ordem.get(String(a.id_externo))-ordem.get(String(b.id_externo)));
+  const linhasOrdenadas=inscricoes.filter(i=>permitidas.has(String(i.id_externo))).sort((a,b)=>ordem.get(String(a.id_externo))-ordem.get(String(b.id_externo)));
+  const linhas=[...linhasOrdenadas.filter(i=>!videosComProblema.has(String(i.id_externo))),...linhasOrdenadas.filter(i=>videosComProblema.has(String(i.id_externo)))];
   INSCRICOES=linhas.map(row=>{
     const raw=row.raw_json||{};
     return {
@@ -406,7 +459,7 @@ async function carregarMaratona(){
     if(!a.concluida) return;
     const cs=(criteriosPorAvaliacao[String(a.inscricao_id_externo)]||[]).sort((x,y)=>x.criterio_ordem-y.criterio_ordem);
     const notas=cs.length?cs.map(c=>c.nota):(a.notas_json||[]);
-    minhas[String(a.inscricao_id_externo)]={comunicacao:NOTA_NUMERO[notas[0]]||Number(notas[0])||0,criatividade:NOTA_NUMERO[notas[1]]||Number(notas[1])||0,ia:NOTA_NUMERO[notas[2]]||Number(notas[2])||0,comentario:a.parecer_geral||"",criado_em:a.updated_at||new Date().toISOString()};
+    minhas[String(a.inscricao_id_externo)]={comunicacao:notaParaNumero(notas[0]),criatividade:notaParaNumero(notas[1]),ia:notaParaNumero(notas[2]),comentario:a.parecer_geral||"",criado_em:a.updated_at||new Date().toISOString()};
   });
   eu={nome:parRes.data.nome||"Parecerista"};
   $("#quem").textContent=eu.nome;
@@ -524,11 +577,13 @@ function linkSeguro(valor){
 
 function anexosHtml(i){
   const video = linkSeguro(i.video_url);
+  const reportado = videosComProblema.has(String(i.id));
   const play = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m8 5 11 7-11 7z"/></svg>`;
   const links = [
     video ? `<button class="anexo-toggle" type="button" data-anexo="video" data-url="${esc(video)}">${play}Vídeo</button>` : ""
   ].filter(Boolean).join("");
-  return `<div class="anexos-projeto">${links || '<span class="anexos-projeto-vazio">Nenhum vídeo informado</span>'}<button class="perfil-toggle" id="perfil-toggle" type="button" aria-expanded="false" aria-controls="perfil-time">Perfil</button></div>`;
+  const problema = `<button class="problema-video-toggle" id="reportar-video" type="button" aria-label="${reportado?"Problema no vídeo já reportado":"Reportar problema no vídeo"}" title="${reportado?"Problema já reportado":"Reportar problema no vídeo"}" ${reportado?"disabled":""}>⚠</button>`;
+  return `<div class="anexos-projeto">${links || '<span class="anexos-projeto-vazio">Nenhum vídeo informado</span>'}${reportado?'<span class="aviso-video-reportado">Reportado</span>':""}${problema}<button class="perfil-toggle" id="perfil-toggle" type="button" aria-expanded="false" aria-controls="perfil-time">Perfil</button></div>`;
 }
 
 function urlIncorporada(tipo, valor){
@@ -594,7 +649,7 @@ function inscricaoHtml(i){
         <p class="desc">${esc(c.desc)}</p>
       </div>
       <div class="escala" role="radiogroup" aria-label="${esc(c.nome)}">
-        ${[1,2,3,4].map(n=>`<button type="button" data-n="${n}" class="${rascunho[c.k]===n?"on":""}" aria-pressed="${rascunho[c.k]===n}">${n}</button>`).join("")}
+        ${[0,1,2,3,4].map(n=>`<button type="button" data-n="${n}" class="${rascunho[c.k]===n?"on":""}" aria-pressed="${rascunho[c.k]===n}">${n}</button>`).join("")}
       </div>
     </section>`).join("")}
     <section class="crit">
@@ -677,6 +732,8 @@ function ligarFormulario(ins){
     viewer.scrollIntoView({behavior:"smooth", block:"nearest"});
   });
   $("#anexo-fechar").onclick = fecharAnexo;
+  const reportarVideo = $("#reportar-video");
+  if (reportarVideo && !reportarVideo.disabled) reportarVideo.onclick = () => abrirReporteVideo(ins);
   document.querySelectorAll(".crit[data-k]").forEach(sec => {
     const k = sec.dataset.k;
     sec.querySelectorAll(".escala button").forEach(b => b.onclick = () => {
@@ -692,10 +749,65 @@ function ligarFormulario(ins){
   checar();
 }
 
-function completo(){ return CRITERIOS.every(c => rascunho[c.k] >= 1); }
+function completo(){ return CRITERIOS.every(c => Number.isInteger(rascunho[c.k]) && rascunho[c.k] >= 0 && rascunho[c.k] <= 4); }
 function checar(){ $("#salvar").setAttribute("aria-disabled", completo() ? "false" : "true"); }
 
+function abrirReporteVideo(ins){
+  inscricaoProblemaAtual = ins;
+  $("#anexo-frame")?.replaceChildren();
+  if ($("#anexo-viewer")) $("#anexo-viewer").hidden = true;
+  $("#video-problema-tipo").value = "Vídeo não carregou";
+  $("#video-problema-tentativas").value = "Tentei uma vez";
+  $("#video-problema-comentario").value = "";
+  $("#video-problema-erro").textContent = "";
+  $("#modal-video-problema").showModal();
+}
+
+function fecharReporteVideo(){
+  inscricaoProblemaAtual = null;
+  $("#modal-video-problema").close();
+}
+
+async function registrarProblemaVideo(){
+  const ins = inscricaoProblemaAtual;
+  if (!ins) return;
+  const botao = $("#confirmar-video-problema"), erro = $("#video-problema-erro");
+  const reportId = `video-issue-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
+  const tipoProblema = $("#video-problema-tipo").value;
+  const tentativas = $("#video-problema-tentativas").value;
+  const comentario = $("#video-problema-comentario").value.trim();
+  const reportedAt = new Date().toISOString();
+  botao.disabled = true; erro.textContent = "Registrando…";
+  const payload = {
+    correlation_id:reportId, report_id:reportId, parecerista_id:token, par_nome:eu?.nome||"",
+    inscricao_id:String(ins.id), lider:ins.equipe||"", video_url:ins.video_url||null,
+    status:"aguardando_verificacao_video", tipo_problema:tipoProblema, tentativas, comentario,
+    browser:navigator.userAgent, sistema_operacional:navigator.platform||"", user_agent:navigator.userAgent,
+    mensagem_erro:ins.video_url?null:"URL do vídeo indisponível na ficha.", reported_at:reportedAt,
+    retorno_preferencial:"mesmo_parecerista"
+  };
+  const {error}=await cliente.from("eventos_auditoria").insert({
+    environment:AMBIENTE,event_type:"video_problema_reportado",actor_type:"parecerista",actor_id:token,
+    inscricao_id:String(ins.id),parecerista_id:token,correlation_id:reportId,payload_json:payload,created_at:reportedAt
+  });
+  if(error){ erro.textContent = "Não foi possível registrar o problema. Tente novamente."; botao.disabled = false; throw error; }
+  videosComProblema.add(String(ins.id));
+  videosAbertos.delete(ins.id);
+  inicioAvaliacaoPorInscricao.delete(ins.id);
+  const indice=fila.findIndex(item=>String(item.id)===String(ins.id));
+  if(indice>=0){ const [reportada]=fila.splice(indice,1); fila.push(reportada); }
+  const proxima=fila.findIndex(item=>!minhas[item.id]&&!videosComProblema.has(String(item.id)));
+  atual=proxima>=0?proxima:Math.max(0,fila.length-1);
+  botao.disabled = false;
+  fecharReporteVideo();
+  render();
+  $("#modal-bloqueio-titulo").textContent = "Problema registrado";
+  $("#mensagem-bloqueio").textContent = "A candidatura foi enviada para o fim da fila sem registrar nota. A pendência já está disponível na Auditoria.";
+  $("#modal-bloqueio").showModal();
+}
+
 function validarTempoEVideo(ins){
+  if (videosComProblema.has(String(ins.id))) return "Este vídeo está aguardando verificação técnica antes da avaliação.";
   if (!linkSeguro(ins.video_url)) return "Esta candidatura não possui um vídeo válido. Não é possível concluir a avaliação.";
   if (!videosAbertos.has(ins.id)) return "Abra o vídeo antes de salvar a avaliação.";
   const duracao = duracaoVideo(ins);
@@ -717,7 +829,7 @@ async function salvar(ins){
   if (bloqueio){ av.className = "aviso erro"; av.textContent = bloqueio; return; }
   btn.disabled = true; av.className = "aviso"; av.textContent = "Salvando…";
   const data = {...rascunho, inscricao_id:ins.id, criado_em:new Date().toISOString()};
-  const notas=CRITERIOS.map(c=>NOTA_TEXTO[data[c.k]]||null);
+  const notas=CRITERIOS.map(c=>NOTA_TEXTO[data[c.k]]??null);
   const {error:avaliacaoError}=await cliente.from("avaliacoes").upsert({
     environment:AMBIENTE,inscricao_id_externo:ins.id,parecerista_id_externo:token,is_teste:false,
     status:"concluida",parecer_geral:data.comentario||"",concluida:true,notas_json:notas,
@@ -753,6 +865,7 @@ function ir(ix){
 function abrirBloqueio(ix){
   const pendente = fila.find(i => !minhas[i.id]);
   const destino = fila[ix];
+  $("#modal-bloqueio-titulo").textContent = "Próximo time ainda bloqueado";
   $("#mensagem-bloqueio").textContent = pendente
     ? `Conclua e salve a avaliação de ${pendente.equipe.toUpperCase()} para liberar ${destino.equipe.toUpperCase()} e os próximos times da fila.`
     : "Conclua e salve a avaliação em andamento para liberar o próximo time da fila.";
@@ -770,6 +883,9 @@ $("#fechar-incompleta").onclick = () => $("#modal-incompleta").close();
 $("#modal-incompleta").onclick = e => { if (e.target.id === "modal-incompleta") e.target.close(); };
 $("#fechar-bloqueio").onclick = () => $("#modal-bloqueio").close();
 $("#modal-bloqueio").onclick = e => { if (e.target.id === "modal-bloqueio") e.target.close(); };
+$("#cancelar-video-problema").onclick = fecharReporteVideo;
+$("#form-video-problema").onsubmit = e => { e.preventDefault(); registrarProblemaVideo().catch(console.error); };
+$("#modal-video-problema").onclick = e => { if (e.target.id === "modal-video-problema") fecharReporteVideo(); };
 </script>
 </body>
 </html>

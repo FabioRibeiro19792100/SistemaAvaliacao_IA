@@ -4996,9 +4996,9 @@ let bancaModelosConfig = {
 const CRITERIO_PESOS_PADRAO = [33.33,33.33,33.34];
 let CRITERIO_PESOS = [...CRITERIO_PESOS_PADRAO];
 
-const NC = { 'Insuficiente':'b-ins','Regular':'b-reg','Bom':'b-bom','Ótimo':'b-oti' };
+const NC = { '0':'b-ins','Insuficiente':'b-ins','Regular':'b-reg','Bom':'b-bom','Ótimo':'b-oti' };
 const CRITERIOS_PORTAL_ABREV = ['COM','CRI','IA'];
-const NV = { 'Insuficiente':1,'Regular':2,'Bom':3,'Ótimo':4,'1':1,'2':2,'3':3,'4':4,'5':5 };
+const NV = { '0':0,'Insuficiente':1,'Regular':2,'Bom':3,'Ótimo':4,'1':1,'2':2,'3':3,'4':4,'5':5 };
 
 function normalizeBancaModelId(value) {
   return Object.prototype.hasOwnProperty.call(BANCA_MODEL_DEFS, value) ? value : 'grade_completa';
@@ -6451,7 +6451,7 @@ function notaGeralAvaliacao(av, pesos = CRITERIO_PESOS) {
   av.notas.forEach((nota, index) => {
     const numeric = NV[nota];
     const weight = weights[index] || 0;
-    if (!numeric || !weight) return;
+    if (!Number.isFinite(numeric) || !weight) return;
     weightedSum += numeric * weight;
     appliedWeight += weight;
   });
@@ -6481,7 +6481,8 @@ function mediaNumericaPorCrit(inscId, critIdx) {
   const valores = getOfficialPareceristas().map(p => {
     if (!isEvaluationConcluded(p.id, inscId)) return null;
     const conceito = avaliacoes[p.id]?.[inscId]?.notas?.[critIdx];
-    return NV[conceito] || null;
+    const numeric = NV[conceito];
+    return Number.isFinite(numeric) ? numeric : null;
   }).filter(valor => valor !== null);
   if (!valores.length) return null;
   return valores.reduce((soma, valor) => soma + valor, 0) / valores.length;
@@ -9030,7 +9031,7 @@ async function resolveVideoIssueReport(reportId) {
 function registrarAuditoria({ saida, motivoSaida, notas, parecer }) {
   const par = pareceristas.find(p => p.id === currentParId);
   const e = INSCRICOES.find(x => x.id === currentInscId);
-  const NV = { 'Insuficiente':1,'Regular':2,'Bom':3,'Ótimo':4 };
+  const NV = { '0':0,'Insuficiente':1,'Regular':2,'Bom':3,'Ótimo':4 };
   const vals = notas.filter(Boolean).map(n => NV[n]);
   const pt = vals.length === 8 ? Math.round(vals.reduce((a,b)=>a+b,0)/8*25) : null;
   const fim = new Date();
