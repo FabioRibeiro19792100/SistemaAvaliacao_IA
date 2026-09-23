@@ -287,9 +287,43 @@ const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;
 let token = new URLSearchParams(location.search).get("par") || new URLSearchParams(location.search).get("token");
 let fila = [], TRADUCOES_PTBR = {};
 let cliente, eu, minhas = {}, atual = 0, rascunho = {};
+let DURACOES_VIDEO = {};
+const inicioAvaliacaoPorInscricao = new Map();
+const videosAbertos = new Set();
 const AMBIENTE = "homolog";
+const SENHA_ACESSO = "maratonaia2026";
 const NOTA_NUMERO = {Insuficiente:1, Regular:2, Bom:3, "Ótimo":4};
 const NOTA_TEXTO = [null,"Insuficiente","Regular","Bom","Ótimo"];
+
+function ambienteLocal(){
+  return location.protocol === "file:" || ["localhost","127.0.0.1","::1"].includes(location.hostname);
+}
+
+function chaveVideo(valor){
+  const url = String(valor || "").trim();
+  if (!url) return "";
+  try { return new URL(url).href; } catch { return url; }
+}
+
+async function carregarDuracoesVideo(){
+  try {
+    const resposta = await fetch("./video-durations.json", {cache:"no-store"});
+    if (!resposta.ok) return;
+    const dados = await resposta.json();
+    Object.entries(dados?.durationsByUrl || {}).forEach(([url, duracao]) => {
+      const segundos = Number(duracao);
+      if (!Number.isFinite(segundos) || segundos <= 0) return;
+      DURACOES_VIDEO[url] = segundos;
+      DURACOES_VIDEO[chaveVideo(url)] = segundos;
+    });
+  } catch {}
+}
+
+function duracaoVideo(ins){
+  const url = String(ins?.video_url || "").trim();
+  const duracao = Number(DURACOES_VIDEO[url] || DURACOES_VIDEO[chaveVideo(url)]);
+  return Number.isFinite(duracao) && duracao > 0 ? duracao : 0;
+}
 
 async function configuracaoSupabase(){
   let local = {};
@@ -323,9 +357,9 @@ function valorRaw(raw, nomes){
 }
 
 async function carregarMaratona(){
-  const cfg=await configuracaoSupabase();
+  const [cfg]=await Promise.all([configuracaoSupabase(),carregarDuracoesVideo()]);
   cliente=window.supabase.createClient(cfg.url,cfg.key);
-  const localSemSenha=location.protocol==="file:" || ["localhost","127.0.0.1","::1"].includes(location.hostname);
+  const localSemSenha=ambienteLocal();
   if(!token && localSemSenha){
     const {data,error}=await cliente.from("pareceristas").select("id_externo").eq("environment",AMBIENTE).eq("ativo",true).order("nome").limit(1).maybeSingle();
     if(error) throw error;
@@ -394,8 +428,8 @@ function solicitarAcesso(){
     e.preventDefault(); const erro = $("#erro-acesso"), botao = e.currentTarget.querySelector("button");
     erro.textContent = ""; botao.disabled = true;
     try {
-      if ($("#senha-dados").value !== "goup2026") throw new Error("senha");
-      await carregarBase();
+      if ($("#senha-dados").value !== SENHA_ACESSO) throw new Error("senha");
+      await carregarMaratona();
     }
     catch { erro.textContent = "Senha incorreta."; botao.disabled = false; $("#senha-dados").select(); }
   };
@@ -413,6 +447,7 @@ async function carregarBase(){
 }
 
 async function prepararAcesso(){
+  if (!ambienteLocal()) return solicitarAcesso();
   try { await carregarMaratona(); }
   catch (erro) { console.error(erro); vazio("Não foi possível carregar a base", erro.message || "Tente novamente."); }
 }
@@ -446,6 +481,7 @@ function notaFila(a){
 
 function render(){
   const ins = fila[atual];
+  if (ins && !inicioAvaliacaoPorInscricao.has(ins.id)) inicioAvaliacaoPorInscricao.set(ins.id, Date.now());
   const feitas = fila.filter(i => minhas[i.id]).length;
   const primeiraPendente = fila.findIndex(i => !minhas[i.id]);
   const limite = primeiraPendente < 0 ? fila.length - 1 : primeiraPendente;
@@ -597,6 +633,7 @@ function ligarFormulario(ins){
     const tipo = botao.dataset.anexo;
     const url = urlIncorporada(tipo, botao.dataset.url);
     if (!url) return;
+    if (tipo === "video") videosAbertos.add(ins.id);
     frame.replaceChildren();
     let elemento;
     if (tipo === "video") {
@@ -606,6 +643,13 @@ function ligarFormulario(ins){
       elemento.playsInline = true;
       elemento.preload = "metadata";
       elemento.src = url;
+      elemento.addEventListener("loadedmetadata", () => {
+        const segundos = Number(elemento.duration);
+        if (Number.isFinite(segundos) && segundos > 0) {
+          DURACOES_VIDEO[ins.video_url] = segundos;
+          DURACOES_VIDEO[chaveVideo(ins.video_url)] = segundos;
+        }
+      }, {once:true});
     } else if (/\.(?:png|jpe?g|gif|webp)(?:[?#].*)?$/i.test(url)) {
       elemento = document.createElement("img");
       elemento.src = url;
@@ -643,9 +687,26 @@ function ligarFormulario(ins){
 function completo(){ return CRITERIOS.every(c => rascunho[c.k] >= 1); }
 function checar(){ $("#salvar").setAttribute("aria-disabled", completo() ? "false" : "true"); }
 
+function validarTempoEVideo(ins){
+  if (!linkSeguro(ins.video_url)) return "Esta candidatura não possui um vídeo válido. Não é possível concluir a avaliação.";
+  if (!videosAbertos.has(ins.id)) return "Abra o vídeo antes de salvar a avaliação.";
+  const duracao = duracaoVideo(ins);
+  if (!duracao) return "Aguarde o carregamento da duração do vídeo antes de salvar.";
+  const inicio = inicioAvaliacaoPorInscricao.get(ins.id) || Date.now();
+  const minimoMs = (duracao + 10) * 1000;
+  const decorridoMs = Date.now() - inicio;
+  if (decorridoMs < minimoMs) {
+    const restante = Math.ceil((minimoMs - decorridoMs) / 1000);
+    return `A avaliação ainda não atingiu o tempo mínimo. Aguarde mais ${restante} segundo${restante === 1 ? "" : "s"}.`;
+  }
+  return "";
+}
+
 async function salvar(ins){
   if (!completo()){ $("#modal-incompleta").showModal(); return; }
   const btn = $("#salvar"), av = $("#aviso");
+  const bloqueio = validarTempoEVideo(ins);
+  if (bloqueio){ av.className = "aviso erro"; av.textContent = bloqueio; return; }
   btn.disabled = true; av.className = "aviso"; av.textContent = "Salvando…";
   const data = {...rascunho, inscricao_id:ins.id, criado_em:new Date().toISOString()};
   const notas=CRITERIOS.map(c=>NOTA_TEXTO[data[c.k]]||null);
