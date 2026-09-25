@@ -10011,7 +10011,8 @@ let dashCharts = {};
 const ARQUIVO_PADRAO = '';
 const ARQUIVO_PADRAO_HOMOLOG = '';
 const STARTUP_BASE_OVERRIDES = {
-  '20260921': 'inscricoes-maratona-ia-20260921-131155.xlsx',
+  '20260921': 'Inscrições - Maratona de IA (ultimo).xlsx',
+  '20260925': 'Inscrições - Maratona de IA (ultimo).xlsx',
 };
 const STORAGE_KEY = 'maratonaia_app_state_v1';
 const SUPABASE_SETTINGS_KEY = 'maratonaia_supabase_settings_v1';
@@ -10166,7 +10167,7 @@ function currentEnvironmentConfig() {
 }
 
 function defaultBaseFileForEnvironment(env) {
-  return 'inscricoes-maratona-ia-20260921-131155.xlsx';
+  return 'Inscrições - Maratona de IA (ultimo).xlsx';
 }
 
 function applyStartupBaseOverride() {
@@ -10186,7 +10187,10 @@ function applyStartupBaseOverride() {
 
 function normalizeEnvironmentBaseFile(env, value) {
   const raw = String(value || '').trim();
-  if (raw === 'inscricoes-maratona-ia-20260908-171520.xlsx') {
+  if (
+    raw === 'inscricoes-maratona-ia-20260908-171520.xlsx' ||
+    raw === 'inscricoes-maratona-ia-20260921-131155.xlsx'
+  ) {
     return defaultBaseFileForEnvironment(env);
   }
   if (isLegacyFakeBaseName(raw)) return '';
@@ -12601,9 +12605,22 @@ function distribuicaoExcedeCotas() {
 }
 
 function carregarWorkbook(workbook) {
+  const hasRegistrationHeaders = name => {
+    const worksheet = workbook.Sheets[name];
+    if (!worksheet?.['!ref']) return false;
+    const firstRow = XLSX.utils.sheet_to_json(worksheet, {
+      header: 1,
+      defval: '',
+      blankrows: false,
+      range: 0,
+    })[0] || [];
+    const headers = new Set(firstRow.map(value => String(value || '').trim()));
+    return headers.has('ID') && headers.has('Status');
+  };
   const inscricaoSheet =
     workbook.SheetNames.find(name => ['Inscrições', 'Inscrição', 'Inscricoes', 'Inscricao'].includes(name)) ||
     workbook.SheetNames.find(name => /inscri/i.test(name)) ||
+    workbook.SheetNames.find(hasRegistrationHeaders) ||
     workbook.SheetNames[0];
   const participantesSheet = workbook.SheetNames.includes('Participantes') ? 'Participantes' : null;
   const iesSheet = workbook.SheetNames.includes('IES') ? 'IES' : null;

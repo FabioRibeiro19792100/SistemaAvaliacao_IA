@@ -1,7 +1,7 @@
 {
   "persistenceMode": "supabase",
   "environmentBaseFiles": {
-    "homolog": "inscricoes-maratona-ia-20260921-131155.xlsx",
+    "homolog": "Inscrições - Maratona de IA (ultimo).xlsx",
     "producao": ""
   },
   "url": "https://sdnrrzwrvbdnhdjypfub.supabase.co",
