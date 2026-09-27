@@ -6588,7 +6588,7 @@ function queueBancaSelectionRemotePersist(ids) {
 
 function avalCount(inscId) {
   const pareceristasDaInscricao = getPareceristasDaInscricao(inscId);
-  const total = pareceristasDaInscricao.length;
+  const total = Math.max(NUM_PARECERES_POR_EQUIPE, pareceristasDaInscricao.length);
   const done = pareceristasDaInscricao.filter(p => isEvaluationConcluded(p.id, inscId)).length;
   return { done, total };
 }
