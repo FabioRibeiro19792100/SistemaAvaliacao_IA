@@ -405,9 +405,9 @@ async function carregarMaratona(){
   cliente=window.supabase.createClient(cfg.url,cfg.key);
   const localSemSenha=ambienteLocal();
   if(!token && localSemSenha){
-    const {data,error}=await cliente.from("pareceristas").select("id_externo").eq("environment",AMBIENTE).eq("ativo",true).order("nome").limit(1).maybeSingle();
+    const {data,error}=await cliente.from("pareceristas").select("id_externo,is_teste").eq("environment",AMBIENTE).eq("ativo",true).order("nome");
     if(error) throw error;
-    token=data?.id_externo||"";
+    token=(data||[]).find(item=>item.is_teste)?.id_externo||data?.[0]?.id_externo||"";
   }
   if(!token) return vazio("Link incompleto", "Este endereço precisa do código do parecerista.");
   const [parRes,atribuicoes,avaliacoes,criterios,inscricoes,eventosVideo]=await Promise.all([
@@ -427,9 +427,13 @@ async function carregarMaratona(){
     if(evento.event_type==="video_problema_resolvido") videosComProblema.delete(inscricaoId);
     else videosComProblema.add(inscricaoId);
   });
+  const reviewerIsTest=!!parRes.data.is_teste;
   const ordem=new Map(atribuicoes.map((a,i)=>[String(a.inscricao_id_externo),i]));
   const permitidas=new Set(atribuicoes.map(a=>String(a.inscricao_id_externo)));
-  const linhasOrdenadas=inscricoes.filter(i=>permitidas.has(String(i.id_externo))).sort((a,b)=>ordem.get(String(a.id_externo))-ordem.get(String(b.id_externo)));
+  const linhasOrdenadas=(reviewerIsTest?inscricoes:inscricoes.filter(i=>permitidas.has(String(i.id_externo))))
+    .sort((a,b)=>reviewerIsTest
+      ? Number(a.id_curto||0)-Number(b.id_curto||0)
+      : ordem.get(String(a.id_externo))-ordem.get(String(b.id_externo)));
   const linhas=[...linhasOrdenadas.filter(i=>!videosComProblema.has(String(i.id_externo))),...linhasOrdenadas.filter(i=>videosComProblema.has(String(i.id_externo)))];
   INSCRICOES=linhas.map(row=>{
     const raw=row.raw_json||{};
@@ -461,7 +465,7 @@ async function carregarMaratona(){
     const notas=cs.length?cs.map(c=>c.nota):(a.notas_json||[]);
     minhas[String(a.inscricao_id_externo)]={comunicacao:notaParaNumero(notas[0]),criatividade:notaParaNumero(notas[1]),ia:notaParaNumero(notas[2]),comentario:a.parecer_geral||"",criado_em:a.updated_at||new Date().toISOString()};
   });
-  eu={nome:parRes.data.nome||"Parecerista"};
+  eu={nome:parRes.data.nome||"Parecerista",isTest:reviewerIsTest};
   $("#quem").textContent=eu.nome;
   atual=Math.max(0,fila.findIndex(i=>!minhas[i.id]));
   render();
@@ -542,7 +546,7 @@ function render(){
   if (ins && !inicioAvaliacaoPorInscricao.has(ins.id)) inicioAvaliacaoPorInscricao.set(ins.id, Date.now());
   const feitas = fila.filter(i => minhas[i.id]).length;
   const primeiraPendente = fila.findIndex(i => !minhas[i.id]);
-  const limite = primeiraPendente < 0 ? fila.length - 1 : primeiraPendente;
+  const limite = eu?.isTest ? fila.length - 1 : primeiraPendente < 0 ? fila.length - 1 : primeiraPendente;
   const listaHtml = fila.map((i, ix) => `
     <button data-ix="${ix}" ${ix>limite?'aria-disabled="true"':''} class="${ix===atual?"ativa":""} ${minhas[i.id]?"avaliada":""} ${ix>limite?'bloqueada':''}" aria-label="${esc(i.codigo)} ${esc(i.equipe)}${minhas[i.id]?' — avaliada':ix>limite?' — bloqueada':' — disponível'}">
       <span class="st ${minhas[i.id]?"feita":ix>limite?'trancada':ix===atual?'em-andamento':''}"></span>
@@ -822,27 +826,84 @@ function validarTempoEVideo(ins){
   return "";
 }
 
+function erroRpcIndisponivel(error){
+  const texto=String(error?.message||error?.details||error||"").toLowerCase();
+  return error?.code==="PGRST202"||texto.includes("salvar_avaliacao_maratona")||texto.includes("schema cache");
+}
+
+function eventoAvaliacao(ins,data,{revisao,inicio,fim,duracaoVideoSegundos,eventId}){
+  const nota=mediaPonderada(data);
+  const duracaoMs=Math.max(0,fim.getTime()-inicio.getTime());
+  return {
+    environment:AMBIENTE,
+    event_type:revisao?"avaliacao_editada":"auditoria_concluida",
+    actor_type:"parecerista",
+    actor_id:token,
+    inscricao_id:String(ins.id),
+    parecerista_id:token,
+    correlation_id:eventId,
+    payload_json:{
+      parecerista_id:token,par_nome:eu?.nome||"",inscricao_id:String(ins.id),lider:ins.equipe||"",
+      is_teste:!!eu?.isTest,revisao,inicio:inicio.toISOString(),fim:fim.toISOString(),duracao_ms:duracaoMs,
+      duracao_video_segundos:duracaoVideoSegundos,tempo_minimo_ms:(duracaoVideoSegundos+10)*1000,
+      nota,notas:[data.comunicacao,data.criatividade,data.ia],status:"concluida",
+      audit_snapshot:{
+        parId:token,parNome:eu?.nome||"",isTest:!!eu?.isTest,inscId:String(ins.id),lider:ins.equipe||"",
+        inicio:inicio.toISOString(),fim:fim.toISOString(),duracaoMs,nota,status:"concluida",motivoSaida:""
+      }
+    },
+    created_at:fim.toISOString()
+  };
+}
+
+async function salvarAvaliacaoFallback(ins,data,notas,evento){
+  const {error:avaliacaoError}=await cliente.from("avaliacoes").upsert({
+    environment:AMBIENTE,inscricao_id_externo:ins.id,parecerista_id_externo:token,is_teste:!!eu?.isTest,
+    status:"concluida",parecer_geral:data.comentario||"",concluida:true,notas_json:notas,
+    justificativas_json:["","",""],updated_at:data.criado_em
+  },{onConflict:"environment,inscricao_id_externo,parecerista_id_externo"});
+  if(avaliacaoError) throw avaliacaoError;
+  const criterios=CRITERIOS.map((c,i)=>({
+    environment:AMBIENTE,inscricao_id_externo:ins.id,parecerista_id_externo:token,
+    criterio_ordem:i+1,criterio_nome:c.nome,criterio_grupo:"Maratona IA",nota:notas[i],justificativa:""
+  }));
+  const {error:criteriosError}=await cliente.from("avaliacao_criterios").upsert(criterios,{onConflict:"environment,inscricao_id_externo,parecerista_id_externo,criterio_ordem"});
+  if(criteriosError) throw criteriosError;
+  const {error:eventoError}=await cliente.from("eventos_auditoria").upsert(evento,{onConflict:"environment,event_type,correlation_id"});
+  if(eventoError) throw eventoError;
+}
+
 async function salvar(ins){
   if (!completo()){ $("#modal-incompleta").showModal(); return; }
   const btn = $("#salvar"), av = $("#aviso");
   const bloqueio = validarTempoEVideo(ins);
   if (bloqueio){ av.className = "aviso erro"; av.textContent = bloqueio; return; }
   btn.disabled = true; av.className = "aviso"; av.textContent = "Salvando…";
+  const revisao=!!minhas[ins.id];
+  const fim=new Date();
+  const inicio=new Date(inicioAvaliacaoPorInscricao.get(ins.id)||fim.getTime());
+  const duracaoVideoSegundos=duracaoVideo(ins);
+  const eventId=`avaliacao-${token}-${ins.id}-${fim.getTime()}`;
   const data = {...rascunho, inscricao_id:ins.id, criado_em:new Date().toISOString()};
   const notas=CRITERIOS.map(c=>NOTA_TEXTO[data[c.k]]??null);
-  const {error:avaliacaoError}=await cliente.from("avaliacoes").upsert({
-    environment:AMBIENTE,inscricao_id_externo:ins.id,parecerista_id_externo:token,is_teste:false,
-    status:"concluida",parecer_geral:data.comentario||"",concluida:true,notas_json:notas,
-    justificativas_json:["","",""],updated_at:data.criado_em
-  },{onConflict:"environment,inscricao_id_externo,parecerista_id_externo"});
-  if(avaliacaoError){btn.disabled=false;av.className="aviso erro";av.textContent="Não foi possível salvar.";throw avaliacaoError;}
-  const {error:deleteError}=await cliente.from("avaliacao_criterios").delete().eq("environment",AMBIENTE).eq("inscricao_id_externo",ins.id).eq("parecerista_id_externo",token);
-  if(deleteError) throw deleteError;
-  const {error:criteriosError}=await cliente.from("avaliacao_criterios").insert(CRITERIOS.map((c,i)=>({
-    environment:AMBIENTE,inscricao_id_externo:ins.id,parecerista_id_externo:token,
-    criterio_ordem:i+1,criterio_nome:c.nome,criterio_grupo:"Maratona IA",nota:notas[i],justificativa:""
-  })));
-  if(criteriosError) throw criteriosError;
+  const evento=eventoAvaliacao(ins,data,{revisao,inicio,fim,duracaoVideoSegundos,eventId});
+  const criterios=CRITERIOS.map((c,i)=>({ordem:i+1,nome:c.nome,grupo:"Maratona IA",nota:notas[i],justificativa:""}));
+  try{
+    const {error:rpcError}=await cliente.rpc("salvar_avaliacao_maratona",{
+      p_environment:AMBIENTE,p_inscricao_id_externo:String(ins.id),p_parecerista_id_externo:token,
+      p_is_teste:!!eu?.isTest,p_parecer_geral:data.comentario||"",p_notas:notas,p_criterios:criterios,
+      p_event_type:evento.event_type,p_event_id:eventId,p_event_payload:evento.payload_json,
+      p_inicio_at:inicio.toISOString(),p_fim_at:fim.toISOString()
+    });
+    if(rpcError){
+      if(!erroRpcIndisponivel(rpcError)) throw rpcError;
+      console.warn("RPC transacional ainda não disponível; usando gravação compatível.",rpcError);
+      await salvarAvaliacaoFallback(ins,data,notas,evento);
+    }
+  }catch(error){
+    btn.disabled=false;av.className="aviso erro";av.textContent="Não foi possível salvar. Tente novamente.";
+    throw error;
+  }
   minhas[ins.id] = data;
   av.className = "aviso ok"; av.textContent = "Avaliação salva às " + fmt(data.criado_em) + ".";
   progresso();
@@ -857,7 +918,7 @@ async function salvar(ins){
 
 function ir(ix){
   const primeiraPendente = fila.findIndex(i => !minhas[i.id]);
-  const limite = primeiraPendente < 0 ? fila.length - 1 : primeiraPendente;
+  const limite = eu?.isTest ? fila.length - 1 : primeiraPendente < 0 ? fila.length - 1 : primeiraPendente;
   if (ix < 0 || ix >= fila.length || ix > limite) return;
   atual = ix; render(); window.scrollTo({top:0});
 }

@@ -5536,6 +5536,7 @@ async function syncPareceristasRosterToSupabase() {
     inst: p.instituicao,
     cota: null,
     cotaManual: false,
+    isTest: !!p.is_teste,
   }));
 
   environmentRemoteReady[activeEnvironment] = true;
@@ -7696,28 +7697,11 @@ function zerarFiltrosResultados() {
 }
 
 async function loadProjectSummaries() {
-  try {
-    if (typeof XLSX === 'undefined') return false;
-    const response = await fetch('./Resumos%20PPA.xlsx', { cache:'no-store' });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const workbook = XLSX.read(await response.arrayBuffer(), { type:'array' });
-    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-    const rows = XLSX.utils.sheet_to_json(sheet, { defval:'' });
-    const nextSummaries = new Map();
-    rows.forEach(row => {
-      const id = row.ID ?? row.Id ?? row.id ?? '';
-      const summary = row.Resummo ?? row.Resumo ?? row.resummo ?? row.resumo ?? '';
-      const normalizedId = String(id).trim();
-      const normalizedSummary = String(summary).trim();
-      if (normalizedId && normalizedSummary) nextSummaries.set(normalizedId, normalizedSummary);
-    });
-    projectSummaries = nextSummaries;
-    return true;
-  } catch (error) {
-    console.warn('Não foi possível carregar os resumos dos projetos:', error);
-    projectSummaries = new Map();
-    return false;
-  }
+  // A própria base persistida já contém a apresentação/defesa usada como resumo.
+  // Mantemos o mapa apenas para compatibilidade com a renderização, sem depender
+  // de um arquivo XLSX paralelo que não faz parte deste projeto.
+  projectSummaries = new Map();
+  return true;
 }
 
 function syncResultsSummaryColumn() {
@@ -7887,6 +7871,7 @@ function renderResultados() {
   document.getElementById('tblResultados').innerHTML = rows.length ? rows.map(({ e, idx }, i) => {
     const { done, total: tot } = avalCount(e.id);
     const avcls = done===0?'b-pend':done===tot?'b-ok':'b-par';
+    const stageLabel = done===0 ? '' : done===tot ? `Final · ${done}/${tot}` : `Parcial · ${done}/${tot}`;
     const pt = mediaNotasRanking(e.id, rankingMode);
     const isVisibleTie = Number.isFinite(pt) && (visibleTieCounts[pt.toFixed(2)] || 0) > 1;
     const ranking = absoluteRankingById.get(String(e.id)) || { rank:'—', tied:false };
@@ -7968,6 +7953,7 @@ function renderResultados() {
           <div class="nota-main">${pt !== null ? fmtResultadoFinal(pt) : '<span style="color:#E0E0E0;font-size:15px">—</span>'}</div>
           ${rankingMode === 'Ranking ajustado por parecerista' && pt !== null ? '<div class="res-faint" style="font-size:8.5px;margin-top:-3px;white-space:nowrap">percentil médio</div>' : ''}
           <div class="nota-actions">
+            ${stageLabel ? `<span class="badge ${avcls}" style="font-size:8.5px;white-space:nowrap">${stageLabel}</span>` : ''}
             ${parecerProgressHTML(e.id, i)}
           </div>
         </div>
@@ -10176,12 +10162,10 @@ function applyStartupBaseOverride() {
   if (!baseFile) return false;
 
   activeEnvironment = PRIMARY_ENVIRONMENT;
-  persistenceMode = 'local';
   environmentBaseFiles[PRIMARY_ENVIRONMENT] = baseFile;
   selectedLocalBaseNames[PRIMARY_ENVIRONMENT] = baseFile;
-  environmentRemoteReady[PRIMARY_ENVIRONMENT] = false;
-  remoteBootResolved[PRIMARY_ENVIRONMENT] = true;
-  remoteBootFailureReason[PRIMARY_ENVIRONMENT] = '';
+  // Links antigos podem continuar apontando a planilha correta, mas nunca
+  // devem desativar a persistência Supabase nem esconder avaliações salvas.
   return true;
 }
 
@@ -14167,6 +14151,12 @@ window.addEventListener('load', () => {
 window.addEventListener('focus', () => {
   if (!reviewerBootMode) refreshStateFromSupabaseInBackground();
 });
+
+// Mantém resultados e dashboards atualizados enquanto a tela administrativa
+// permanece aberta. O limitador interno evita consultas concorrentes.
+setInterval(() => {
+  if (!document.hidden && !reviewerBootMode) refreshStateFromSupabaseInBackground();
+}, 20000);
 </script>
 
 </div><!-- /appScroll -->
