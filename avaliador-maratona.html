@@ -813,7 +813,7 @@ async function registrarProblemaVideo(){
 function validarTempoEVideo(ins){
   if (videosComProblema.has(String(ins.id))) return {titulo:"Vídeo em verificação",mensagem:"Este vídeo está aguardando verificação técnica antes da avaliação."};
   if (!linkSeguro(ins.video_url)) return {titulo:"Vídeo indisponível",mensagem:"Esta candidatura não possui um vídeo válido. Não é possível concluir a avaliação."};
-  if (!videosAbertos.has(ins.id)) return {titulo:"Vídeo ainda não aberto",mensagem:"Abra o vídeo da candidatura antes de concluir a avaliação."};
+  if (!videosAbertos.has(ins.id)) return {titulo:"Assista ao vídeo",mensagem:"É preciso assistir ao vídeo para completar a avaliação."};
   const duracao = duracaoVideo(ins);
   if (!duracao) return {titulo:"Vídeo ainda carregando",mensagem:"Aguarde o carregamento das informações do vídeo antes de concluir a avaliação."};
   const inicio = inicioAvaliacaoPorInscricao.get(ins.id) || Date.now();
@@ -852,7 +852,6 @@ function eventoAvaliacao(ins,data,{revisao,inicio,fim,duracaoVideoSegundos,event
 }
 
 async function salvar(ins){
-  if (!completo()){ $("#modal-incompleta").showModal(); return; }
   const btn = $("#salvar"), av = $("#aviso");
   const bloqueio = validarTempoEVideo(ins);
   if (bloqueio){
@@ -862,6 +861,7 @@ async function salvar(ins){
     $("#modal-bloqueio").showModal();
     return;
   }
+  if (!completo()){ $("#modal-incompleta").showModal(); return; }
   btn.disabled = true; av.className = "aviso"; av.textContent = "Salvando…";
   const revisao=!!minhas[ins.id];
   const fim=new Date();
