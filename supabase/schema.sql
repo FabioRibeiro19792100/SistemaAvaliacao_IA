@@ -263,6 +263,21 @@ create table if not exists backups_log (
   finished_at timestamptz
 );
 
+create table if not exists avaliacoes_historico (
+  id uuid primary key default gen_random_uuid(),
+  avaliacao_id uuid not null,
+  environment text not null,
+  inscricao_id_externo text not null,
+  parecerista_id_externo text not null,
+  operacao text not null check (operacao in ('UPDATE', 'DELETE')),
+  dados_anteriores jsonb not null,
+  dados_novos jsonb,
+  alterado_em timestamptz not null default now()
+);
+
+create index if not exists avaliacoes_historico_lookup_idx
+  on avaliacoes_historico(environment, inscricao_id_externo, parecerista_id_externo, alterado_em desc);
+
 alter table imports enable row level security;
 alter table import_rows_raw enable row level security;
 alter table inscricoes enable row level security;
@@ -278,6 +293,7 @@ alter table distribuicoes enable row level security;
 alter table configuracoes_sistema enable row level security;
 alter table eventos_auditoria enable row level security;
 alter table backups_log enable row level security;
+alter table avaliacoes_historico enable row level security;
 
 drop policy if exists "prototype full access imports" on imports;
 create policy "prototype full access imports" on imports for all using (true) with check (true);
@@ -292,9 +308,19 @@ create policy "prototype full access pareceristas" on pareceristas for all using
 drop policy if exists "prototype full access atribuicoes" on atribuicoes;
 create policy "prototype full access atribuicoes" on atribuicoes for all using (true) with check (true);
 drop policy if exists "prototype full access avaliacoes" on avaliacoes;
-create policy "prototype full access avaliacoes" on avaliacoes for all using (true) with check (true);
+drop policy if exists "evaluation read access" on avaliacoes;
+drop policy if exists "evaluation insert access" on avaliacoes;
+drop policy if exists "evaluation update access" on avaliacoes;
+create policy "evaluation read access" on avaliacoes for select to anon, authenticated using (true);
+create policy "evaluation insert access" on avaliacoes for insert to anon, authenticated with check (true);
+create policy "evaluation update access" on avaliacoes for update to anon, authenticated using (true) with check (true);
 drop policy if exists "prototype full access avaliacao_criterios" on avaliacao_criterios;
-create policy "prototype full access avaliacao_criterios" on avaliacao_criterios for all using (true) with check (true);
+drop policy if exists "evaluation criteria read access" on avaliacao_criterios;
+drop policy if exists "evaluation criteria insert access" on avaliacao_criterios;
+drop policy if exists "evaluation criteria update access" on avaliacao_criterios;
+create policy "evaluation criteria read access" on avaliacao_criterios for select to anon, authenticated using (true);
+create policy "evaluation criteria insert access" on avaliacao_criterios for insert to anon, authenticated with check (true);
+create policy "evaluation criteria update access" on avaliacao_criterios for update to anon, authenticated using (true) with check (true);
 drop policy if exists "prototype full access banca_pareceristas" on banca_pareceristas;
 create policy "prototype full access banca_pareceristas" on banca_pareceristas for all using (true) with check (true);
 drop policy if exists "prototype full access banca_avaliacoes" on banca_avaliacoes;
@@ -309,6 +335,39 @@ drop policy if exists "prototype full access eventos_auditoria" on eventos_audit
 create policy "prototype full access eventos_auditoria" on eventos_auditoria for all using (true) with check (true);
 drop policy if exists "prototype full access backups_log" on backups_log;
 create policy "prototype full access backups_log" on backups_log for all using (true) with check (true);
+drop policy if exists "evaluation history read access" on avaliacoes_historico;
+create policy "evaluation history read access" on avaliacoes_historico for select to anon, authenticated using (true);
+
+create or replace function public.registrar_historico_avaliacao()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if tg_op = 'UPDATE' and to_jsonb(old) = to_jsonb(new) then
+    return new;
+  end if;
+
+  insert into public.avaliacoes_historico (
+    avaliacao_id, environment, inscricao_id_externo, parecerista_id_externo,
+    operacao, dados_anteriores, dados_novos
+  ) values (
+    old.id, old.environment, old.inscricao_id_externo, old.parecerista_id_externo,
+    tg_op, to_jsonb(old), case when tg_op = 'UPDATE' then to_jsonb(new) else null end
+  );
+
+  if tg_op = 'DELETE' then
+    return old;
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists avaliacoes_historico_trigger on public.avaliacoes;
+create trigger avaliacoes_historico_trigger
+after update or delete on public.avaliacoes
+for each row execute function public.registrar_historico_avaliacao();
 
 -- Grava avaliação, critérios e auditoria como uma única operação atômica.
 create or replace function public.salvar_avaliacao_maratona(
@@ -327,6 +386,7 @@ create or replace function public.salvar_avaliacao_maratona(
 )
 returns jsonb
 language plpgsql
+security definer
 set search_path = public
 as $$
 declare

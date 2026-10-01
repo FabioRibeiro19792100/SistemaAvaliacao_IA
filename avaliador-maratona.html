@@ -826,11 +826,6 @@ function validarTempoEVideo(ins){
   return "";
 }
 
-function erroRpcIndisponivel(error){
-  const texto=String(error?.message||error?.details||error||"").toLowerCase();
-  return error?.code==="PGRST202"||texto.includes("salvar_avaliacao_maratona")||texto.includes("schema cache");
-}
-
 function eventoAvaliacao(ins,data,{revisao,inicio,fim,duracaoVideoSegundos,eventId}){
   const nota=mediaPonderada(data);
   const duracaoMs=Math.max(0,fim.getTime()-inicio.getTime());
@@ -856,23 +851,6 @@ function eventoAvaliacao(ins,data,{revisao,inicio,fim,duracaoVideoSegundos,event
   };
 }
 
-async function salvarAvaliacaoFallback(ins,data,notas,evento){
-  const {error:avaliacaoError}=await cliente.from("avaliacoes").upsert({
-    environment:AMBIENTE,inscricao_id_externo:ins.id,parecerista_id_externo:token,is_teste:!!eu?.isTest,
-    status:"concluida",parecer_geral:data.comentario||"",concluida:true,notas_json:notas,
-    justificativas_json:["","",""],updated_at:data.criado_em
-  },{onConflict:"environment,inscricao_id_externo,parecerista_id_externo"});
-  if(avaliacaoError) throw avaliacaoError;
-  const criterios=CRITERIOS.map((c,i)=>({
-    environment:AMBIENTE,inscricao_id_externo:ins.id,parecerista_id_externo:token,
-    criterio_ordem:i+1,criterio_nome:c.nome,criterio_grupo:"Maratona IA",nota:notas[i],justificativa:""
-  }));
-  const {error:criteriosError}=await cliente.from("avaliacao_criterios").upsert(criterios,{onConflict:"environment,inscricao_id_externo,parecerista_id_externo,criterio_ordem"});
-  if(criteriosError) throw criteriosError;
-  const {error:eventoError}=await cliente.from("eventos_auditoria").upsert(evento,{onConflict:"environment,event_type,correlation_id"});
-  if(eventoError) throw eventoError;
-}
-
 async function salvar(ins){
   if (!completo()){ $("#modal-incompleta").showModal(); return; }
   const btn = $("#salvar"), av = $("#aviso");
@@ -896,9 +874,7 @@ async function salvar(ins){
       p_inicio_at:inicio.toISOString(),p_fim_at:fim.toISOString()
     });
     if(rpcError){
-      if(!erroRpcIndisponivel(rpcError)) throw rpcError;
-      console.warn("RPC transacional ainda não disponível; usando gravação compatível.",rpcError);
-      await salvarAvaliacaoFallback(ins,data,notas,evento);
+      throw new Error(`O salvamento transacional falhou: ${rpcError.message||rpcError.details||rpcError}`);
     }
   }catch(error){
     btn.disabled=false;av.className="aviso erro";av.textContent="Não foi possível salvar. Tente novamente.";

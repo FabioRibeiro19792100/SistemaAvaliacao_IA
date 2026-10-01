@@ -5499,7 +5499,6 @@ async function syncPareceristasRosterToSupabase() {
       .eq('environment', activeEnvironment)
       .in('id_externo', removidos);
     if (deactivateError) throw deactivateError;
-    await deleteRemoteEvaluationsByReviewer(client, removidos);
   }
 
   await runSupabaseQuery(
@@ -11172,41 +11171,6 @@ async function flushPendingReviewerEvents(parId, inscricaoId = null, options = {
   }
 }
 
-async function deleteRemoteEvaluationPair(client, parId, fullInscIdValue) {
-  const { error: critDeleteError } = await client
-    .from('avaliacao_criterios')
-    .delete()
-    .eq('environment', activeEnvironment)
-    .eq('parecerista_id_externo', parId)
-    .eq('inscricao_id_externo', fullInscIdValue);
-  if (critDeleteError) throw critDeleteError;
-
-  const { error: evalDeleteError } = await client
-    .from('avaliacoes')
-    .delete()
-    .eq('environment', activeEnvironment)
-    .eq('parecerista_id_externo', parId)
-    .eq('inscricao_id_externo', fullInscIdValue);
-  if (evalDeleteError) throw evalDeleteError;
-}
-
-async function deleteRemoteEvaluationsByReviewer(client, reviewerIds) {
-  if (!reviewerIds.length) return;
-  const { error: critDeleteError } = await client
-    .from('avaliacao_criterios')
-    .delete()
-    .eq('environment', activeEnvironment)
-    .in('parecerista_id_externo', reviewerIds);
-  if (critDeleteError) throw critDeleteError;
-
-  const { error: evalDeleteError } = await client
-    .from('avaliacoes')
-    .delete()
-    .eq('environment', activeEnvironment)
-    .in('parecerista_id_externo', reviewerIds);
-  if (evalDeleteError) throw evalDeleteError;
-}
-
 async function ensureImportRecord(client) {
   if (!rawRows.length) return currentImportIdByEnvironment[activeEnvironment];
   currentImportHash = simpleHash({ rows: rawRows, participantes: rawParticipantes, environment: activeEnvironment });
@@ -11440,7 +11404,6 @@ async function syncStateToSupabase(reason) {
         .eq('environment', activeEnvironment)
         .in('id_externo', removidos);
       if (deactivateError) throw deactivateError;
-      await deleteRemoteEvaluationsByReviewer(client, removidos);
     }
     await runSupabaseQuery(
       client.from('pareceristas').upsert(parsRows, { onConflict:'environment,id_externo' })
@@ -11472,7 +11435,6 @@ async function syncStateToSupabase(reason) {
           .eq('inscricao_id_externo', stale.inscricao_id_externo)
           .eq('parecerista_id_externo', stale.parecerista_id_externo);
         if (staleAtribError) throw staleAtribError;
-        await deleteRemoteEvaluationPair(client, stale.parecerista_id_externo, stale.inscricao_id_externo);
       }
     }
 
@@ -11603,9 +11565,24 @@ async function syncNowToSupabase() {
   notify(`Sincronização manual concluída para ${activeEnvironment}.`);
 }
 
+async function assertRemoteEnvironmentHasNoEvaluations(client) {
+  const { count, error } = await client
+    .from('avaliacoes')
+    .select('id', { count:'exact', head:true })
+    .eq('environment', activeEnvironment);
+  if (error) throw error;
+  if ((count || 0) > 0) {
+    throw new Error(
+      `Operação bloqueada: ${count} avaliação(ões) existente(s) em ${activeEnvironment}. ` +
+      'Avaliações nunca são apagadas automaticamente.'
+    );
+  }
+}
+
 async function clearRemoteEnvironmentData() {
   const client = getSupabaseClient();
   if (!client) throw new Error('Supabase não configurado');
+  await assertRemoteEnvironmentHasNoEvaluations(client);
   await runSupabaseQuery(client.from('avaliacao_criterios').delete().eq('environment', activeEnvironment));
   await runSupabaseQuery(client.from('avaliacoes').delete().eq('environment', activeEnvironment));
   await runSupabaseQuery(client.from('atribuicoes').delete().eq('environment', activeEnvironment));
