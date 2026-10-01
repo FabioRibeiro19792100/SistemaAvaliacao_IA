@@ -546,7 +546,7 @@ function render(){
   if (ins && !inicioAvaliacaoPorInscricao.has(ins.id)) inicioAvaliacaoPorInscricao.set(ins.id, Date.now());
   const feitas = fila.filter(i => minhas[i.id]).length;
   const primeiraPendente = fila.findIndex(i => !minhas[i.id]);
-  const limite = eu?.isTest ? fila.length - 1 : primeiraPendente < 0 ? fila.length - 1 : primeiraPendente;
+  const limite = primeiraPendente < 0 ? fila.length - 1 : primeiraPendente;
   const listaHtml = fila.map((i, ix) => `
     <button data-ix="${ix}" ${ix>limite?'aria-disabled="true"':''} class="${ix===atual?"ativa":""} ${minhas[i.id]?"avaliada":""} ${ix>limite?'bloqueada':''}" aria-label="${esc(i.codigo)} ${esc(i.equipe)}${minhas[i.id]?' — avaliada':ix>limite?' — bloqueada':' — disponível'}">
       <span class="st ${minhas[i.id]?"feita":ix>limite?'trancada':ix===atual?'em-andamento':''}"></span>
@@ -811,19 +811,18 @@ async function registrarProblemaVideo(){
 }
 
 function validarTempoEVideo(ins){
-  if (videosComProblema.has(String(ins.id))) return "Este vídeo está aguardando verificação técnica antes da avaliação.";
-  if (!linkSeguro(ins.video_url)) return "Esta candidatura não possui um vídeo válido. Não é possível concluir a avaliação.";
-  if (!videosAbertos.has(ins.id)) return "Abra o vídeo antes de salvar a avaliação.";
+  if (videosComProblema.has(String(ins.id))) return {titulo:"Vídeo em verificação",mensagem:"Este vídeo está aguardando verificação técnica antes da avaliação."};
+  if (!linkSeguro(ins.video_url)) return {titulo:"Vídeo indisponível",mensagem:"Esta candidatura não possui um vídeo válido. Não é possível concluir a avaliação."};
+  if (!videosAbertos.has(ins.id)) return {titulo:"Vídeo ainda não aberto",mensagem:"Abra o vídeo da candidatura antes de concluir a avaliação."};
   const duracao = duracaoVideo(ins);
-  if (!duracao) return "Aguarde o carregamento da duração do vídeo antes de salvar.";
+  if (!duracao) return {titulo:"Vídeo ainda carregando",mensagem:"Aguarde o carregamento das informações do vídeo antes de concluir a avaliação."};
   const inicio = inicioAvaliacaoPorInscricao.get(ins.id) || Date.now();
   const minimoMs = (duracao + 10) * 1000;
   const decorridoMs = Date.now() - inicio;
   if (decorridoMs < minimoMs) {
-    const restante = Math.ceil((minimoMs - decorridoMs) / 1000);
-    return `A avaliação ainda não atingiu o tempo mínimo. Aguarde mais ${restante} segundo${restante === 1 ? "" : "s"}.`;
+    return {titulo:"Tempo de avaliação insuficiente",mensagem:"Esta avaliação ainda não pode ser concluída. O tempo de avaliação registrado é menor que a duração do vídeo da candidatura. Assista ao vídeo completo e revise os critérios antes de finalizar."};
   }
-  return "";
+  return null;
 }
 
 function eventoAvaliacao(ins,data,{revisao,inicio,fim,duracaoVideoSegundos,eventId}){
@@ -841,6 +840,7 @@ function eventoAvaliacao(ins,data,{revisao,inicio,fim,duracaoVideoSegundos,event
       parecerista_id:token,par_nome:eu?.nome||"",inscricao_id:String(ins.id),lider:ins.equipe||"",
       is_teste:!!eu?.isTest,revisao,inicio:inicio.toISOString(),fim:fim.toISOString(),duracao_ms:duracaoMs,
       duracao_video_segundos:duracaoVideoSegundos,tempo_minimo_ms:(duracaoVideoSegundos+10)*1000,
+      video_aberto:videosAbertos.has(ins.id),
       nota,notas:[data.comunicacao,data.criatividade,data.ia],status:"concluida",
       audit_snapshot:{
         parId:token,parNome:eu?.nome||"",isTest:!!eu?.isTest,inscId:String(ins.id),lider:ins.equipe||"",
@@ -855,7 +855,13 @@ async function salvar(ins){
   if (!completo()){ $("#modal-incompleta").showModal(); return; }
   const btn = $("#salvar"), av = $("#aviso");
   const bloqueio = validarTempoEVideo(ins);
-  if (bloqueio){ av.className = "aviso erro"; av.textContent = bloqueio; return; }
+  if (bloqueio){
+    av.className = "aviso"; av.textContent = "";
+    $("#modal-bloqueio-titulo").textContent = bloqueio.titulo;
+    $("#mensagem-bloqueio").textContent = bloqueio.mensagem;
+    $("#modal-bloqueio").showModal();
+    return;
+  }
   btn.disabled = true; av.className = "aviso"; av.textContent = "Salvando…";
   const revisao=!!minhas[ins.id];
   const fim=new Date();
@@ -894,8 +900,13 @@ async function salvar(ins){
 
 function ir(ix){
   const primeiraPendente = fila.findIndex(i => !minhas[i.id]);
-  const limite = eu?.isTest ? fila.length - 1 : primeiraPendente < 0 ? fila.length - 1 : primeiraPendente;
+  const limite = primeiraPendente < 0 ? fila.length - 1 : primeiraPendente;
   if (ix < 0 || ix >= fila.length || ix > limite) return;
+  const atualInscricao = fila[atual];
+  if (atualInscricao && ix !== atual && !minhas[atualInscricao.id]) {
+    videosAbertos.delete(atualInscricao.id);
+    inicioAvaliacaoPorInscricao.delete(atualInscricao.id);
+  }
   atual = ix; render(); window.scrollTo({top:0});
 }
 
