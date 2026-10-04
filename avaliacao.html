@@ -5648,6 +5648,17 @@ function isTestParecerista(parOrId) {
   return !!getPareceristaById(parOrId)?.isTest;
 }
 
+function isTestEvaluation(parId, inscId) {
+  const evaluation = avaliacoes[parId]?.[inscId];
+  if (typeof evaluation?.isTest === 'boolean') return evaluation.isTest;
+  return isTestParecerista(parId);
+}
+
+function isTestAuditRow(row) {
+  if (typeof row?.isTest === 'boolean') return row.isTest;
+  return isTestParecerista(row?.parId);
+}
+
 function getOfficialPareceristas() {
   return pareceristas.filter(p => !isTestParecerista(p));
 }
@@ -5821,7 +5832,9 @@ function renderPareceristas() {
   ensureRawIESCatalogLoaded();
   const totalInsc = INSCRICOES.length;
   const totalDone = Object.entries(avaliacoes).reduce((acc, [parId, byInsc]) => (
-    acc + (isTestParecerista(parId) ? 0 : Object.keys(byInsc || {}).filter(inscId => isEvaluationConcluded(parId, inscId)).length)
+    acc + Object.keys(byInsc || {}).filter(inscId =>
+      !isTestEvaluation(parId, inscId) && isEvaluationConcluded(parId, inscId)
+    ).length
   ), 0);
   const capacidadesAuto = capacidadeAutomaticaPorParecerista();
   const totalEsperado = totalInsc * NUM_PARECERES_POR_EQUIPE;
@@ -9160,14 +9173,24 @@ function renderAuditoria() {
       };
     }),
     ...pendingVideoRows,
-  ].filter(r => !isTestParecerista(r.parId));
-  const completedCountByPar = getOfficialPareceristas().reduce((acc, par) => {
+  ].filter(r => !isTestAuditRow(r));
+  const completedCountByPar = pareceristas.reduce((acc, par) => {
     acc[par.id] = Object.keys(avaliacoes[par.id] || {})
-      .filter(inscId => INSCRICOES.some(i => i.id === inscId) && isEvaluationConcluded(par.id, inscId))
+      .filter(inscId =>
+        INSCRICOES.some(i => i.id === inscId) &&
+        !isTestEvaluation(par.id, inscId) &&
+        isEvaluationConcluded(par.id, inscId)
+      )
       .length;
     return acc;
   }, {});
-  const officialCompletedTotal = Object.values(completedCountByPar).reduce((sum, count) => sum + count, 0);
+  const officialCompletedTotal = Object.entries(avaliacoes).reduce((sum, [parId, byInsc]) => (
+    sum + Object.keys(byInsc || {}).filter(inscId =>
+      INSCRICOES.some(i => i.id === inscId) &&
+      !isTestEvaluation(parId, inscId) &&
+      isEvaluationConcluded(parId, inscId)
+    ).length
+  ), 0);
   const sel = document.getElementById('audFiltPar');
   if (sel) {
     const cur = sel.value;
@@ -9218,7 +9241,7 @@ function renderAuditoria() {
     r.duracaoMs >= 0 &&
     r.duracaoMs <= 30 * 60 * 1000
   );
-  const officialCompletedDurations = completedDurations.filter(r => !isTestParecerista(r.parId));
+  const officialCompletedDurations = completedDurations.filter(r => !isTestAuditRow(r));
   const averageDuration = durationRows => durationRows.length
     ? Math.round(durationRows.reduce((sum, r) => sum + r.duracaoMs, 0) / durationRows.length)
     : null;

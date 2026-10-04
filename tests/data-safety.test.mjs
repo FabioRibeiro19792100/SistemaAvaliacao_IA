@@ -42,6 +42,22 @@ assert.match(
   'O painel deve manter o total esperado de pareceres.',
 );
 
+assert.match(
+  app,
+  /function isTestEvaluation\(parId, inscId\)[\s\S]*?typeof evaluation\?\.isTest === 'boolean'/,
+  'A estatística deve respeitar a marca de teste gravada em cada avaliação.',
+);
+assert.match(
+  app,
+  /const officialCompletedTotal =[\s\S]*?!isTestEvaluation\(parId, inscId\)/,
+  'O percentual oficial não pode incluir avaliações de teste.',
+);
+assert.match(
+  app,
+  /\.filter\(r => !isTestAuditRow\(r\)\)/,
+  'A Auditoria não deve exibir registros de teste nas métricas oficiais.',
+);
+
 for (const sql of [schema, migration]) {
   assert.doesNotMatch(
     sql,
