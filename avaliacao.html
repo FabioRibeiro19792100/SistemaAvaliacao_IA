@@ -5659,6 +5659,11 @@ function isTestAuditRow(row) {
   return isTestParecerista(row?.parId);
 }
 
+function isOfficialAuditRow(row) {
+  const reviewer = getPareceristaById(row?.parId);
+  return !!reviewer && !isTestParecerista(reviewer) && !isTestAuditRow(row);
+}
+
 function getOfficialPareceristas() {
   return pareceristas.filter(p => !isTestParecerista(p));
 }
@@ -5831,9 +5836,9 @@ function renderPareceristas() {
   syncPareceristaInstitutionOptions();
   ensureRawIESCatalogLoaded();
   const totalInsc = INSCRICOES.length;
-  const totalDone = Object.entries(avaliacoes).reduce((acc, [parId, byInsc]) => (
-    acc + Object.keys(byInsc || {}).filter(inscId =>
-      !isTestEvaluation(parId, inscId) && isEvaluationConcluded(parId, inscId)
+  const totalDone = getOfficialPareceristas().reduce((acc, par) => (
+    acc + Object.keys(avaliacoes[par.id] || {}).filter(inscId =>
+      !isTestEvaluation(par.id, inscId) && isEvaluationConcluded(par.id, inscId)
     ).length
   ), 0);
   const capacidadesAuto = capacidadeAutomaticaPorParecerista();
@@ -9173,7 +9178,7 @@ function renderAuditoria() {
       };
     }),
     ...pendingVideoRows,
-  ].filter(r => !isTestAuditRow(r));
+  ].filter(isOfficialAuditRow);
   const completedCountByPar = pareceristas.reduce((acc, par) => {
     acc[par.id] = Object.keys(avaliacoes[par.id] || {})
       .filter(inscId =>
@@ -9184,13 +9189,8 @@ function renderAuditoria() {
       .length;
     return acc;
   }, {});
-  const officialCompletedTotal = Object.entries(avaliacoes).reduce((sum, [parId, byInsc]) => (
-    sum + Object.keys(byInsc || {}).filter(inscId =>
-      INSCRICOES.some(i => i.id === inscId) &&
-      !isTestEvaluation(parId, inscId) &&
-      isEvaluationConcluded(parId, inscId)
-    ).length
-  ), 0);
+  const officialCompletedTotal = getOfficialPareceristas()
+    .reduce((sum, par) => sum + (completedCountByPar[par.id] || 0), 0);
   const sel = document.getElementById('audFiltPar');
   if (sel) {
     const cur = sel.value;

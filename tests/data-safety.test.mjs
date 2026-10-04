@@ -49,14 +49,15 @@ assert.match(
 );
 assert.match(
   app,
-  /const officialCompletedTotal =[\s\S]*?!isTestEvaluation\(parId, inscId\)/,
-  'O percentual oficial não pode incluir avaliações de teste.',
+  /const officialCompletedTotal = getOfficialPareceristas\(\)[\s\S]*?completedCountByPar\[par\.id\]/,
+  'O percentual oficial deve considerar somente pareceristas oficiais ativos.',
 );
 assert.match(
   app,
-  /\.filter\(r => !isTestAuditRow\(r\)\)/,
-  'A Auditoria não deve exibir registros de teste nas métricas oficiais.',
+  /function isOfficialAuditRow\(row\)[\s\S]*?!!reviewer[\s\S]*?!isTestAuditRow\(row\)/,
+  'A Auditoria deve excluir testes e contas técnicas removidas do cadastro oficial.',
 );
+assert.match(app, /\.filter\(isOfficialAuditRow\)/);
 
 for (const sql of [schema, migration]) {
   assert.doesNotMatch(
