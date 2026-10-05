@@ -70,6 +70,16 @@ assert.match(
   /reviewer\.done \/ reviewer\.assigned/,
   'A barra individual deve usar a carga do próprio parecerista, não o total geral.',
 );
+assert.match(
+  app,
+  /function compareCriteriosDesempate\(a, b\)[\s\S]*?for \(const criterio of \[2, 1, 0\]\)/,
+  'O desempate deve priorizar IA, depois Criatividade e Comunicação.',
+);
+assert.match(
+  app,
+  /sameRankingPosition\(a, b, rankingMode\)/,
+  'A exibição do empate deve usar a mesma regra do ranking.',
+);
 
 for (const sql of [schema, migration]) {
   assert.doesNotMatch(

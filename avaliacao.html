@@ -7550,11 +7550,11 @@ function buildAnyTopMembership(topLimit, variationPercent = 0) {
     const rankById = buildAbsoluteRankingById(mode);
     const ranked = INSCRICOES.map(team => ({ team, score:mediaNotasRanking(team.id, mode) }))
       .filter(row => row.score !== null && Number.isFinite(row.score))
-      .sort((a, b) => (b.score - a.score) || compareInscIdAsc(a.team, b.team));
+      .sort((a, b) => compareResultadoRows(a.team, b.team, mode));
     const cutoffScore = ranked[topLimit - 1]?.score ?? null;
-    const cutoffKey = Number.isFinite(cutoffScore) ? cutoffScore.toFixed(2) : null;
+    const cutoffTeam = ranked[topLimit - 1]?.team || null;
     ranked.forEach((row, index) => {
-        const isTop = index < topLimit || row.score.toFixed(2) === cutoffKey;
+        const isTop = index < topLimit || (cutoffTeam && sameRankingPosition(row.team, cutoffTeam, mode));
         const isMargin = !isTop && variationPercent > 0 && cutoffScore !== null && row.score < cutoffScore && ((cutoffScore - row.score) / cutoffScore) * 100 <= variationPercent;
         if (!isTop && !isMargin) return;
         const id = String(row.team.id);
@@ -7589,56 +7589,60 @@ function compareResultadoRows(a, b, rankingMode) {
   if (notaA === null && notaB !== null) return 1;
   if (notaA !== null && notaB === null) return -1;
   if (notaA === null && notaB === null) return compareInscIdAsc(a, b);
-  if (notaA !== notaB) return notaB - notaA;
+  if (Math.abs(notaA - notaB) > 1e-9) return notaB - notaA;
+  const criterioDesempate = compareCriteriosDesempate(a, b);
+  if (criterioDesempate !== 0) return criterioDesempate;
 
   return compareInscIdAsc(a, b);
 }
-function buildRankingMeta(rows, rankingMode) {
-  const tieCounts = {};
-  rows.forEach(({ e }, index) => {
-    const nota = mediaNotasRanking(e.id, rankingMode);
-    if (nota === null) return;
-    const key = nota.toFixed(2);
-    tieCounts[key] = (tieCounts[key] || 0) + 1;
-  });
 
+function compareCriteriosDesempate(a, b) {
+  // A Maratona é um desafio de IA: IA prevalece, seguida de Criatividade e Comunicação.
+  for (const criterio of [2, 1, 0]) {
+    const notaA = mediaNumericaPorCrit(a.id, criterio);
+    const notaB = mediaNumericaPorCrit(b.id, criterio);
+    if (!Number.isFinite(notaA) || !Number.isFinite(notaB)) continue;
+    if (Math.abs(notaA - notaB) > 1e-9) return notaB - notaA;
+  }
+  return 0;
+}
+
+function sameRankingPosition(a, b, rankingMode) {
+  const notaA = mediaNotasRanking(a.id, rankingMode);
+  const notaB = mediaNotasRanking(b.id, rankingMode);
+  return Number.isFinite(notaA) && Number.isFinite(notaB) &&
+    Math.abs(notaA - notaB) <= 1e-9 &&
+    compareCriteriosDesempate(a, b) === 0;
+}
+function buildRankingMeta(rows, rankingMode) {
   let currentRank = 0;
-  let prevKey = null;
   return rows.map(({ e }, index) => {
-    const nota = mediaNotasRanking(e.id, rankingMode);
-    const key = nota === null ? `null-${index}` : nota.toFixed(2);
-    const sameAsPrev = nota !== null && key === prevKey;
+    const previous = rows[index - 1]?.e;
+    const sameAsPrev = !!previous && sameRankingPosition(e, previous, rankingMode);
     if (!sameAsPrev) currentRank = index + 1;
-    prevKey = nota !== null ? key : null;
     return {
       rank: currentRank,
-      tied: nota !== null && (tieCounts[key] || 0) > 1,
+      tied: rows.some(({ e: other }) => other !== e && sameRankingPosition(e, other, rankingMode)),
     };
   });
 }
 function buildAbsoluteRankingById(rankingMode) {
   const scored = INSCRICOES.map(e => ({ e, score:mediaNotasRanking(e.id, rankingMode) }));
-  const validScores = scored.map(item => item.score).filter(score => score !== null && Number.isFinite(score));
-  const countByScore = {};
-  validScores.forEach(score => {
-    const key = score.toFixed(2);
-    countByScore[key] = (countByScore[key] || 0) + 1;
-  });
-  const uniqueScores = [...new Set(validScores.map(score => score.toFixed(2)))]
-    .map(Number)
-    .sort((a, b) => b - a);
-  const rankByScore = new Map();
-  let consumed = 0;
-  uniqueScores.forEach(score => {
-    const key = score.toFixed(2);
-    rankByScore.set(key, consumed + 1);
-    consumed += countByScore[key] || 0;
-  });
-  return new Map(scored.map(({ e, score }) => {
-    if (score === null || !Number.isFinite(score)) return [String(e.id), { rank:'—', tied:false }];
-    const key = score.toFixed(2);
-    return [String(e.id), { rank:rankByScore.get(key), tied:(countByScore[key] || 0) > 1 }];
-  }));
+  const ranked = scored.filter(({ score }) => Number.isFinite(score))
+    .sort((a, b) => compareResultadoRows(a.e, b.e, rankingMode));
+  const meta = new Map(scored.map(({ e, score }) => [String(e.id), { rank:'—', tied:false }]));
+  let index = 0;
+  while (index < ranked.length) {
+    const group = [ranked[index]];
+    let cursor = index + 1;
+    while (cursor < ranked.length && sameRankingPosition(ranked[index].e, ranked[cursor].e, rankingMode)) {
+      group.push(ranked[cursor]);
+      cursor++;
+    }
+    group.forEach(({ e }) => meta.set(String(e.id), { rank:index + 1, tied:group.length > 1 }));
+    index = cursor;
+  }
+  return meta;
 }
 function generoInscricao(e) {
   return e?._raw?.['Como você se identifica?'] || e?._raw?.['Gênero'] || e?._raw?.['genero'] || '';
@@ -7885,13 +7889,6 @@ function renderResultados() {
       })
     : [];
   const rows = topLimit ? [...officialTopRows, ...nearCutRows] : allRankedRows;
-  const visibleTieCounts = {};
-  rows.forEach(({ e }) => {
-    const score = mediaNotasRanking(e.id, rankingMode);
-    if (score === null || !Number.isFinite(score)) return;
-    const key = score.toFixed(2);
-    visibleTieCounts[key] = (visibleTieCounts[key] || 0) + 1;
-  });
   const total = rows.length;
   const convergenceCount = anyTopCutActive ? rows.filter(({ e }) => {
     const topCodes = new Set((anyTopMembership.get(String(e.id))?.origins || [])
@@ -7931,7 +7928,7 @@ function renderResultados() {
     const avcls = done===0?'b-pend':done===tot?'b-ok':'b-par';
     const stageLabel = done===0 ? '' : done===tot ? `Final · ${done}/${tot}` : `Parcial · ${done}/${tot}`;
     const pt = mediaNotasRanking(e.id, rankingMode);
-    const isVisibleTie = Number.isFinite(pt) && (visibleTieCounts[pt.toFixed(2)] || 0) > 1;
+    const isVisibleTie = Number.isFinite(pt) && rows.some(({ e: other }) => other !== e && sameRankingPosition(e, other, rankingMode));
     const ranking = absoluteRankingById.get(String(e.id)) || { rank:'—', tied:false };
     const baseRanking = baseRankingById.get(String(e.id)) || { rank:'—', tied:false };
     const isOfficialTop = topLimit > 0 && i < officialTopRows.length;
