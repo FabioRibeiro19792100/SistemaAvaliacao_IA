@@ -3808,23 +3808,13 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
     </div>
 
     <div class="dash-page active" id="dash-page-overview">
-      <div class="kpi-row" id="dashKpis" style="grid-template-columns:repeat(5,minmax(0,1fr));margin-bottom:20px"></div>
+      <div class="kpi-row" id="dashKpis" style="grid-template-columns:repeat(3,minmax(0,1fr));margin-bottom:20px"></div>
 
       <div class="card">
         <div class="section-label">Inscrições acumuladas</div>
         <div id="slotEvolucao" style="position:relative;height:210px"><canvas id="cEvolucao"></canvas></div>
       </div>
 
-      <div class="grid-2">
-        <div class="card" style="margin-bottom:0">
-          <div class="section-label">Situação das inscrições</div>
-        <div id="slotModalidade" style="position:relative;min-height:120px"><canvas id="cModalidade"></canvas></div>
-        </div>
-        <div class="card" style="margin-bottom:0">
-          <div class="section-label">Uso de IA no vídeo criativo</div>
-        <div id="slotIA" style="position:relative;min-height:120px"><canvas id="cIA"></canvas></div>
-        </div>
-      </div>
     </div>
 
     <div class="dash-page" id="dash-page-perfil">
@@ -3854,10 +3844,6 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
         </div>
       </div>
 
-      <div class="card" style="margin-top:16px">
-        <div class="section-label">Como ficou sabendo do edital</div>
-        <div id="slotCanais" style="position:relative;min-height:160px"><canvas id="cCanais"></canvas></div>
-      </div>
     </div>
 
     <div class="dash-page" id="dash-page-geo">
@@ -3871,15 +3857,9 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
         <div id="slotRegiao" style="position:relative;min-height:180px"><canvas id="cRegiao"></canvas></div>
       </div>
 
-      <div class="grid-2" style="margin-top:16px">
-        <div class="card" style="margin-bottom:0">
-          <div class="section-label">Top 10 instituições</div>
-          <div id="slotInst" style="position:relative;min-height:220px"><canvas id="cInst"></canvas></div>
-        </div>
-        <div class="card" style="margin-bottom:0">
-          <div class="section-label">Por curso</div>
-          <div id="slotCursos" style="position:relative;min-height:220px"><canvas id="cCursos"></canvas></div>
-        </div>
+      <div class="card" style="margin-top:16px">
+        <div class="section-label">Top 10 instituições</div>
+        <div id="slotInst" style="position:relative;min-height:220px"><canvas id="cInst"></canvas></div>
       </div>
     </div>
 
@@ -13546,7 +13526,6 @@ function renderDashboard() {
     return s.includes('não') || s.includes('nao') ? 'Não' : 'Sim';
   };
 
-  const mods = count(insc,'mod');
   const ufs = {};
   const regionMap = {};
   insc.forEach(i => {
@@ -13569,14 +13548,11 @@ function renderDashboard() {
     inst[key] = (inst[key] || 0) + 1;
   });
   const topInst = topN(inst,10);
-  const cursoMap = {};
   const generoMap = {};
   const racaMap = {};
   const idadeMap = {};
   const deficMap = {};
   const areaMap = {};
-  const canaisMap = {};
-  const iaMap = { Sim:0, Não:0, 'Não informado':0 };
   const studentSet = new Set();
   const mentorSet = new Set();
   let totalStudents = 0;
@@ -13599,14 +13575,9 @@ function renderDashboard() {
       studentSet.add((p.email || p.nome || '').toLowerCase());
     });
     if (i.mentor || i.me) mentorSet.add((i.me || i.mentor || '').toLowerCase());
-    const iaRotulo = yesNo(i.ia);
-    iaMap[iaRotulo] = (iaMap[iaRotulo] || 0) + 1;
   });
 
   profileRows.forEach(raw => {
-    const curso = rawVal(raw, ['Curso de graduação que você cursa', 'Curso', 'curso']);
-    if (curso) cursoMap[curso] = (cursoMap[curso] || 0) + 1;
-
     const genero = rawVal(raw, ['Como você se identifica?', 'Gênero', 'genero']);
     if (genero) generoMap[genero] = (generoMap[genero] || 0) + 1;
 
@@ -13642,12 +13613,9 @@ function renderDashboard() {
     const area = rawVal(raw, ['Domicílio Área', 'O seu domicílio fica localizado em área urbana ou rural?', 'Área do domicílio']);
     if (area) areaMap[area] = (areaMap[area] || 0) + 1;
 
-    const canal = rawVal(raw, ['Como você soube da Maratona IA?', 'Onde você soube sobre a Maratona IA?', 'Canal de origem']);
-    if (canal) canaisMap[canal] = (canaisMap[canal] || 0) + 1;
   });
 
   const participantesTotal = studentSet.size;
-  const usouIA = iaMap['Sim'] || 0;
   const mediaIdade = totalIdades ? somaIdades / totalIdades : null;
   const generoTotal = Object.values(generoMap).reduce((acc, value) => acc + value, 0);
   const mulheresTotal = Object.entries(generoMap).reduce((acc, [label, value]) => {
@@ -13663,19 +13631,12 @@ function renderDashboard() {
       normalized.includes('mulher');
     return acc + (isMulher ? Number(value || 0) : 0);
   }, 0);
-  const topCursoEntry = topN(cursoMap, 1)[0] || null;
-  const topCursoNome = topCursoEntry ? compactCourseLabel(topCursoEntry[0]) : '—';
-  const topCursoTotal = topCursoEntry ? Number(topCursoEntry[1] || 0) : 0;
-  const topCursoPct = insc.length ? Math.round((topCursoTotal / insc.length) * 100) : 0;
   const mulheresPct = generoTotal ? Math.round((mulheresTotal / generoTotal) * 100) : null;
-  const iaPct = insc.length ? Math.round((usouIA / insc.length) * 100) : null;
 
   document.getElementById('dashKpis').innerHTML = `
     <div class="kpi"><div class="kpi-lbl">Inscrições</div><div class="kpi-val">${insc.length.toLocaleString('pt-BR')}</div><div class="kpi-sub">candidaturas enviadas</div></div>
     <div class="kpi"><div class="kpi-lbl">Candidatos</div><div class="kpi-val">${participantesTotal.toLocaleString('pt-BR')}</div><div class="kpi-sub">inscrições individuais</div></div>
     <div class="kpi"><div class="kpi-lbl">% de mulheres</div><div class="kpi-val">${mulheresPct == null ? '—' : `${mulheresPct}%`}</div><div class="kpi-sub">${mulheresTotal.toLocaleString('pt-BR')} participantes</div></div>
-    <div class="kpi"><div class="kpi-lbl">${topCursoNome}</div><div class="kpi-val">${topCursoTotal ? topCursoTotal.toLocaleString('pt-BR') : '—'}</div><div class="kpi-sub">${topCursoEntry ? `${topCursoPct}% das inscrições` : 'curso não identificado'}</div></div>
-    <div class="kpi"><div class="kpi-lbl">Declararam ferramentas de IA</div><div class="kpi-val">${iaPct == null ? '—' : `${iaPct}%`}</div><div class="kpi-sub">${usouIA.toLocaleString('pt-BR')} candidatos</div></div>
   `;
 
   const B1='#1A73E8',B2='#4285F4',B3='#669DF6',B4='#AECBFA';
@@ -13737,8 +13698,6 @@ function renderDashboard() {
 
   if (currentDashPage === 'overview') {
     restoreDashSlot('slotEvolucao', 'cEvolucao', '210px');
-    restoreDashListSlot('slotModalidade');
-    restoreDashListSlot('slotIA');
 
     if (daySeries.length) {
       const pontosLinha = daySeries.map(e => e.semData ? '#5F6368' : '#137333');
@@ -13789,16 +13748,6 @@ function renderDashboard() {
       safeFallback('cEvolucao', 'A base real não traz uma coluna de data de inscrição. Este gráfico depende dessa informação temporal.');
     }
 
-    renderDashboardBarListSlot('slotModalidade', Object.entries(mods), {
-      colors:[B1,B2,B4],
-      fallbackMessage:'Modalidade não encontrada'
-    });
-
-    const iaEntries = Object.entries(iaMap).filter(([,v]) => v > 0);
-    renderDashboardBarListSlot('slotIA', iaEntries, {
-      colors:['#34A853','#8A94A3','#AECBFA'],
-      fallbackMessage:'Uso de IA não encontrado'
-    });
   }
 
   if (currentDashPage === 'perfil') {
@@ -13807,7 +13756,6 @@ function renderDashboard() {
     restoreDashListSlot('slotIdade');
     restoreDashListSlot('slotDefic');
     restoreDashListSlot('slotArea');
-    restoreDashListSlot('slotCanais');
 
     const genEntries = topN(generoMap, 6);
     if (genEntries.length) {
@@ -13859,22 +13807,12 @@ function renderDashboard() {
       renderDashboardBarListSlot('slotArea', [], { fallbackMessage:'Área do domicílio não encontrada' });
     }
 
-    const canaisEntries = topN(canaisMap, 8);
-    if (canaisEntries.length) {
-      renderDashboardBarListSlot('slotCanais', canaisEntries, {
-        colors:[B1,B1,B1,B1,B1,B1,B1,B1],
-        limit:8
-      });
-    } else {
-      renderDashboardBarListSlot('slotCanais', [], { fallbackMessage:'Canal de origem não informado nesta base' });
-    }
   }
 
   if (currentDashPage === 'geo') {
     restoreDashListSlot('slotUF');
     restoreDashListSlot('slotRegiao');
     restoreDashListSlot('slotInst');
-    restoreDashListSlot('slotCursos');
     renderDashboardBarListSlot('slotUF', topUFsComOutros.map(e => [e[0] === 'Outros' ? 'Outros' : compactUfLabel(e[0]), e[1]]), {
       colors:topUFsComOutros.map((entry, i) => entry[0] === 'Outros' ? '#DADCE0' : (i < 4 ? B1 : i < 8 ? B2 : B4)),
       limit:11
@@ -13886,12 +13824,6 @@ function renderDashboard() {
     renderDashboardBarListSlot('slotInst', topInst, {
       colors:topInst.map((_,i)=>i<4?B1:i<7?B2:B4),
       limit:10
-    });
-    const cursoEntries = topN(cursoMap,10);
-    renderDashboardBarListSlot('slotCursos', cursoEntries, {
-      colors:cursoEntries.map((_,i)=>i<4?B1:i<7?B2:B4),
-      limit:10,
-      fallbackMessage:'Curso não informado nesta base'
     });
   }
 
