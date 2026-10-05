@@ -8377,7 +8377,9 @@ function openEvaluationProgressDrawer() {
   if (title) title.textContent = 'Evolução das avaliações';
   if (body) {
     const rows = reviewers.map(reviewer => {
-      const share = expected ? Math.min(100, (reviewer.done / expected) * 100) : 0;
+      const share = reviewer.assigned
+        ? Math.min(100, (reviewer.done / reviewer.assigned) * 100)
+        : 0;
       const allocation = reviewer.assigned
         ? `${reviewer.done} de ${reviewer.assigned} atribuições concluídas`
         : `${reviewer.done} avaliação${reviewer.done === 1 ? '' : 'ões'} concluída${reviewer.done === 1 ? '' : 's'}`;

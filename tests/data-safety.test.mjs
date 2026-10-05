@@ -65,6 +65,11 @@ assert.match(
   'O progresso exibido nos Resultados deve excluir avaliações de teste.',
 );
 assert.match(app, /openEvaluationProgressDrawer\(\)/);
+assert.match(
+  app,
+  /reviewer\.done \/ reviewer\.assigned/,
+  'A barra individual deve usar a carga do próprio parecerista, não o total geral.',
+);
 
 for (const sql of [schema, migration]) {
   assert.doesNotMatch(
