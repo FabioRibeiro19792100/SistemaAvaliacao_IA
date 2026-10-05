@@ -59,6 +59,13 @@ assert.match(
 );
 assert.match(app, /\.filter\(isOfficialAuditRow\)/);
 
+assert.match(
+  app,
+  /function resultadosProgressData\(\)[\s\S]*?getOfficialPareceristas\(\)[\s\S]*?!isTestEvaluation\(par\.id, inscId\)/,
+  'O progresso exibido nos Resultados deve excluir avaliações de teste.',
+);
+assert.match(app, /openEvaluationProgressDrawer\(\)/);
+
 for (const sql of [schema, migration]) {
   assert.doesNotMatch(
     sql,

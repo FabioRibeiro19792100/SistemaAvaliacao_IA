@@ -823,6 +823,9 @@ tr:hover td.sticky{background:#FAFAFA}
 #view-resultados .results-utility-row{display:flex;align-items:center;gap:18px;min-height:30px;margin-top:8px;padding-top:7px;border-top:1px solid #E5E7EB}
 #view-resultados .results-export-btn{margin-left:auto;background:transparent;border-color:transparent;color:#68727D;box-shadow:none}
 #view-resultados .results-export-btn:hover{background:#F1F3F4;border-color:#E1E4E8}
+#view-resultados .results-evaluation-progress-btn{margin-left:auto;border-color:#AECBFA;background:#F8FBFF;color:#1558B0;font-weight:600}
+#view-resultados .results-evaluation-progress-btn:hover{background:#E8F0FE;border-color:#8AB4F8}
+#view-resultados .results-evaluation-progress-btn + .results-export-btn{margin-left:0}
 #view-resultados #resSummaryBar{margin:0 !important}
 #view-resultados #resSummaryBar .res-subtle{color:var(--accent) !important;font-weight:500}
 #view-resultados #resSummaryBar .res-summary-coral{color:#C45F4A}
@@ -1190,6 +1193,20 @@ tr:hover td.sticky{background:#FAFAFA}
 .results-drawer-backdrop.open{opacity:1;pointer-events:auto}
 .results-drawer-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:22px 22px 16px;border-bottom:1px solid #E5E7EB}
 .results-drawer-body{padding:18px 22px 28px;overflow:auto}
+.evaluation-progress-overview{padding:15px 16px;border:1px solid #D7E5FA;border-radius:10px;background:#F8FBFF}
+.evaluation-progress-total{display:flex;align-items:baseline;justify-content:space-between;gap:12px;color:#202124}
+.evaluation-progress-total strong{font-size:24px;letter-spacing:-.03em}
+.evaluation-progress-total span{font-size:12px;color:#5F6368}
+.evaluation-progress-track{height:7px;margin-top:12px;overflow:hidden;border-radius:999px;background:#E5E7EB}
+.evaluation-progress-track span{display:block;height:100%;border-radius:inherit;background:#1A73E8}
+.evaluation-progress-list{display:grid;gap:10px;margin-top:18px}
+.evaluation-progress-row{padding:13px 0;border-bottom:1px solid #E9EDF2}
+.evaluation-progress-row:first-child{padding-top:0}
+.evaluation-progress-row:last-child{border-bottom:0}
+.evaluation-progress-row-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;color:#202124;font-size:13px;font-weight:600}
+.evaluation-progress-row-head strong{font-variant-numeric:tabular-nums;font-size:13px}
+.evaluation-progress-row-meta{margin-top:4px;color:#7A828E;font-size:11px;line-height:1.4}
+.evaluation-progress-row .evaluation-progress-track{height:5px;margin-top:8px}
 .results-stats-intro{margin:0 0 4px;padding:0 0 14px;border-bottom:1px solid #EEF0F2;color:#4B5563;font-size:12.5px;line-height:1.55}
 .results-stats-intro strong{color:#202124;font-weight:700;font-variant-numeric:tabular-nums}
 .results-stat-section{padding:14px 0;border-bottom:1px solid #EEF0F2}
@@ -4159,6 +4176,7 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
       <div class="results-utility-row">
         <button class="results-reset-btn" type="button" onclick="zerarFiltrosResultados()"><i class="ti ti-x"></i>Zerar filtros</button>
         <div id="resSummaryBar" style="display:none;font-size:12px;color:#7A828E"></div>
+        <button class="btn btn-secondary btn-sm results-evaluation-progress-btn" id="resultsEvaluationProgress" type="button" onclick="openEvaluationProgressDrawer()" title="Ver evolução por parecerista"><i class="ti ti-chart-bar"></i><span>Progresso das avaliações</span></button>
         <button class="btn btn-secondary btn-sm results-export-btn"><i class="ti ti-download"></i>Exportar Excel</button>
       </div>
     </div>
@@ -6609,6 +6627,31 @@ function avalCount(inscId) {
   const done = pareceristasDaInscricao.filter(p => isEvaluationConcluded(p.id, inscId)).length;
   return { done, total };
 }
+
+function resultadosProgressData() {
+  const reviewers = getOfficialPareceristas().map(par => {
+    const done = Object.keys(avaliacoes[par.id] || {}).filter(inscId =>
+      INSCRICOES.some(i => i.id === inscId) &&
+      !isTestEvaluation(par.id, inscId) &&
+      isEvaluationConcluded(par.id, inscId)
+    ).length;
+    const assigned = getAtribAtivas(par.id).length;
+    return { ...par, done, assigned };
+  }).sort((a, b) => b.done - a.done || String(a.nome || '').localeCompare(String(b.nome || ''), 'pt-BR'));
+  const done = reviewers.reduce((total, reviewer) => total + reviewer.done, 0);
+  const expected = INSCRICOES.length * NUM_PARECERES_POR_EQUIPE;
+  const percent = expected ? Math.round((done / expected) * 100) : 0;
+  return { reviewers, done, expected, percent };
+}
+
+function renderResultsEvaluationProgress() {
+  const button = document.getElementById('resultsEvaluationProgress');
+  if (!button) return;
+  const { done, expected, percent } = resultadosProgressData();
+  button.innerHTML = `<i class="ti ti-chart-bar"></i><span>${done.toLocaleString('pt-BR')} / ${expected.toLocaleString('pt-BR')} · ${percent}% concluídas</span>`;
+  button.title = `${done} avaliações oficiais concluídas de ${expected} esperadas. Ver evolução por parecerista.`;
+  button.setAttribute('aria-label', button.title);
+}
 function parecerProgressHTML(inscId, rowIdx) {
   const pareceristasDaInscricao = getPareceristasDaInscricao(inscId);
   const totalAtribuidoOficial = pareceristasDaInscricao.length;
@@ -7812,6 +7855,7 @@ function renderResultados() {
   syncResultadosFilters();
   syncResultsSummaryColumn();
   syncResultsIdColumn();
+  renderResultsEvaluationProgress();
   const rankingMode = document.getElementById('resFiltroRanking')?.value || 'Ranking normal';
   const topLimit = Number(document.getElementById('resFiltroTop')?.value || 0);
   const anyTopField = document.getElementById('resFiltroAnyTop');
@@ -7900,7 +7944,7 @@ function renderResultados() {
   window.currentResultsTopRows = officialTopRows;
   const statsBtn = document.getElementById('resultsStatsBtn');
   if (statsBtn) statsBtn.style.display = topLimit ? 'inline-flex' : 'none';
-  if (!topLimit) closeResultsStatsDrawer();
+  if (!topLimit && resultsDrawerMode === 'stats') closeResultsStatsDrawer();
 
   document.getElementById('tblResultados').innerHTML = rows.length ? rows.map(({ e, idx }, i) => {
     const { done, total: tot } = avalCount(e.id);
@@ -8340,11 +8384,44 @@ function openResultsStatsDrawer(source = 'resultados') {
   const title = document.getElementById('resultsStatsDrawerTitle');
   if (title) title.textContent = source === 'banca' ? 'Estatísticas da banca' : 'Estatísticas rápidas';
   renderResultsStatsDrawer(source);
+  resultsDrawerMode = 'stats';
   document.getElementById('resultsStatsDrawer')?.classList.add('open');
   document.getElementById('resultsDrawerBackdrop')?.classList.add('open');
   document.getElementById('resultsStatsDrawer')?.setAttribute('aria-hidden', 'false');
 }
+
+function openEvaluationProgressDrawer() {
+  const { reviewers, done, expected, percent } = resultadosProgressData();
+  const title = document.getElementById('resultsStatsDrawerTitle');
+  const body = document.getElementById('resultsStatsDrawerBody');
+  if (title) title.textContent = 'Evolução das avaliações';
+  if (body) {
+    const rows = reviewers.map(reviewer => {
+      const share = expected ? Math.min(100, (reviewer.done / expected) * 100) : 0;
+      const allocation = reviewer.assigned
+        ? `${reviewer.done} de ${reviewer.assigned} atribuições concluídas`
+        : `${reviewer.done} avaliação${reviewer.done === 1 ? '' : 'ões'} concluída${reviewer.done === 1 ? '' : 's'}`;
+      return `<div class="evaluation-progress-row">
+        <div class="evaluation-progress-row-head"><span>${escapeHtmlAttr(reviewer.nome || 'Parecerista')}</span><strong>${reviewer.done}</strong></div>
+        <div class="evaluation-progress-row-meta">${allocation}</div>
+        <div class="evaluation-progress-track" aria-hidden="true"><span style="width:${share}%"></span></div>
+      </div>`;
+    }).join('');
+    body.innerHTML = `<div class="evaluation-progress-overview">
+      <div class="evaluation-progress-total"><strong>${done.toLocaleString('pt-BR')} / ${expected.toLocaleString('pt-BR')}</strong><span>${percent}% concluídas</span></div>
+      <div class="evaluation-progress-track" aria-hidden="true"><span style="width:${percent}%"></span></div>
+      <div class="res-faint" style="margin-top:10px;font-size:11px">Apenas avaliações oficiais ativas; testes e contas técnicas não entram nesta conta.</div>
+    </div>
+    <div class="evaluation-progress-list">${rows || '<div class="res-faint">Nenhum parecerista oficial ativo.</div>'}</div>`;
+  }
+  resultsDrawerMode = 'progress';
+  document.getElementById('resultsStatsDrawer')?.classList.add('open');
+  document.getElementById('resultsDrawerBackdrop')?.classList.add('open');
+  document.getElementById('resultsStatsDrawer')?.setAttribute('aria-hidden', 'false');
+}
+
 function closeResultsStatsDrawer() {
+  resultsDrawerMode = null;
   document.getElementById('resultsStatsDrawer')?.classList.remove('open');
   document.getElementById('resultsDrawerBackdrop')?.classList.remove('open');
   document.getElementById('resultsStatsDrawer')?.setAttribute('aria-hidden', 'true');
@@ -10032,6 +10109,7 @@ let rawIESAutoloadPromise = null;
 let rawIESAutoloadSource = '';
 let baseConfirmada = false;
 let dashCharts = {};
+let resultsDrawerMode = null;
 const ARQUIVO_PADRAO = '';
 const ARQUIVO_PADRAO_HOMOLOG = '';
 const STARTUP_BASE_OVERRIDES = {
@@ -13788,7 +13866,7 @@ function renderDashboard() {
         limit:8
       });
     } else {
-      renderDashboardBarListSlot('slotCanais', [], { fallbackMessage:'Canal de origem não encontrado' });
+      renderDashboardBarListSlot('slotCanais', [], { fallbackMessage:'Canal de origem não informado nesta base' });
     }
   }
 
@@ -13809,9 +13887,11 @@ function renderDashboard() {
       colors:topInst.map((_,i)=>i<4?B1:i<7?B2:B4),
       limit:10
     });
-    renderDashboardBarListSlot('slotCursos', topN(cursoMap,10), {
-      colors:topN(cursoMap,10).map((_,i)=>i<4?B1:i<7?B2:B4),
-      limit:10
+    const cursoEntries = topN(cursoMap,10);
+    renderDashboardBarListSlot('slotCursos', cursoEntries, {
+      colors:cursoEntries.map((_,i)=>i<4?B1:i<7?B2:B4),
+      limit:10,
+      fallbackMessage:'Curso não informado nesta base'
     });
   }
 
