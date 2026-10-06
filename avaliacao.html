@@ -334,7 +334,8 @@ body {
 
 /* ── NAV ── */
 .topnav{background:var(--nav-bg);border-bottom:1px solid var(--nav-border);padding:0 42px;display:flex;align-items:center;justify-content:space-between;height:52px;position:relative;z-index:100;transition:background .2s;flex-shrink:0}
-.topnav-brand{display:flex;align-items:center;gap:10px;font-size:15.4px;font-weight:var(--font-weight-bold);color:var(--text-primary)}
+.topnav-brand{display:flex;align-items:center;gap:10px;font-size:17px;font-weight:var(--font-weight-bold);letter-spacing:-.012em;color:var(--text-primary);white-space:nowrap}
+.topnav-brand-divider{color:var(--text-tertiary);font-weight:400}
 .topnav-right{font-size:13.2px;color:var(--text-tertiary);display:flex;align-items:center;gap:8px}
 .topnav-right span{color:var(--text-primary);font-weight:var(--font-weight-bold)}
 .topnav-ficha-controls{display:none;align-items:center;gap:12px;margin-right:8px}
@@ -573,9 +574,9 @@ body {
   box-shadow:none;
 }
 
-.subnav{background:var(--nav-bg);border-bottom:0;padding:0 28px;display:flex;align-items:center;height:52px;overflow:hidden;transition:background .2s;flex-shrink:0}
+.subnav{background:var(--nav-bg);border-bottom:0;padding:0 28px;display:flex;align-items:center;height:58px;overflow:hidden;transition:background .2s;flex-shrink:0}
 .subnav::-webkit-scrollbar{display:none}
-.snav{position:relative;display:flex;align-items:center;gap:7px;padding:0 14px;height:52px;font-size:calc(var(--font-size-base) * 1.10);font-weight:var(--font-weight-medium);color:var(--text-secondary);cursor:pointer;white-space:nowrap;user-select:none}
+.snav{position:relative;display:flex;align-items:center;gap:8px;padding:0 16px;height:58px;font-size:16px;font-weight:var(--font-weight-medium);color:var(--text-secondary);cursor:pointer;white-space:nowrap;user-select:none}
 .snav svg{width:14px;height:14px;flex-shrink:0}
 .snav:hover{color:var(--text-primary)}
 .snav.active{color:var(--nav-active-text)}
@@ -674,9 +675,9 @@ tr:hover td.sticky{background:#FAFAFA}
 .results-summary-toggle-sign{font-size:15px;font-weight:500;line-height:.9}
 .results-summary-toggle-label{font-size:7.5px;font-weight:600;letter-spacing:.04em;line-height:1.1;white-space:nowrap;text-transform:uppercase}
 #view-resultados .results-table{width:100%!important;min-width:1200px!important;table-layout:fixed}
-#view-resultados:not(.results-summary-open) .results-table .s0{left:0;width:4.5%;min-width:0;max-width:none}
-#view-resultados:not(.results-summary-open) .results-table .s5{left:4.5%;width:25.5%;min-width:0;max-width:none}
-#view-resultados.results-id-open:not(.results-summary-open) .results-table .s5{left:9%;width:21%}
+#view-resultados:not(.results-summary-open) .results-table .s0{left:0;width:5.5%;min-width:0;max-width:none}
+#view-resultados:not(.results-summary-open) .results-table .s5{left:5.5%;width:24.5%;min-width:0;max-width:none}
+#view-resultados.results-id-open:not(.results-summary-open) .results-table .s5{left:10%;width:20%}
 #view-resultados col.res-id-number-col,
 #view-resultados th.res-id-number-col,
 #view-resultados td.res-id-number-col{display:none}
@@ -687,7 +688,7 @@ tr:hover td.sticky{background:#FAFAFA}
 #view-resultados .results-table th.res-id-number-col,
 #view-resultados .results-table td.res-id-number-col{text-align:center}
 #view-resultados .results-table td.res-id-number-col{color:#1A73E8;font-size:11px;font-weight:700;font-variant-numeric:tabular-nums}
-#view-resultados.results-id-open:not(.results-summary-open) .results-table .res-id-number-col{position:sticky;left:4.5%;z-index:5;background:#fff}
+#view-resultados.results-id-open:not(.results-summary-open) .results-table .res-id-number-col{position:sticky;left:5.5%;z-index:5;background:#fff}
 #view-resultados:not(.results-summary-open) .results-table .res-university-col{width:15%;min-width:0;max-width:none}
 #view-resultados .results-table .res-university-col{text-transform:uppercase;font-size:10.5px;font-weight:400;font-style:normal;line-height:1.35;color:#202124}
 #view-resultados .results-table .res-university-col .res-muted{color:#202124!important}
@@ -3932,7 +3933,16 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
 #view-resultados #resFiltroRaca{width:142px!important;min-width:142px!important;max-width:142px!important;flex-basis:142px!important}
 #view-resultados #resFiltroDuracao{width:156px!important;min-width:156px!important;max-width:156px!important;flex-basis:156px!important}
 #view-resultados #resFiltroRanking{width:168px!important;min-width:168px!important;max-width:168px!important;flex-basis:168px!important}
-#view-resultados #resFiltroTop{width:132px!important;min-width:132px!important;max-width:132px!important;flex-basis:132px!important}
+#view-resultados #resFiltroTop{width:160px!important;min-width:160px!important;max-width:160px!important;flex-basis:160px!important}
+#view-resultados .results-evaluation-progress-btn{
+  height:44px!important;
+  min-height:44px!important;
+  padding:0 15px!important;
+  box-sizing:border-box;
+}
+#view-resultados .results-filter-group .finput{
+  padding-right:44px!important;
+}
 #view-resultados .results-top-stats-btn{flex:0 0 auto;white-space:nowrap}
 
 /* Divisão visual entre os controles e a grade, sem criar conteúdo novo. */
@@ -3970,7 +3980,9 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
 
 /* Andamento das avaliações sem bolinhas e sem etiquetas pesadas. */
 #view-resultados .nota-actions{gap:3px;margin-top:4px}
+#view-resultados .nota-progress-summary{order:1}
 #view-resultados .nota-progress-text{
+  order:2;
   color:#7C8798;
   font-size:10px;
   font-weight:600;
@@ -3978,7 +3990,387 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
   white-space:nowrap;
 }
 #view-resultados .nota-progress-btn{min-height:14px;padding:0}
+#view-resultados .nota-progress-btn{order:3}
 #view-resultados .nota-progress-arrow{font-size:13px;color:#9CA6B5}
+#view-resultados .nota-progress-dot.is-done,
+#view-resultados .nota-progress-dot.is-started{background:#1A73E8}
+#view-resultados .nota-progress-dot.is-pending{background:#D7E6FB}
+
+/* Tipografia literal da grade Learning Sectors.
+   IBM Plex Sans é a fonte de interface e IBM Plex Mono, dos números. */
+#view-resultados,
+#view-resultados button,
+#view-resultados select,
+#view-resultados input,
+#view-resultados .results-table,
+#view-resultados .results-table th,
+#view-resultados .results-table td{
+  font-family:"IBM Plex Sans",system-ui,sans-serif!important;
+}
+#view-resultados{font-size:14px;line-height:1.5}
+#view-resultados .results-filter-group .finput,
+#view-resultados .results-evaluation-progress-btn,
+#view-resultados .results-export-btn,
+#view-resultados .results-reset-btn{font-family:"IBM Plex Sans",system-ui,sans-serif!important;font-size:14px}
+#view-resultados .results-header-label,
+#view-resultados .results-table thead th{
+  font-family:"IBM Plex Sans",system-ui,sans-serif!important;
+  font-size:13px!important;
+  font-weight:600!important;
+  line-height:18px!important;
+}
+#view-resultados .results-table thead th .peso{
+  font-family:"IBM Plex Sans",system-ui,sans-serif!important;
+  font-size:10px!important;
+  font-weight:500!important;
+  line-height:14px!important;
+}
+#view-resultados .res-leader-name,
+#view-resultados .team-member-line{
+  font-family:"IBM Plex Sans",system-ui,sans-serif!important;
+  font-size:14px!important;
+  font-weight:500!important;
+}
+#view-resultados .res-university-col,
+#view-resultados .res-university-col .res-muted,
+#view-resultados .res-university-location,
+#view-resultados .results-table .res-gender-col,
+#view-resultados .results-table .res-race-col{
+  font-family:"IBM Plex Sans",system-ui,sans-serif!important;
+  font-size:12px!important;
+  font-weight:400!important;
+}
+#view-resultados .res-primary-rank,
+#view-resultados .nota-main,
+#view-resultados .res-criterion-score,
+#view-resultados .res-criterion-calc,
+#view-resultados .results-table td.s0{
+  font-family:"IBM Plex Mono",ui-monospace,monospace!important;
+  font-variant-numeric:tabular-nums;
+}
+#view-resultados .res-primary-rank,
+#view-resultados .results-table td.s0{font-size:14px!important;font-weight:500!important}
+#view-resultados .nota-main{font-size:14px!important;font-weight:600!important}
+#view-resultados .res-criterion-score{font-size:14px!important;font-weight:500!important}
+#view-resultados .res-criterion-calc{font-family:"IBM Plex Sans",system-ui,sans-serif!important;font-size:9px!important;font-weight:500!important}
+
+/* Uma escala única para os dados da tabela; exceções são apenas metadados. */
+#view-resultados .results-table tbody > tr:not(.sub-row) > td,
+#view-resultados .res-leader-name,
+#view-resultados .team-member-line,
+#view-resultados .res-university-col,
+#view-resultados .res-university-col .res-muted,
+#view-resultados .results-table .res-gender-col,
+#view-resultados .results-table .res-race-col{
+  font-size:14px!important;
+}
+#view-resultados .res-university-location{font-size:11px!important}
+
+/* Mesma família Learning Sectors nas telas administrativas. */
+:is(#view-dashboard,#view-auditoria,#view-pareceristas),
+:is(#view-dashboard,#view-auditoria,#view-pareceristas) button,
+:is(#view-dashboard,#view-auditoria,#view-pareceristas) input,
+:is(#view-dashboard,#view-auditoria,#view-pareceristas) select,
+:is(#view-dashboard,#view-auditoria,#view-pareceristas) textarea,
+:is(#view-dashboard,#view-auditoria,#view-pareceristas) table,
+:is(#view-dashboard,#view-auditoria,#view-pareceristas) th,
+:is(#view-dashboard,#view-auditoria,#view-pareceristas) td{
+  font-family:"IBM Plex Sans",system-ui,sans-serif!important;
+}
+:is(#view-dashboard,#view-auditoria,#view-pareceristas){font-size:14px;line-height:1.5}
+:is(#view-dashboard,#view-auditoria,#view-pareceristas) .page-title{
+  font-family:"IBM Plex Sans",system-ui,sans-serif!important;
+  font-size:24px!important;
+  font-weight:600!important;
+  letter-spacing:-.02em!important;
+}
+:is(#view-dashboard,#view-auditoria,#view-pareceristas) .page-sub{font-size:14px!important}
+:is(#view-dashboard,#view-auditoria,#view-pareceristas) .section-label,
+:is(#view-dashboard,#view-auditoria,#view-pareceristas) .kpi-lbl{
+  font-family:"IBM Plex Sans",system-ui,sans-serif!important;
+  font-size:10px!important;
+  font-weight:600!important;
+  letter-spacing:.06em!important;
+}
+:is(#view-dashboard,#view-auditoria,#view-pareceristas) th{
+  font-size:13px!important;
+  font-weight:600!important;
+  line-height:18px!important;
+}
+:is(#view-dashboard,#view-auditoria,#view-pareceristas) .kpi-val,
+:is(#view-dashboard,#view-auditoria,#view-pareceristas) .audit-table td:nth-child(4),
+:is(#view-dashboard,#view-auditoria,#view-pareceristas) .audit-table td:nth-child(5),
+:is(#view-dashboard,#view-auditoria,#view-pareceristas) .audit-table td:nth-child(6){
+  font-family:"IBM Plex Mono",ui-monospace,monospace!important;
+  font-variant-numeric:tabular-nums;
+}
+
+/* Controles de ranking alternativo ficam fora da interface operacional. */
+#view-resultados #resFiltroRanking{display:none!important}
+
+/* Cabeçalho e corpo usam a mesma régua: títulos no alto, com o mesmo
+   respiro lateral das células. Os pesos continuam menores por serem detalhe. */
+#view-resultados .results-table thead th,
+#view-resultados .results-table thead tr:first-child th,
+#view-resultados .results-table thead th[rowspan="2"]{
+  height:102px!important;
+  padding:15px 16px!important;
+  vertical-align:top!important;
+  text-align:left;
+}
+#view-resultados .results-table thead th.crit{
+  position:relative;
+  padding-bottom:34px!important;
+  text-align:center;
+}
+#view-resultados .results-table thead th.crit .results-header-label{
+  text-align:center;
+}
+#view-resultados .results-table thead th.s7{text-align:center}
+#view-resultados .results-table thead th .peso{
+  left:16px!important;
+  right:16px!important;
+  bottom:15px!important;
+}
+
+/* Linguagem estrutural da grade Learning Sectors, mantida na paleta da
+   Maratona. Este bloco só trata tipografia, ritmo e superfícies da tabela. */
+#view-resultados .results-top-shell{
+  padding:12px!important;
+  border-color:#E2E6EE!important;
+  border-radius:7px!important;
+  background:#F8FAFD!important;
+}
+#view-resultados .results-filter-group .finput{
+  height:38px!important;
+  padding-top:7px!important;
+  padding-bottom:7px!important;
+  border-color:#DDE2EA!important;
+  border-radius:4px!important;
+  background:#FFF!important;
+  color:#303746!important;
+  font-size:13px!important;
+}
+#view-resultados .results-evaluation-progress-btn{
+  height:38px!important;
+  min-height:38px!important;
+  border-radius:4px!important;
+  background:#FFF!important;
+}
+#view-resultados .results-utility-row{
+  margin-top:10px!important;
+  padding-top:9px!important;
+  border-top-color:#E1E5EC!important;
+}
+#view-resultados .results-criteria-floating-label{
+  height:21px!important;
+  background:#FFF!important;
+}
+#view-resultados .results-criteria-floating-label span{
+  color:#777E8B!important;
+  font-size:9px!important;
+  font-weight:600!important;
+  letter-spacing:.09em!important;
+}
+#view-resultados .results-table{
+  border-color:#E1E5EC!important;
+  border-collapse:collapse!important;
+}
+#view-resultados .results-table th,
+#view-resultados .results-table td{
+  border-color:#E1E5EC!important;
+}
+#view-resultados .results-table thead th,
+#view-resultados .results-table thead tr:first-child th,
+#view-resultados .results-table thead th[rowspan="2"]{
+  height:78px!important;
+  padding:10px 12px!important;
+  background:#E9EDF2!important;
+  color:#4F5867!important;
+  border-bottom:2px solid #C7CDD6!important;
+  box-shadow:0 2px 4px rgba(24,39,75,.045)!important;
+}
+#view-resultados .results-table thead th.crit{
+  padding:10px 12px 29px!important;
+  background:#E9EDF2!important;
+}
+#view-resultados .results-table thead th .peso{
+  left:12px!important;
+  right:12px!important;
+  bottom:9px!important;
+  color:#858D9B!important;
+}
+#view-resultados .results-table th.s5{background:#EAF1FC!important;color:#225A9D!important}
+#view-resultados .results-table th.s7{background:#DDE9F8!important;color:#2D486B!important}
+#view-resultados .results-table tbody > tr:not(.sub-row) > td{
+  height:96px!important;
+  padding:12px!important;
+  background:#FFF!important;
+  color:#343C49!important;
+  font-size:14px!important;
+  line-height:1.42!important;
+}
+#view-resultados .results-table tbody > tr:not(.sub-row):nth-child(even) > td{background:#FCFDFE!important}
+#view-resultados .results-table tbody > tr:not(.sub-row) > td.s5{background:#F5F8FE!important}
+#view-resultados .results-table tbody > tr:not(.sub-row):nth-child(even) > td.s5{background:#F8FAFE!important}
+#view-resultados .results-table tbody > tr:not(.sub-row) > td.crit-td{background:#F7F8FA!important}
+#view-resultados .results-table tbody > tr:not(.sub-row):nth-child(even) > td.crit-td{background:#FAFBFC!important}
+#view-resultados .results-table tbody > tr:not(.sub-row) > td.s7{background:#EAF2FD!important}
+#view-resultados .results-table tbody > tr:not(.sub-row):nth-child(even) > td.s7{background:#EFF5FE!important}
+#view-resultados .results-table tbody > tr:not(.sub-row):hover > td{background:#F4F7FB!important}
+#view-resultados .results-table tbody > tr:not(.sub-row):hover > td.s5{background:#EAF1FC!important}
+#view-resultados .results-table tbody > tr:not(.sub-row):hover > td.crit-td{background:#EEF1F5!important}
+#view-resultados .results-table tbody > tr:not(.sub-row):hover > td.s7{background:#DDEBFC!important}
+#view-resultados .res-leader-name,
+#view-resultados .team-member-line{font-weight:500!important;color:#2C3441!important}
+#view-resultados .res-university-col,
+#view-resultados .res-university-col .res-muted,
+#view-resultados .results-table .res-gender-col,
+#view-resultados .results-table .res-race-col{color:#596474!important;font-weight:400!important}
+#view-resultados .res-university-location{color:#858E9D!important}
+#view-resultados .nota-main,
+#view-resultados .res-criterion-score{font-family:"IBM Plex Mono",ui-monospace,monospace!important;font-weight:500!important}
+#view-resultados .res-criterion-calc{font-family:"IBM Plex Sans",system-ui,sans-serif!important;font-weight:500!important}
+
+/* Hierarquia de colunas equivalente à grade LS: cada bloco tem uma função
+   visual própria, em vez de uma única faixa uniforme de cabeçalho. */
+#view-resultados .results-table thead th.s0,
+#view-resultados .results-table tbody > tr:not(.sub-row) > td.s0{
+  background:#FFF!important;
+}
+#view-resultados .results-table thead th.res-gender-col,
+#view-resultados .results-table thead th.res-race-col,
+#view-resultados .results-table thead th.res-university-col{
+  background:#F5F7FA!important;
+  color:#586271!important;
+}
+#view-resultados .results-table tbody > tr:not(.sub-row) > td.res-gender-col,
+#view-resultados .results-table tbody > tr:not(.sub-row) > td.res-race-col,
+#view-resultados .results-table tbody > tr:not(.sub-row) > td.res-university-col{
+  background:#FBFCFD!important;
+}
+#view-resultados .results-table thead th.crit{
+  background:#E9EBEF!important;
+  color:#4F4C5D!important;
+}
+#view-resultados .results-table tbody > tr:not(.sub-row) > td.crit-td{
+  background:#F7F8FA!important;
+}
+#view-resultados .results-table thead th.s7{
+  background:#D9E7F8!important;
+  color:#2F496B!important;
+  border-left-color:#BCCDE3!important;
+}
+#view-resultados .results-table tbody > tr:not(.sub-row) > td.s7{
+  background:#EAF2FD!important;
+  border-left-color:#C8D8EC!important;
+}
+
+/* Dashboard com a mesma linguagem visual da consolidação: área ampla,
+   cartões técnicos leves e navegação de seção inspirada nas abas do LS. */
+#view-dashboard{padding:28px 32px 72px!important;background:#FFF}
+#view-dashboard > div{max-width:1600px!important;margin:0 auto!important}
+#view-dashboard .page-title{font-size:24px!important;line-height:1.2!important;letter-spacing:-.02em!important}
+#view-dashboard .page-sub{margin-top:4px!important;color:#6B7280!important}
+#view-dashboard .dash-tabs{
+  gap:4px!important;
+  margin:0 0 20px!important;
+  padding:0 0 0 0!important;
+  border-bottom:1px solid #DDE3EA;
+}
+#view-dashboard .dash-tab{
+  min-width:122px;
+  margin:0 0 -1px!important;
+  padding:10px 16px 9px!important;
+  border:1px solid #D8DEE8!important;
+  border-bottom-color:#D8DEE8!important;
+  border-radius:7px 7px 0 0!important;
+  background:#F2F5F9!important;
+  color:#687386!important;
+  font-size:13px!important;
+  font-weight:600!important;
+  text-align:left;
+}
+#view-dashboard .dash-tab:hover{background:#F8FAFD!important;color:#1A73E8!important}
+#view-dashboard .dash-tab.active{
+  padding-top:12px!important;
+  background:#FFF!important;
+  border-bottom-color:#FFF!important;
+  color:#1A73E8!important;
+  box-shadow:0 -3px 10px rgba(26,115,232,.06)!important;
+}
+#view-dashboard .kpi-row{gap:12px!important;margin-bottom:20px!important}
+#view-dashboard .kpi,
+#view-dashboard .card{
+  border-color:#E1E5EC!important;
+  border-radius:7px!important;
+  background:#FFF!important;
+  box-shadow:none!important;
+}
+#view-dashboard .kpi{padding:16px 18px!important}
+#view-dashboard .kpi:first-child{background:#F6F9FE!important;border-color:#CFDCF0!important}
+#view-dashboard .kpi-val{font-family:"IBM Plex Mono",ui-monospace,monospace!important;font-weight:500!important;font-variant-numeric:tabular-nums}
+#view-dashboard .kpi-lbl,
+#view-dashboard .section-label{color:#687386!important;font-weight:600!important}
+#view-dashboard .card{padding:16px 18px!important}
+#view-dashboard .dash-list-controls{
+  gap:8px!important;
+  margin-bottom:10px!important;
+  padding:9px 12px!important;
+  border:1px solid #E1E6EE;
+  border-radius:7px;
+  background:#F8FAFD;
+}
+#view-dashboard .dash-list-controls select{
+  height:38px!important;
+  padding:7px 38px 7px 11px!important;
+  border-color:#DDE2EA!important;
+  border-radius:4px!important;
+  background:#FFF!important;
+  font-size:13px!important;
+}
+#view-dashboard .dash-list-controls .btn{height:38px;border-radius:4px!important;font-size:13px!important}
+#view-dashboard .tbl-card{border-color:#E1E5EC!important;border-radius:0!important}
+#view-dashboard .tbl-card thead th{
+  padding:10px 12px!important;
+  border-bottom:2px solid #C7CDD6!important;
+  background:#E9EDF2!important;
+  color:#4F5867!important;
+  font-size:13px!important;
+  font-weight:600!important;
+  text-transform:none!important;
+  letter-spacing:0!important;
+}
+#view-dashboard .tbl-card tbody td{
+  padding:11px 12px!important;
+  border-bottom-color:#E1E5EC!important;
+  color:#343C49!important;
+  font-size:14px!important;
+}
+#view-dashboard .tbl-card tbody tr:nth-child(even) td{background:#FCFDFE}
+#view-dashboard .tbl-card tbody tr:hover td{background:#F4F7FB}
+#view-dashboard .dash-tabs{display:none!important}
+#view-dashboard .dash-page{display:block!important;margin:26px 0 0!important}
+#view-dashboard .dash-page:first-of-type{margin-top:0!important}
+#view-dashboard .dash-flow-section-heading{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:0 0 12px;
+  color:#586271;
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+#view-dashboard .dash-flow-section-heading::before,
+#view-dashboard .dash-flow-section-heading::after{
+  content:"";
+  height:1px;
+  background:#D9E0EA;
+}
+#view-dashboard .dash-flow-section-heading::before{width:28px}
+#view-dashboard .dash-flow-section-heading::after{flex:1}
 
 /* A régua aparece com mais presença, mas sem criar outro cartão. */
 #view-resultados > div > .tbl-card::before{
@@ -3995,7 +4387,7 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
 <div class="topnav" id="mainTopnav" style="display:none">
   <div class="topnav-brand">
     <span class="icon icon-md"><i class="ti ti-layout-dashboard"></i></span>
-    Sistema de Avaliação de Candidaturas
+    <span>Maratona IA 2026</span><span class="topnav-brand-divider" aria-hidden="true">|</span><span>Sistema de Avaliação de Candidaturas</span>
   </div>
     <div class="topnav-right">
     <div class="topnav-ficha-controls" id="topnavFichaControls">
@@ -4003,7 +4395,7 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
         <i class="ti ti-arrow-left"></i>Voltar
       </button>
     </div>
-    <span>Desafio: <span>Maratona IA 2026</span></span>
+    <span class="topnav-credit">Desenvolvido por Mastertech</span>
   </div>
 </div>
 
@@ -4070,6 +4462,7 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
     </div>
 
     <div class="dash-page" id="dash-page-perfil">
+      <div class="dash-flow-section-heading">Perfil das pessoas candidatas</div>
       <div class="grid-2">
         <div class="card" style="margin-bottom:0">
           <div class="section-label">Gênero dos participantes</div>
@@ -4099,6 +4492,7 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
     </div>
 
     <div class="dash-page" id="dash-page-geo">
+      <div class="dash-flow-section-heading">Distribuição geográfica</div>
       <div class="card">
         <div class="section-label">Inscrições por UF — top 10 + outros</div>
         <div id="slotUF" style="position:relative;min-height:220px"><canvas id="cUF"></canvas></div>
@@ -4116,6 +4510,7 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
     </div>
 
     <div class="dash-page" id="dash-page-lista">
+      <div class="dash-flow-section-heading">Lista de inscrições</div>
       <div class="dash-list-controls">
         <select class="finput" id="dashFiltroUf" onchange="renderDashboardList()">
           <option value="">Estados</option>
@@ -4409,9 +4804,9 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
       <div class="results-criteria-floating-label"><span>Critérios da Maratona IA</span></div>
       <table class="results-table" style="width:max-content;min-width:100%">
         <colgroup>
-          <col style="width:4.5%">
+          <col style="width:5.5%">
           <col class="res-id-number-col" style="width:4.5%">
-          <col style="width:25.5%">
+          <col style="width:24.5%">
           <col class="res-project-summary-col" style="width:320px">
           <col style="width:7.5%">
           <col style="width:7.5%">
@@ -6011,15 +6406,12 @@ function evaluationUpdatedAtMs(parId, inscId) {
 }
 
 function requiresReevaluation(parId, inscId) {
-  const resolved = getResolvedVideoIssue(parId, inscId);
-  if (!resolved) return false;
-  const av = avaliacoes[parId]?.[inscId];
-  if (!av?.done) return true;
-  const resolvedAtMs = new Date(resolved.resolvedAt || resolved.reportedAt || 0).getTime();
-  const updatedAtMs = evaluationUpdatedAtMs(parId, inscId);
-  if (!Number.isFinite(resolvedAtMs)) return false;
-  if (!Number.isFinite(updatedAtMs)) return true;
-  return updatedAtMs < resolvedAtMs;
+  // Um registro de "vídeo verificado" é evidência de auditoria, não uma
+  // revogação da avaliação já salva. Uma avaliação concluída continua válida
+  // até que seja reaberta explicitamente pelo parecerista ou pela gestão.
+  // Isso evita reduzir artificialmente os totais quando um chamado é
+  // resolvido depois da conclusão da ficha.
+  return false;
 }
 
 function isEvaluationConcluded(parId, inscId) {
@@ -6879,8 +7271,12 @@ function parecerProgressHTML(inscId, rowIdx) {
   const totalAtribuidoOficial = pareceristasDaInscricao.length;
   const totalEsperado = Math.max(NUM_PARECERES_POR_EQUIPE, totalAtribuidoOficial);
   const done = pareceristasDaInscricao.filter(p => isEvaluationConcluded(p.id, inscId)).length;
+  const states = Array.from({ length: totalEsperado }, (_, idx) => idx < done ? 'done' : 'pending');
   const title = `${done} de ${totalEsperado} pareceres concluídos`;
-  return `<button class="nota-progress-btn" id="exp-res-${rowIdx}" onclick="toggleRes(${rowIdx})" title="Ver notas dos pareceristas" aria-label="Ver notas dos pareceristas: ${title}" aria-expanded="false">
+  return `<div class="nota-progress-summary" title="${title}">
+    <span class="nota-progress-dots">${states.map(state => `<span class="nota-progress-dot is-${state}"></span>`).join('')}</span>
+  </div>
+  <button class="nota-progress-btn" id="exp-res-${rowIdx}" onclick="toggleRes(${rowIdx})" title="Ver notas dos pareceristas" aria-label="Ver notas dos pareceristas: ${title}" aria-expanded="false">
     <i class="ti ti-chevron-down nota-progress-arrow" aria-hidden="true"></i>
   </button>`;
 }
@@ -8165,9 +8561,7 @@ function renderResultados() {
   if (!topLimit && resultsDrawerMode === 'stats') closeResultsStatsDrawer();
 
   document.getElementById('tblResultados').innerHTML = rows.length ? rows.map(({ e, idx }, i) => {
-    const { done, total: tot } = avalCount(e.id);
-    const avcls = done===0?'b-pend':done===tot?'b-ok':'b-par';
-    const stageLabel = done===0 ? 'Aguardando pareceres' : `${done} de ${tot} pareceres`;
+    const { done } = avalCount(e.id);
     const pt = mediaNotasRanking(e.id, rankingMode);
     const isVisibleTie = Number.isFinite(pt) && rows.some(({ e: other }) => other !== e && sameRankingPosition(e, other, rankingMode));
     const ranking = absoluteRankingById.get(String(e.id)) || { rank:'—', tied:false };
@@ -8249,7 +8643,6 @@ function renderResultados() {
           <div class="nota-main">${pt !== null ? fmtResultadoFinal(pt) : '<span style="color:#E0E0E0;font-size:15px">—</span>'}</div>
           ${rankingMode === 'Ranking ajustado por parecerista' && pt !== null ? '<div class="res-faint" style="font-size:8.5px;margin-top:-3px;white-space:nowrap">percentil médio</div>' : ''}
           <div class="nota-actions">
-            <span class="nota-progress-text">${stageLabel}</span>
             ${parecerProgressHTML(e.id, i)}
           </div>
         </div>
@@ -13280,8 +13673,15 @@ function safeFallback(id, msg) {
 }
 
 let currentDashPage = 'overview';
+const DASHBOARD_UNIFIED_VIEW = true;
 
 function showDashPage(page) {
+  if (DASHBOARD_UNIFIED_VIEW) {
+    currentDashPage = 'overview';
+    document.querySelectorAll('.dash-page').forEach(el => el.classList.add('active'));
+    renderDashboard();
+    return;
+  }
   currentDashPage = page;
   document.querySelectorAll('.dash-tab').forEach(el => el.classList.toggle('active', el.dataset.page === page));
   document.querySelectorAll('.dash-page').forEach(el => el.classList.toggle('active', el.id === `dash-page-${page}`));
@@ -13659,7 +14059,7 @@ function renderDashboard() {
       !document.getElementById('view-dashboard').classList.contains('active')) return;
 
   document.querySelectorAll('.dash-tab').forEach(el => el.classList.toggle('active', el.dataset.page === currentDashPage));
-  document.querySelectorAll('.dash-page').forEach(el => el.classList.toggle('active', el.id === `dash-page-${currentDashPage}`));
+  document.querySelectorAll('.dash-page').forEach(el => el.classList.toggle('active', DASHBOARD_UNIFIED_VIEW || el.id === `dash-page-${currentDashPage}`));
 
   const insc = INSCRICOES;
   if (!insc.length) {
@@ -13881,6 +14281,7 @@ function renderDashboard() {
 
   const B1='#1A73E8',B2='#4285F4',B3='#669DF6',B4='#AECBFA';
   Chart.defaults.font.size = 11;
+  Chart.defaults.font.family = 'IBM Plex Sans, system-ui, sans-serif';
   Chart.defaults.color = '#9AA0A6';
   Chart.defaults.borderColor = '#F1F3F4';
 
@@ -13936,7 +14337,7 @@ function renderDashboard() {
   syncDashboardListFilters();
   renderDashboardList();
 
-  if (currentDashPage === 'overview') {
+  if (DASHBOARD_UNIFIED_VIEW || currentDashPage === 'overview') {
     restoreDashSlot('slotEvolucao', 'cEvolucao', '210px');
 
     if (daySeries.length) {
@@ -13990,7 +14391,7 @@ function renderDashboard() {
 
   }
 
-  if (currentDashPage === 'perfil') {
+  if (DASHBOARD_UNIFIED_VIEW || currentDashPage === 'perfil') {
     restoreDashListSlot('slotGenero');
     restoreDashListSlot('slotRaca');
     restoreDashListSlot('slotIdade');
@@ -14049,7 +14450,7 @@ function renderDashboard() {
 
   }
 
-  if (currentDashPage === 'geo') {
+  if (DASHBOARD_UNIFIED_VIEW || currentDashPage === 'geo') {
     restoreDashListSlot('slotUF');
     restoreDashListSlot('slotRegiao');
     restoreDashListSlot('slotInst');
@@ -14067,7 +14468,7 @@ function renderDashboard() {
     });
   }
 
-  if (currentDashPage === 'lista') {
+  if (DASHBOARD_UNIFIED_VIEW || currentDashPage === 'lista') {
     renderDashboardList();
   }
 }
