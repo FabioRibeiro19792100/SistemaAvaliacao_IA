@@ -3735,6 +3735,258 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
 .mini-legend-label{font-size:11.5px;color:#202124;line-height:1.35;min-width:0;flex:1;overflow-wrap:anywhere}
 .mini-legend-value{font-size:10.5px;color:#5F6368;font-weight:700;white-space:nowrap;flex-shrink:0}
 
+/* ── RESULTADOS · composição visual inspirada na grade LS ───────────────
+   Escopo deliberadamente restrito a esta view: não altera dados, filtros,
+   cálculos, ranking, eventos ou o conteúdo renderizado pela tabela. */
+#view-resultados{
+  --results-ink:#202124;
+  --results-muted:#6B7280;
+  --results-line:#DCE1EA;
+  --results-soft:#F5F7FC;
+  --results-candidate:#F4F7FE;
+  --results-accent:#1A73E8;
+  padding:28px 32px 72px;
+  background:#fff;
+}
+#view-resultados > div{max-width:1600px!important;margin:0 auto!important;padding:0!important}
+#view-resultados .results-top-sticky{
+  padding:0 0 18px;
+  margin:0;
+  background:#fff;
+}
+#view-resultados .results-top-sticky::before,
+#view-resultados .results-top-sticky::after{background:#fff}
+#view-resultados .results-top-shell{
+  padding:15px 16px 12px;
+  border:1px solid #E1E6F0;
+  border-radius:10px;
+  background:#fff;
+}
+#view-resultados .results-filter-row{gap:14px;align-items:center}
+#view-resultados .results-filter-group{gap:10px}
+#view-resultados .results-filter-group .finput{
+  height:44px;
+  min-width:154px!important;
+  padding:8px 34px 8px 13px;
+  border-color:#D9DFEB;
+  border-radius:5px;
+  background:#fff;
+  color:#303746;
+  font-size:13px;
+  font-weight:500;
+}
+#view-resultados .results-filter-group .finput:focus{border-color:#79A9F2;box-shadow:0 0 0 3px rgba(26,115,232,.11)}
+#view-resultados .results-top-stats-btn{
+  min-height:44px;
+  padding:0 15px;
+  border-color:#1A73E8;
+  border-radius:5px;
+  background:#fff;
+  color:#145DB8;
+  box-shadow:none;
+}
+#view-resultados .results-special-filter-row{margin-top:10px;padding:0}
+#view-resultados .results-special-filter strong{font-size:12px;color:#4B5563}
+#view-resultados .results-special-filter small{font-size:10.5px}
+#view-resultados .results-utility-row{
+  min-height:25px;
+  margin-top:12px;
+  padding-top:11px;
+  border-top-color:#E2E6EF;
+}
+#view-resultados .results-reset-btn{font-size:12px}
+#view-resultados .results-evaluation-progress-btn,
+#view-resultados .results-export-btn{border-radius:5px}
+
+#view-resultados > div > .tbl-card{
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+}
+#view-resultados .tbl-scroll{background:transparent}
+#view-resultados .results-criteria-floating-label{
+  height:30px;
+  justify-content:flex-end;
+  background:#fff;
+}
+#view-resultados .results-criteria-floating-label span{
+  position:relative;
+  width:30%;
+  color:#7B8494;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.08em;
+}
+#view-resultados .results-criteria-floating-label span::before,
+#view-resultados .results-criteria-floating-label span::after{
+  content:"";
+  position:absolute;
+  top:50%;
+  width:24%;
+  border-top:1px solid #C9D0DC;
+}
+#view-resultados .results-criteria-floating-label span::before{left:4%}
+#view-resultados .results-criteria-floating-label span::after{right:4%}
+
+#view-resultados .results-table{
+  border:1px solid var(--results-line);
+  border-radius:0;
+  background:#fff;
+}
+#view-resultados .results-table th,
+#view-resultados .results-table td{border-color:var(--results-line)!important}
+#view-resultados .results-table thead th,
+#view-resultados .results-table thead tr:first-child th,
+#view-resultados .results-table thead tr:nth-child(2) th,
+#view-resultados .results-table thead th[rowspan="2"]{
+  background:#F7F8FB;
+  color:#505866;
+}
+#view-resultados .results-table thead th,
+#view-resultados .results-table thead tr:first-child th{
+  height:78px;
+  padding-top:15px;
+  vertical-align:top;
+}
+#view-resultados .results-table thead th.crit{padding-bottom:25px}
+#view-resultados .results-table thead th.crit .peso{bottom:9px}
+#view-resultados .results-header-label,
+#view-resultados .results-table thead th,
+#view-resultados .results-table thead th .peso{
+  color:#505866!important;
+  font-size:11px!important;
+  font-weight:700!important;
+  font-style:normal!important;
+  letter-spacing:.015em!important;
+  line-height:1.3!important;
+  text-transform:none!important;
+}
+#view-resultados .results-table thead th .peso{
+  color:#7E8796!important;
+  font-size:10px!important;
+  font-weight:600!important;
+}
+#view-resultados .results-table th.s5,
+#view-resultados .results-table td.s5{background:var(--results-candidate)!important}
+#view-resultados .results-table th.s7,
+#view-resultados .results-table td.s7{background:#EEF4FD!important}
+#view-resultados .results-table tbody > tr:not(.sub-row) > td{
+  height:102px;
+  padding:15px 16px;
+  background:#fff;
+  color:var(--results-ink);
+  font-size:13px;
+  line-height:1.42;
+}
+#view-resultados .results-table tbody > tr:not(.sub-row):nth-child(even) > td{background:#FCFDFE}
+#view-resultados .results-table tbody > tr:not(.sub-row):nth-child(even) > td.s5{background:#F7F9FE!important}
+#view-resultados .results-table tbody > tr:not(.sub-row):nth-child(even) > td.s7{background:#F3F7FE!important}
+#view-resultados .results-table tbody > tr:not(.sub-row) > td.s5{background:var(--results-candidate)!important}
+#view-resultados .results-table tbody > tr:not(.sub-row) > td.s7{background:#EEF4FD!important}
+#view-resultados .res-leader-name,
+#view-resultados .team-member-line{
+  color:#222938!important;
+  font-size:14px!important;
+  font-weight:700!important;
+  line-height:1.35!important;
+  text-transform:none;
+}
+#view-resultados .res-university-col,
+#view-resultados .res-university-col .res-muted,
+#view-resultados .res-university-location,
+#view-resultados .results-table .res-gender-col,
+#view-resultados .results-table .res-race-col{
+  color:#4F5968!important;
+  font-size:12px!important;
+  font-weight:500!important;
+  line-height:1.5!important;
+  text-transform:none!important;
+}
+#view-resultados .res-university-location{margin-top:2px;color:#80899A!important;font-size:11px!important}
+#view-resultados .results-table .rank-cell,
+#view-resultados .results-table td.s0{font-size:14px;font-weight:700;color:#343C4A}
+#view-resultados .nota-cell{gap:6px;padding-top:0}
+#view-resultados .nota-main{color:#202938!important;font-size:20px!important;font-weight:700!important;line-height:1.1!important}
+#view-resultados .res-criterion-score{color:#252D3B!important;font-size:16px!important;font-weight:600!important;line-height:1.2!important}
+#view-resultados .res-criterion-calc{color:#7A8494!important;font-size:10px!important;font-weight:600!important;line-height:1.35!important}
+#view-resultados .res-video-duration-value{color:#7A8494;font-size:10px}
+#view-resultados .results-table tbody > tr:not(.sub-row) > td.crit-td{text-align:center}
+#view-resultados .results-table .badge{border-radius:999px}
+#view-resultados .results-table .nota-actions > .badge{font-size:10px}
+
+@media (max-width:1100px){
+  #view-resultados{padding-left:20px;padding-right:20px}
+  #view-resultados .results-top-shell{padding:12px}
+  #view-resultados .results-filter-group .finput{min-width:140px!important}
+}
+
+/* A barra principal de filtros deve permanecer uma única linha: em telas
+   estreitas, rola lateralmente em vez de ocultar ou deslocar controles. */
+#view-resultados .results-filter-row{flex-wrap:nowrap;min-width:0}
+#view-resultados .results-filter-group{flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;padding-bottom:1px;scrollbar-width:thin}
+#view-resultados .results-filter-group .finput{width:144px!important;min-width:144px!important;max-width:144px!important;flex:0 0 144px!important}
+#view-resultados #resFiltroStatus{width:156px!important;min-width:156px!important;max-width:156px!important;flex-basis:156px!important}
+#view-resultados #resFiltroUf{width:142px!important;min-width:142px!important;max-width:142px!important;flex-basis:142px!important}
+#view-resultados #resFiltroGenero{width:150px!important;min-width:150px!important;max-width:150px!important;flex-basis:150px!important}
+#view-resultados #resFiltroRaca{width:142px!important;min-width:142px!important;max-width:142px!important;flex-basis:142px!important}
+#view-resultados #resFiltroDuracao{width:156px!important;min-width:156px!important;max-width:156px!important;flex-basis:156px!important}
+#view-resultados #resFiltroRanking{width:168px!important;min-width:168px!important;max-width:168px!important;flex-basis:168px!important}
+#view-resultados #resFiltroTop{width:132px!important;min-width:132px!important;max-width:132px!important;flex-basis:132px!important}
+#view-resultados .results-top-stats-btn{flex:0 0 auto;white-space:nowrap}
+
+/* Divisão visual entre os controles e a grade, sem criar conteúdo novo. */
+#view-resultados > div > .tbl-card{position:relative;margin-top:30px}
+#view-resultados > div > .tbl-card::before{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  top:-16px;
+  height:1px;
+  background:linear-gradient(90deg,transparent 0,#DCE3EE 4%,#DCE3EE 96%,transparent 100%);
+  pointer-events:none;
+}
+
+/* Ranking com a mesma linguagem tipográfica dos nomes; empate é secundário. */
+#view-resultados .res-rank-line{grid-template-columns:24px max-content max-content;gap:6px;min-height:20px}
+#view-resultados .res-primary-rank{
+  width:24px;
+  color:#222938!important;
+  font-family:var(--font-body)!important;
+  font-size:14px!important;
+  font-weight:700!important;
+  line-height:1.35!important;
+  letter-spacing:0!important;
+}
+#view-resultados .res-tie-label{
+  display:block;
+  margin-top:3px;
+  color:#8B95A5;
+  font-size:10px;
+  font-weight:600;
+  line-height:1.25;
+}
+
+/* Andamento das avaliações sem bolinhas e sem etiquetas pesadas. */
+#view-resultados .nota-actions{gap:3px;margin-top:4px}
+#view-resultados .nota-progress-text{
+  color:#7C8798;
+  font-size:10px;
+  font-weight:600;
+  line-height:1.25;
+  white-space:nowrap;
+}
+#view-resultados .nota-progress-btn{min-height:14px;padding:0}
+#view-resultados .nota-progress-arrow{font-size:13px;color:#9CA6B5}
+
+/* A régua aparece com mais presença, mas sem criar outro cartão. */
+#view-resultados > div > .tbl-card::before{
+  top:-18px;
+  height:1px;
+  background:linear-gradient(90deg,transparent 0,#C9D3E2 4%,#C9D3E2 96%,transparent 100%);
+}
+
 </style>
 </head>
 <body>
@@ -3866,7 +4118,7 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
     <div class="dash-page" id="dash-page-lista">
       <div class="dash-list-controls">
         <select class="finput" id="dashFiltroUf" onchange="renderDashboardList()">
-          <option value="">Todos os estados</option>
+          <option value="">Estados</option>
         </select>
         <select class="finput" id="dashFiltroModalidade" onchange="renderDashboardList()" style="display:none">
           <option value="">Todas as modalidades</option>
@@ -4098,7 +4350,7 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
       <div class="results-filter-row">
         <div class="results-filter-group">
         <select class="finput" id="resFiltroStatus" onchange="renderResultados()" style="width:165px;min-width:165px">
-          <option>Todas as avaliações</option>
+          <option value="Todas as avaliações">Avaliações</option>
           <option>Finalizadas</option>
           <option>Parciais</option>
           <option>Não iniciadas</option>
@@ -4109,11 +4361,11 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
           <option>Em dupla</option>
           <option>Em trio</option>
         </select>
-        <select class="finput" id="resFiltroUf" onchange="renderResultados()" style="width:150px;min-width:150px"><option value="">Todos os estados</option></select>
-        <select class="finput" id="resFiltroGenero" onchange="renderResultados()" style="width:175px;min-width:175px"><option>Todos os gêneros</option><option>Feminino</option><option>Masculino</option><option>Prefiro não indicar</option></select>
-        <select class="finput" id="resFiltroRaca" onchange="renderResultados()" style="width:135px;min-width:135px"><option value="">Todas as raças</option></select>
+        <select class="finput" id="resFiltroUf" onchange="renderResultados()" style="width:150px;min-width:150px"><option value="">Estados</option></select>
+        <select class="finput" id="resFiltroGenero" onchange="renderResultados()" style="width:175px;min-width:175px"><option value="Todos os gêneros">Gêneros</option><option>Feminino</option><option>Masculino</option><option>Prefiro não indicar</option></select>
+        <select class="finput" id="resFiltroRaca" onchange="renderResultados()" style="width:135px;min-width:135px"><option value="">Raças</option></select>
         <select class="finput" id="resFiltroDuracao" onchange="renderResultados()" style="width:185px;min-width:185px">
-          <option value="0">Todos os vídeos</option>
+          <option value="0">Vídeos</option>
           <option value="10">Menos de 10 segundos</option>
           <option value="30">Menos de 30 segundos</option>
         </select>
@@ -4129,6 +4381,7 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
           <option value="20">Top 20</option>
         </select>
         </div>
+        <button class="btn btn-secondary btn-sm results-evaluation-progress-btn" id="resultsEvaluationProgress" type="button" onclick="openEvaluationProgressDrawer()" title="Ver evolução por parecerista"><i class="ti ti-chart-bar"></i><span>Progresso das avaliações</span></button>
         <button class="btn btn-secondary btn-sm results-top-stats-btn" id="resultsStatsBtn" type="button" onclick="openResultsStatsDrawer()" style="display:none"><i class="ti ti-chart-dots"></i>Estatísticas do Top</button>
       </div>
       <div class="results-special-filter-row">
@@ -4141,22 +4394,11 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
             <option value="4">Até 4% do corte</option>
             <option value="5">Até 5% do corte</option>
           </select>
-          <label class="results-special-filter" for="resFiltroAnyTop">
-            <input id="resFiltroAnyTop" type="checkbox" onchange="toggleAnyTopResults(this)">
-            <span class="results-special-check"><i class="ti ti-check"></i></span>
-            <span><strong>Comparar rankings</strong><small>Compara o ranking oficial, o ranking sem a pior nota e o ranking relativo.</small></span>
-          </label>
-          <button class="results-ranking-help" type="button" onclick="openRelativeRankingHelp()"><i class="ti ti-info-circle"></i><span>Entenda o ranking relativo</span></button>
-          <label class="results-summary-flag" for="resultsSummaryFlag">
-            <input id="resultsSummaryFlag" type="checkbox" autocomplete="off" onchange="toggleResultsSummaryColumn(this.checked)">
-            <span>Exibir resumos</span>
-          </label>
         </div>
       </div>
       <div class="results-utility-row">
         <button class="results-reset-btn" type="button" onclick="zerarFiltrosResultados()"><i class="ti ti-x"></i>Zerar filtros</button>
         <div id="resSummaryBar" style="display:none;font-size:12px;color:#7A828E"></div>
-        <button class="btn btn-secondary btn-sm results-evaluation-progress-btn" id="resultsEvaluationProgress" type="button" onclick="openEvaluationProgressDrawer()" title="Ver evolução por parecerista"><i class="ti ti-chart-bar"></i><span>Progresso das avaliações</span></button>
         <button class="btn btn-secondary btn-sm results-export-btn"><i class="ti ti-download"></i>Exportar Excel</button>
       </div>
     </div>
@@ -4183,7 +4425,7 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
           <tr>
             <th class="sticky s0 rank-col-head"><span class="results-header-label">Ranking</span></th>
             <th class="res-id-number-col"><span class="results-header-label">ID</span></th>
-            <th class="sticky s5"><div class="results-team-head"><div class="results-team-title"><span class="results-header-label">Candidato(a)</span><button class="results-id-toggle" id="resultsIdToggle" type="button" onclick="toggleResultsIdColumn()" title="Mostrar coluna de ID" aria-label="Mostrar coluna de ID" aria-expanded="false"><span class="results-id-toggle-sign">+</span><span class="results-id-toggle-label">Mostrar ID</span></button></div><button class="results-summary-toggle" id="resultsSummaryToggle" type="button" onclick="toggleResultsSummaryColumn()" title="Mostrar apresentação" aria-label="Mostrar apresentação" aria-expanded="false"><span class="results-summary-toggle-sign">+</span><span class="results-summary-toggle-label">Ver apresentação</span></button></div></th>
+            <th class="sticky s5"><div class="results-team-head"><div class="results-team-title"><span class="results-header-label">Candidato(a)</span><button class="results-id-toggle" id="resultsIdToggle" type="button" onclick="toggleResultsIdColumn()" title="Mostrar coluna de ID" aria-label="Mostrar coluna de ID" aria-expanded="false"><span class="results-id-toggle-sign">+</span><span class="results-id-toggle-label">Mostrar ID</span></button></div></div></th>
             <th class="res-project-summary-col res-project-summary-head"><span class="results-header-label">Apresentação pessoal</span></th>
             <th class="res-gender-col"><span class="results-header-label">Gênero</span></th>
             <th class="res-race-col"><span class="results-header-label">Raça</span></th>
@@ -6637,12 +6879,8 @@ function parecerProgressHTML(inscId, rowIdx) {
   const totalAtribuidoOficial = pareceristasDaInscricao.length;
   const totalEsperado = Math.max(NUM_PARECERES_POR_EQUIPE, totalAtribuidoOficial);
   const done = pareceristasDaInscricao.filter(p => isEvaluationConcluded(p.id, inscId)).length;
-  const states = Array.from({ length: totalEsperado }, (_, idx) => idx < done ? 'done' : 'pending');
   const title = `${done} de ${totalEsperado} pareceres concluídos`;
-  return `<div class="nota-progress-summary" title="${title}">
-    <span class="nota-progress-dots">${states.map(state => `<span class="nota-progress-dot is-${state}"></span>`).join('')}</span>
-  </div>
-  <button class="nota-progress-btn" id="exp-res-${rowIdx}" onclick="toggleRes(${rowIdx})" title="Ver notas dos pareceristas" aria-label="Ver notas dos pareceristas: ${title}" aria-expanded="false">
+  return `<button class="nota-progress-btn" id="exp-res-${rowIdx}" onclick="toggleRes(${rowIdx})" title="Ver notas dos pareceristas" aria-label="Ver notas dos pareceristas: ${title}" aria-expanded="false">
     <i class="ti ti-chevron-down nota-progress-arrow" aria-hidden="true"></i>
   </button>`;
 }
@@ -7804,7 +8042,9 @@ function toggleResultsIdColumn(forceOpen) {
 }
 
 function toggleResultsSummaryColumn(forceOpen) {
-  resultsSummaryColumnOpen = typeof forceOpen === 'boolean' ? forceOpen : !resultsSummaryColumnOpen;
+  // A apresentação não é exibida na grade de resultados: o modo expandido
+  // estreitava a tabela e prejudicava a leitura das notas.
+  resultsSummaryColumnOpen = false;
   renderResultados();
   const tableScroll = document.getElementById('resultsBodyScroll');
   if (tableScroll) tableScroll.scrollLeft = 0;
@@ -7835,6 +8075,7 @@ window.addEventListener('resize', () => {
 });
 
 function renderResultados() {
+  resultsSummaryColumnOpen = false;
   syncCriterionWeightLabels();
   syncResultadosFilters();
   syncResultsSummaryColumn();
@@ -7926,7 +8167,7 @@ function renderResultados() {
   document.getElementById('tblResultados').innerHTML = rows.length ? rows.map(({ e, idx }, i) => {
     const { done, total: tot } = avalCount(e.id);
     const avcls = done===0?'b-pend':done===tot?'b-ok':'b-par';
-    const stageLabel = done===0 ? '' : done===tot ? `Final · ${done}/${tot}` : `Parcial · ${done}/${tot}`;
+    const stageLabel = done===0 ? 'Aguardando pareceres' : `${done} de ${tot} pareceres`;
     const pt = mediaNotasRanking(e.id, rankingMode);
     const isVisibleTie = Number.isFinite(pt) && rows.some(({ e: other }) => other !== e && sameRankingPosition(e, other, rankingMode));
     const ranking = absoluteRankingById.get(String(e.id)) || { rank:'—', tied:false };
@@ -7988,7 +8229,7 @@ function renderResultados() {
     }).join('');
 
     return `<tr class="${rowClass}">
-      <td class="sticky s0">${isBaseOfficialTop ? `<span class="res-cut-label rank-top-label">Top ${topLimit}</span>` : ''}<div class="res-rank-line"><span class="res-primary-rank ${rankingModeClass}">${ranking.rank}</span><span class="res-rank-axis">${primaryRankingCode || bancaToggleHTML(e.id)}</span>${primaryRankingCode ? bancaToggleHTML(e.id) : ''}</div>${baseRankingLabel}${isVisibleTie ? `<div class="res-faint" style="font-size:10px;margin-top:3px">(empate)</div>` : ''}${isAnyTopMarginOnly || (!isBaseOfficialTop && isNearCut) ? `<span class="res-cut-label res-near-label">Margem ${variacaoPct}%</span>` : ''}${isConvergentTop ? '<span class="res-convergence-label">Convergência</span>' : ''}${comparisonRankLabel}</td>
+      <td class="sticky s0">${isBaseOfficialTop ? `<span class="res-cut-label rank-top-label">Top ${topLimit}</span>` : ''}<div class="res-rank-line"><span class="res-primary-rank ${rankingModeClass}">${ranking.rank}</span><span class="res-rank-axis">${primaryRankingCode || bancaToggleHTML(e.id)}</span>${primaryRankingCode ? bancaToggleHTML(e.id) : ''}</div>${baseRankingLabel}${isAnyTopMarginOnly || (!isBaseOfficialTop && isNearCut) ? `<span class="res-cut-label res-near-label">Margem ${variacaoPct}%</span>` : ''}${isConvergentTop ? '<span class="res-convergence-label">Convergência</span>' : ''}${comparisonRankLabel}</td>
       <td class="res-id-number-col">${escapeHtmlAttr(shortInscId(e.id))}</td>
       <td class="sticky s5">
         <div class="leader-cell">
@@ -8008,7 +8249,7 @@ function renderResultados() {
           <div class="nota-main">${pt !== null ? fmtResultadoFinal(pt) : '<span style="color:#E0E0E0;font-size:15px">—</span>'}</div>
           ${rankingMode === 'Ranking ajustado por parecerista' && pt !== null ? '<div class="res-faint" style="font-size:8.5px;margin-top:-3px;white-space:nowrap">percentil médio</div>' : ''}
           <div class="nota-actions">
-            ${stageLabel ? `<span class="badge ${avcls}" style="font-size:8.5px;white-space:nowrap">${stageLabel}</span>` : ''}
+            <span class="nota-progress-text">${stageLabel}</span>
             ${parecerProgressHTML(e.id, i)}
           </div>
         </div>
@@ -13374,8 +13615,8 @@ function syncDashboardListFilters() {
 }
 
 function syncResultadosFilters() {
-  fillDashboardSelect('resFiltroUf', INSCRICOES.map(e => ufDisplayLabel(e.uf)), 'Todos os estados');
-  fillDashboardSelect('resFiltroRaca', INSCRICOES.flatMap(e => [...racasTimeInscricao(e)]), 'Todas as raças');
+  fillDashboardSelect('resFiltroUf', INSCRICOES.map(e => ufDisplayLabel(e.uf)), 'Estados');
+  fillDashboardSelect('resFiltroRaca', INSCRICOES.flatMap(e => [...racasTimeInscricao(e)]), 'Raças');
 }
 
 function renderDashboardList() {
