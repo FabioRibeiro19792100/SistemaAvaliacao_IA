@@ -4308,6 +4308,16 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
   box-shadow:none!important;
 }
 #view-dashboard .kpi{padding:16px 18px!important}
+#view-dashboard #dashKpis{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  align-items:stretch;
+}
+#view-dashboard #dashKpis .kpi{
+  min-height:108px;
+  display:flex;
+  flex-direction:column;
+}
+#view-dashboard #dashKpis .kpi-sub{margin-top:auto!important;padding-top:5px}
 #view-dashboard .kpi:first-child{background:#F6F9FE!important;border-color:#CFDCF0!important}
 #view-dashboard .kpi-val{font-family:"IBM Plex Mono",ui-monospace,monospace!important;font-weight:500!important;font-variant-numeric:tabular-nums}
 #view-dashboard .kpi-lbl,
@@ -4345,13 +4355,49 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
   padding:11px 12px!important;
   border-bottom-color:#E1E5EC!important;
   color:#343C49!important;
-  font-size:14px!important;
+  font-size:13px!important;
 }
 #view-dashboard .tbl-card tbody tr:nth-child(even) td{background:#FCFDFE}
 #view-dashboard .tbl-card tbody tr:hover td{background:#F4F7FB}
 #view-dashboard .dash-tabs{display:none!important}
 #view-dashboard .dash-page{display:block!important;margin:26px 0 0!important}
 #view-dashboard .dash-page:first-of-type{margin-top:0!important}
+#view-dashboard .dash-chart-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:14px;
+  align-items:stretch;
+}
+#view-dashboard .dash-chart-featured{margin-bottom:14px!important}
+#view-dashboard .dash-chart-featured .dash-chart-slot{overflow:hidden!important}
+#view-dashboard .dash-chart-card{
+  display:flex;
+  flex-direction:column;
+  height:286px;
+  min-height:286px;
+  margin:0!important;
+  overflow:hidden;
+}
+#view-dashboard .dash-chart-card .section-label{flex:0 0 auto;margin-bottom:12px}
+#view-dashboard .dash-chart-slot{
+  flex:1 1 auto;
+  min-height:0!important;
+  height:auto!important;
+  overflow:auto!important;
+  scrollbar-width:thin;
+  scrollbar-color:#C7D2E2 transparent;
+}
+#view-dashboard .dash-chart-slot canvas{max-height:100%!important}
+#view-dashboard .dash-chart-slot .bar-list{padding-right:4px}
+@media (max-width:1200px){
+  #view-dashboard .dash-chart-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (max-width:1050px){
+  #view-dashboard .dash-chart-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:680px){
+  #view-dashboard .dash-chart-grid{grid-template-columns:1fr}
+}
 #view-dashboard .dash-flow-section-heading{
   display:flex;
   align-items:center;
@@ -4454,58 +4500,43 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
     <div class="dash-page active" id="dash-page-overview">
       <div class="kpi-row" id="dashKpis" style="grid-template-columns:repeat(3,minmax(0,1fr));margin-bottom:20px"></div>
 
-      <div class="card">
+      <div class="card dash-chart-card dash-chart-featured">
         <div class="section-label">Inscrições acumuladas</div>
-        <div id="slotEvolucao" style="position:relative;height:210px"><canvas id="cEvolucao"></canvas></div>
+        <div class="dash-chart-slot" id="slotEvolucao" style="position:relative;height:210px"><canvas id="cEvolucao"></canvas></div>
       </div>
-
-    </div>
-
-    <div class="dash-page" id="dash-page-perfil">
-      <div class="dash-flow-section-heading">Perfil das pessoas candidatas</div>
-      <div class="grid-2">
-        <div class="card" style="margin-bottom:0">
-          <div class="section-label">Gênero dos participantes</div>
-          <div id="slotGenero" style="position:relative;min-height:180px"><canvas id="cGenero"></canvas></div>
+      <div class="dash-chart-grid">
+        <div class="card dash-chart-card">
+          <div class="section-label">Gênero</div>
+          <div class="dash-chart-slot" id="slotGenero" style="position:relative;min-height:180px"><canvas id="cGenero"></canvas></div>
         </div>
-        <div class="card" style="margin-bottom:0">
-          <div class="section-label">Cor / raça autodeclarada</div>
-          <div id="slotRaca" style="position:relative;min-height:180px"><canvas id="cRaca"></canvas></div>
+        <div class="card dash-chart-card">
+          <div class="section-label">Cor / raça</div>
+          <div class="dash-chart-slot" id="slotRaca" style="position:relative;min-height:180px"><canvas id="cRaca"></canvas></div>
         </div>
-      </div>
-
-      <div class="grid-3" style="margin-top:16px">
-        <div class="card" style="margin-bottom:0">
+        <div class="card dash-chart-card">
           <div class="section-label">Faixa etária</div>
-          <div id="slotIdade" style="position:relative;min-height:150px"><canvas id="cIdade"></canvas></div>
+          <div class="dash-chart-slot" id="slotIdade" style="position:relative;min-height:150px"><canvas id="cIdade"></canvas></div>
         </div>
-        <div class="card" style="margin-bottom:0">
+        <div class="card dash-chart-card">
           <div class="section-label">Deficiência declarada</div>
-          <div id="slotDefic" style="position:relative;min-height:150px"><canvas id="cDefic"></canvas></div>
+          <div class="dash-chart-slot" id="slotDefic" style="position:relative;min-height:150px"><canvas id="cDefic"></canvas></div>
         </div>
-        <div class="card" style="margin-bottom:0">
+        <div class="card dash-chart-card">
           <div class="section-label">Área do domicílio</div>
-          <div id="slotArea" style="position:relative;min-height:150px"><canvas id="cArea"></canvas></div>
+          <div class="dash-chart-slot" id="slotArea" style="position:relative;min-height:150px"><canvas id="cArea"></canvas></div>
         </div>
-      </div>
-
-    </div>
-
-    <div class="dash-page" id="dash-page-geo">
-      <div class="dash-flow-section-heading">Distribuição geográfica</div>
-      <div class="card">
+        <div class="card dash-chart-card">
         <div class="section-label">Inscrições por UF — top 10 + outros</div>
-        <div id="slotUF" style="position:relative;min-height:220px"><canvas id="cUF"></canvas></div>
+        <div class="dash-chart-slot" id="slotUF" style="position:relative;min-height:220px"><canvas id="cUF"></canvas></div>
       </div>
-
-      <div class="card" style="margin-top:16px">
+      <div class="card dash-chart-card">
         <div class="section-label">Inscrições por região do país</div>
-        <div id="slotRegiao" style="position:relative;min-height:180px"><canvas id="cRegiao"></canvas></div>
+        <div class="dash-chart-slot" id="slotRegiao" style="position:relative;min-height:180px"><canvas id="cRegiao"></canvas></div>
       </div>
-
-      <div class="card" style="margin-top:16px">
+      <div class="card dash-chart-card">
         <div class="section-label">Top 10 instituições</div>
-        <div id="slotInst" style="position:relative;min-height:220px"><canvas id="cInst"></canvas></div>
+        <div class="dash-chart-slot" id="slotInst" style="position:relative;min-height:220px"><canvas id="cInst"></canvas></div>
+      </div>
       </div>
     </div>
 
@@ -14028,7 +14059,7 @@ function renderDashboardList() {
     <tr>
       <td style="font-family:monospace;color:#5F6368">${shortInscId(e.id)}</td>
       <td>${compactUfLabel(e.uf)}</td>
-      <td style="color:#202124;font-weight:600">${e.lider || '—'}</td>
+      <td style="color:#202124;font-weight:600">${String(e.lider || '—').toLocaleUpperCase('pt-BR')}</td>
       <td>${compactInstitutionLabel(e.inst)}</td>
       <td>${e.curso || '—'}</td>
     </tr>
