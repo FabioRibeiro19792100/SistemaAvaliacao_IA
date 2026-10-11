@@ -581,6 +581,19 @@ body {
 .snav:hover{color:var(--text-primary)}
 .snav.active{color:var(--nav-active-text)}
 .snav.active::after{content:'';position:absolute;left:14px;right:14px;bottom:0;height:2px;background:var(--nav-active-border)}
+.snav.snav-report{
+  margin-left:4px;
+  height:34px;
+  padding:0 12px;
+  border:1px solid #B8CCE8;
+  border-radius:7px;
+  color:#2869BE;
+  font-size:13px;
+  font-weight:650;
+  background:#F8FBFF;
+}
+.snav.snav-report:hover{border-color:#7FADF0;background:#EEF5FF;color:#1557A6}
+.snav.snav-report::after{display:none}
 .snav-right{margin-left:auto;display:flex}
 
 /* ── VIEWS ── */
@@ -4546,6 +4559,7 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
   <div class="snav" data-view="dashboard"><span class="icon icon-sm"><i class="ti ti-chart-bar"></i></span>Dashboard</div>
   <div class="snav" data-view="pareceristas" style="display:none"><span class="icon icon-sm"><i class="ti ti-arrows-left-right"></i></span>Pareceristas e atribuições</div>
   <div class="snav" data-view="auditoria" style="display:none"><span class="icon icon-sm"><i class="ti ti-shield-check"></i></span>Auditoria</div>
+  <button class="snav snav-report" type="button" onclick="openResultsReport()"><span class="icon icon-sm"><i class="ti ti-file-analytics"></i></span>Relatório analítico</button>
   <div class="snav-right">
     <div class="snav" data-view="config" style="display:none"><span class="icon icon-sm"><i class="ti ti-adjustments-horizontal"></i></span>Configurações</div>
   </div>
@@ -4933,17 +4947,6 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
       </div>
     </div>
   </div>
-
-  <section class="results-report" aria-labelledby="resultsReportTitle">
-    <div class="results-report-head">
-      <div>
-        <div class="results-report-kicker">Relatório analítico</div>
-        <div class="results-report-title" id="resultsReportTitle">Encerramento da fase de seleção</div>
-        <div class="results-report-sub">Panorama das inscrições, avaliações e perfil das 80 pessoas selecionadas.</div>
-      </div>
-      <button class="btn btn-secondary btn-sm results-report-download" type="button" onclick="openResultsReport()"><i class="ti ti-file-analytics"></i>Abrir relatório</button>
-    </div>
-  </section>
 
   <div class="tbl-card">
     <div class="tbl-scroll" id="resultsBodyScroll">
