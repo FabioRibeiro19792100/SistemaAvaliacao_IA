@@ -6597,14 +6597,32 @@ function getAtribAtivas(parId) {
   return getAtribVisiveisNoPortal(parId).filter(inscId => !hasActiveVideoIssue(parId, inscId));
 }
 
+function hasVideoReturnHistory(parId, inscId) {
+  // A resolução é gravada como um evento separado do aviso original. Para a
+  // ordem da fila, basta que a candidatura tenha voltado da auditoria uma vez:
+  // enquanto estiver pendente, ela nunca deve reaparecer no meio da fila.
+  return (videoIssueReports || [])
+    .map(normalizeVideoIssueReport)
+    .some(report =>
+      report &&
+      report.parId === parId &&
+      report.inscId === inscId &&
+      report.status === 'video_verificado'
+    );
+}
+
 function getAtribVisiveisNoPortal(parId) {
-  // Uma pendência de vídeo resolvida volta para o mesmo parecerista, mas deve
-  // entrar no final da fila: ela não pode interromper as avaliações normais.
-  return [...getPortalUniverseByParecerista(parId)].sort((a, b) => {
-    const aReturnedFromAudit = !!getResolvedVideoIssue(parId, a) && !isEvaluationConcluded(parId, a);
-    const bReturnedFromAudit = !!getResolvedVideoIssue(parId, b) && !isEvaluationConcluded(parId, b);
-    return Number(aReturnedFromAudit) - Number(bReturnedFromAudit);
+  // Nunca ordenar com um comparador dependente do último evento: uma mesma
+  // candidatura pode ter aviso e resolução distintos. Se ela voltou da
+  // auditoria e segue pendente, separamos explicitamente para o fim da fila.
+  const ids = getPortalUniverseByParecerista(parId);
+  const returned = [];
+  const regular = [];
+  ids.forEach(inscId => {
+    const shouldGoToQueueEnd = !isEvaluationConcluded(parId, inscId) && hasVideoReturnHistory(parId, inscId);
+    (shouldGoToQueueEnd ? returned : regular).push(inscId);
   });
+  return [...regular, ...returned];
 }
 
 function getDoneByParecerista(parId) {
