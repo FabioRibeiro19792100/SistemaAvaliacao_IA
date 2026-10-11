@@ -6594,11 +6594,17 @@ function getActiveVideoIssuesForInscricao(inscId) {
 }
 
 function getAtribAtivas(parId) {
-  return getPortalUniverseByParecerista(parId).filter(inscId => !hasActiveVideoIssue(parId, inscId));
+  return getAtribVisiveisNoPortal(parId).filter(inscId => !hasActiveVideoIssue(parId, inscId));
 }
 
 function getAtribVisiveisNoPortal(parId) {
-  return getPortalUniverseByParecerista(parId);
+  // Uma pendência de vídeo resolvida volta para o mesmo parecerista, mas deve
+  // entrar no final da fila: ela não pode interromper as avaliações normais.
+  return [...getPortalUniverseByParecerista(parId)].sort((a, b) => {
+    const aReturnedFromAudit = !!getResolvedVideoIssue(parId, a) && !isEvaluationConcluded(parId, a);
+    const bReturnedFromAudit = !!getResolvedVideoIssue(parId, b) && !isEvaluationConcluded(parId, b);
+    return Number(aReturnedFromAudit) - Number(bReturnedFromAudit);
+  });
 }
 
 function getDoneByParecerista(parId) {
