@@ -675,6 +675,40 @@ tr:hover td.sticky{background:#FAFAFA}
 .results-summary-toggle-sign{font-size:15px;font-weight:500;line-height:.9}
 .results-summary-toggle-label{font-size:7.5px;font-weight:600;letter-spacing:.04em;line-height:1.1;white-space:nowrap;text-transform:uppercase}
 #view-resultados .results-table{width:100%!important;min-width:1200px!important;table-layout:fixed}
+#view-resultados .results-report{
+  margin:22px 0 18px;
+  border:1px solid #D7E2F1;
+  border-radius:8px;
+  overflow:hidden;
+  background:#FFF;
+  box-shadow:0 6px 18px rgba(31,56,88,.07);
+}
+#view-resultados .results-report-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  min-height:66px;
+  padding:13px 18px;
+  border-bottom:1px solid #E1E8F2;
+  background:linear-gradient(90deg,#F4F8FE 0%,#FFF 68%);
+}
+#view-resultados .results-report-kicker{
+  margin-bottom:3px;
+  color:#1A73E8;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.09em;
+  text-transform:uppercase;
+}
+#view-resultados .results-report-title{color:#202124;font-size:15px;font-weight:650;line-height:1.25}
+#view-resultados .results-report-sub{margin-top:2px;color:#6B7280;font-size:12px;line-height:1.35}
+#view-resultados .results-report-download{flex:0 0 auto;white-space:nowrap;text-decoration:none}
+#view-resultados .results-report-frame{display:block;width:100%;height:min(72vh,720px);min-height:520px;border:0;background:#F3F5F8}
+@media (max-width:720px){
+  #view-resultados .results-report-head{align-items:flex-start;flex-direction:column}
+  #view-resultados .results-report-frame{height:68vh;min-height:460px}
+}
 #view-resultados:not(.results-summary-open) .results-table .s0{left:0;width:5.5%;min-width:0;max-width:none}
 #view-resultados:not(.results-summary-open) .results-table .s5{left:5.5%;width:24.5%;min-width:0;max-width:none}
 #view-resultados.results-id-open:not(.results-summary-open) .results-table .s5{left:10%;width:20%}
@@ -749,7 +783,11 @@ tr:hover td.sticky{background:#FAFAFA}
 .res-project-summary-text{font-size:11.5px;font-weight:400;font-style:normal;line-height:1.45;color:#202124;white-space:normal}
 .res-project-summary-empty{color:#BDC1C6}
 .res-leader-head{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start;gap:10px}
+.res-leader-identity{min-width:0}
+.res-leader-copy{min-width:0}
 .res-leader-name{min-width:0;font-size:12.5px;font-weight:400;font-style:normal;line-height:1.25;color:#202124}
+.res-score-alert{display:inline-flex;align-items:center;justify-content:center;width:17px;height:17px;margin-top:5px;border:1px solid #F2C88B;border-radius:50%;background:#FFF5DD;color:#B45309;font-size:12px;line-height:1}
+.res-content-alert{border-color:#F0B5B5;background:#FFF0F0;color:#B42318}
 .res-name-actions{display:grid;grid-template-columns:27px 27px;align-items:start;align-self:start;gap:4px;width:58px;flex:0 0 58px}
 .res-name-actions .icon-btn{align-self:start;width:27px;height:27px;margin:0;border-color:#D7E0EC;border-radius:6px;font-size:15px}
 .res-video-action{display:grid;grid-template-columns:27px;grid-template-rows:27px auto;justify-items:center;align-items:start;gap:3px;width:27px}
@@ -4406,6 +4444,23 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
 }
 #view-dashboard .dash-chart-featured{margin-bottom:14px!important}
 #view-dashboard .dash-chart-featured .dash-chart-slot{overflow:hidden!important}
+#view-dashboard .dash-chart-filter{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+  margin:0 0 10px;
+}
+#view-dashboard .dash-chart-filter-label{
+  color:#7B8797;
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+#view-dashboard .dash-chart-filter .finput{height:32px;min-width:178px;margin:0;padding:0 30px 0 10px;font-size:12px;background-color:#FFF}
+#view-dashboard .dash-chart-filter-note{color:#7B8797;font-size:11px;white-space:nowrap}
 #view-dashboard .dash-chart-card{
   display:flex;
   flex-direction:column;
@@ -4433,6 +4488,8 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
 }
 @media (max-width:680px){
   #view-dashboard .dash-chart-grid{grid-template-columns:1fr}
+  #view-dashboard .dash-chart-filter{align-items:flex-end;flex-wrap:wrap;justify-content:flex-start}
+  #view-dashboard .dash-chart-filter-note{width:100%;white-space:normal}
 }
 #view-dashboard .dash-flow-section-heading{
   display:flex;
@@ -4539,6 +4596,14 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
       <div class="card dash-chart-card dash-chart-featured">
         <div class="section-label">Inscrições acumuladas</div>
         <div class="dash-chart-slot" id="slotEvolucao" style="position:relative;height:210px"><canvas id="cEvolucao"></canvas></div>
+      </div>
+      <div class="dash-chart-filter">
+        <label class="dash-chart-filter-label" for="dashChartScoreFilter">Recorte dos gráficos</label>
+        <select class="finput" id="dashChartScoreFilter" onchange="renderDashboard()">
+          <option value="all">Todas as inscrições</option>
+          <option value="top80">Corte 80+ no ranking</option>
+        </select>
+        <span class="dash-chart-filter-note" id="dashChartScoreFilterNote"></span>
       </div>
       <div class="dash-chart-grid">
         <div class="card dash-chart-card">
@@ -4866,6 +4931,20 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
       </div>
     </div>
   </div>
+
+  <section class="results-report" aria-labelledby="resultsReportTitle">
+    <div class="results-report-head">
+      <div>
+        <div class="results-report-kicker">Relatório analítico</div>
+        <div class="results-report-title" id="resultsReportTitle">Encerramento da fase de seleção</div>
+        <div class="results-report-sub">Panorama das inscrições, avaliações e perfil das 80 pessoas selecionadas.</div>
+      </div>
+      <a class="btn btn-secondary btn-sm results-report-download" href="relatorio_fase1/Maratona%20IA%20-%20Encerramento%20fase%201.pdf" download>
+        <i class="ti ti-download"></i>Baixar relatório
+      </a>
+    </div>
+    <iframe class="results-report-frame" src="relatorio_fase1/Maratona%20IA%20-%20Encerramento%20fase%201.pdf#view=FitH" title="Relatório analítico do encerramento da fase de seleção"></iframe>
+  </section>
 
   <div class="tbl-card">
     <div class="tbl-scroll" id="resultsBodyScroll">
@@ -7201,6 +7280,34 @@ function mediaNotas(inscId) {
   return soma / notasGerais.length;
 }
 
+function resultadoScoreAlertHTML(inscId) {
+  const contentReviewNotes = {
+    '477': 'Trecho colado sem revisão: a apresentação pessoal mantém instruções de modelo entre colchetes.',
+    '704': 'Trecho colado sem revisão: a apresentação pessoal começa com uma resposta do assistente de IA.',
+    '391': 'Trecho colado sem revisão: o campo de supervisão humana contém ficha técnica e metadados de vídeo.',
+    '484': 'Trecho colado sem revisão: o campo sobre etapas de uso de IA contém instruções do formulário.',
+  };
+  const receivedNotes = getOfficialPareceristas().flatMap(parecerista => {
+    const evaluation = avaliacoes[parecerista.id]?.[inscId];
+    return Array.isArray(evaluation?.notas) ? evaluation.notas : [];
+  });
+  const hasZero = receivedNotes.some(nota => String(nota).trim() === '0' || Number(nota) === 0);
+  const hasInsufficient = receivedNotes.some(nota => String(nota).trim().toLowerCase() === 'insuficiente');
+  const scoreAlert = !hasZero && !hasInsufficient ? '' : (() => {
+    const description = hasZero && hasInsufficient
+      ? 'Alerta: recebeu nota 0 e conceito Insuficiente.'
+      : hasZero
+        ? 'Alerta: recebeu nota 0.'
+        : 'Alerta: recebeu conceito Insuficiente.';
+    return `<span class="res-score-alert" title="${description}" aria-label="${description}"><i class="ti ti-alert-triangle" aria-hidden="true"></i></span>`;
+  })();
+  const contentDescription = contentReviewNotes[String(inscId)];
+  const contentAlert = contentDescription
+    ? `<span class="res-score-alert res-content-alert" title="${contentDescription}" aria-label="${contentDescription}"><i class="ti ti-flag-3" aria-hidden="true"></i></span>`
+    : '';
+  return `${scoreAlert}${contentAlert}`;
+}
+
 function mediaPorCrit(inscId, critIdx) {
   const notas = getOfficialPareceristas().map(p => avaliacoes[p.id]?.[inscId]?.notas[critIdx]).filter(Boolean);
   if (!notas.length) return null;
@@ -8697,7 +8804,7 @@ function renderResultados() {
       <td class="res-id-number-col">${escapeHtmlAttr(shortInscId(e.id))}</td>
       <td class="sticky s5">
         <div class="leader-cell">
-          <div class="res-leader-head"><div class="res-leader-name">${formatResultadoLeaderName(e.lider)}</div><div class="res-name-actions"><button class="icon-btn" onclick="openModalPar(${idx})" title="Ver notas dos pareceristas" aria-label="Ver notas dos pareceristas"><i class="ti ti-notes"></i></button><div class="res-video-action"><button class="icon-btn" onclick="openModal(${idx})" title="Abrir vídeo da inscrição" aria-label="Abrir vídeo da inscrição"><i class="ti ti-player-play"></i></button>${videoUrl ? `<span class="res-video-duration-value is-loading" data-video-url="${escapeHtmlAttr(videoUrl)}" title="Carregando duração do vídeo">…</span>` : '<span class="res-video-duration-value" title="Vídeo não informado">—</span>'}</div></div></div>
+          <div class="res-leader-head"><div class="res-leader-identity"><div class="res-leader-copy"><div class="res-leader-name">${formatResultadoLeaderName(e.lider)}</div>${resultadoScoreAlertHTML(e.id)}</div></div><div class="res-name-actions"><button class="icon-btn" onclick="openModalPar(${idx})" title="Ver notas dos pareceristas" aria-label="Ver notas dos pareceristas"><i class="ti ti-notes"></i></button><div class="res-video-action"><button class="icon-btn" onclick="openModal(${idx})" title="Abrir vídeo da inscrição" aria-label="Abrir vídeo da inscrição"><i class="ti ti-player-play"></i></button>${videoUrl ? `<span class="res-video-duration-value is-loading" data-video-url="${escapeHtmlAttr(videoUrl)}" title="Carregando duração do vídeo">…</span>` : '<span class="res-video-duration-value" title="Vídeo não informado">—</span>'}</div></div></div>
           ${e.p2 ? `<div class="team-members">
           <div class="team-member-line" title="${escapeHtmlAttr(displayPersonName(e.p2))}">${formatResultadoMemberName(e.p2)}</div>
           ${e.p3 ? `<div class="team-member-line" title="${escapeHtmlAttr(displayPersonName(e.p3))}">${formatResultadoMemberName(e.p3)}</div>` : ''}
@@ -14168,6 +14275,27 @@ function exportDashboardCSV() {
   URL.revokeObjectURL(url);
 }
 
+function dashboardChartScope() {
+  const mode = document.getElementById('dashChartScoreFilter')?.value || 'all';
+  if (mode !== 'top80') return { rows: INSCRICOES, mode:'all', cutoff:null };
+
+  const ranked = INSCRICOES
+    .map(e => ({ e, score: mediaNotasRanking(e.id, 'Ranking normal') }))
+    .filter(({ score }) => Number.isFinite(score))
+    .sort((a, b) => b.score - a.score || compareInscIdAsc(a.e, b.e));
+
+  if (!ranked.length) return { rows: [], mode:'top80', cutoff:null };
+
+  // Mantém todos os empates na nota que fecha o grupo das 80 primeiras posições.
+  const targetIndex = Math.min(80, ranked.length) - 1;
+  const cutoff = ranked[targetIndex].score;
+  return {
+    rows: ranked.filter(({ score }) => score + 1e-9 >= cutoff).map(({ e }) => e),
+    mode:'top80',
+    cutoff,
+  };
+}
+
 function renderDashboard() {
   // só renderiza se a view estiver visível
   if (document.getElementById('view-dashboard').style.display === 'none' ||
@@ -14261,6 +14389,16 @@ function renderDashboard() {
   document.getElementById('dashEmpty').style.display = 'none';
   document.getElementById('dashContent').style.display = 'block';
   let dashSubText = `${insc.length.toLocaleString('pt-BR')} inscrições carregadas`;
+  const chartScope = dashboardChartScope();
+  const chartInsc = chartScope.rows;
+  const chartScopeNote = document.getElementById('dashChartScoreFilterNote');
+  if (chartScopeNote) {
+    chartScopeNote.textContent = chartScope.mode === 'top80'
+      ? (chartScope.cutoff === null
+        ? 'Nenhuma candidatura com nota disponível.'
+        : `${chartInsc.length.toLocaleString('pt-BR')} candidaturas no corte (≥ ${chartScope.cutoff.toLocaleString('pt-BR', { minimumFractionDigits:2, maximumFractionDigits:2 })})`)
+      : '';
+  }
 
   Object.values(dashCharts).forEach(c => { try { c.destroy(); } catch(e){} });
   dashCharts = {};
@@ -14283,7 +14421,7 @@ function renderDashboard() {
 
   const ufs = {};
   const regionMap = {};
-  insc.forEach(i => {
+  chartInsc.forEach(i => {
     const ufKey = compactUfLabel(i.uf);
     if (!ufKey || ufKey === 'N/D') return;
     ufs[ufKey] = (ufs[ufKey] || 0) + 1;
@@ -14298,7 +14436,7 @@ function renderDashboard() {
     .map(label => [label, Number(regionMap[label] || 0)])
     .filter(([, value]) => value > 0);
   const inst = {};
-  insc.forEach(i => {
+  chartInsc.forEach(i => {
     const key = compactInstitutionLabel(i.inst);
     inst[key] = (inst[key] || 0) + 1;
   });
@@ -14314,9 +14452,7 @@ function renderDashboard() {
   let somaIdades = 0;
   let totalIdades = 0;
 
-  const profileRows = rawParticipantes.length
-    ? rawParticipantes.filter(row => isStatusEnviado(String(row?.['Status inscrição'] || '').trim()))
-    : insc.map(i => i._raw || {});
+  const profileRows = chartInsc.flatMap(resultadoParticipantRows);
 
   insc.forEach(i => {
     const raw = i._raw || {};

@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Maratona IA · Encerramento da fase 1</title>
+<style>
+@font-face{font-family:'Plex';src:url(fonts/files/ibm-plex-sans-latin-300-normal.woff2);font-weight:300}
+@font-face{font-family:'Plex';src:url(fonts/files/ibm-plex-sans-latin-400-normal.woff2);font-weight:400}
+@font-face{font-family:'Plex';src:url(fonts/files/ibm-plex-sans-latin-500-normal.woff2);font-weight:500}
+@font-face{font-family:'Plex';src:url(fonts/files/ibm-plex-sans-latin-600-normal.woff2);font-weight:600}
+@font-face{font-family:'Plex';src:url(fonts/files/ibm-plex-sans-latin-700-normal.woff2);font-weight:700}
+@font-face{font-family:'PlexMono';src:url(fonts/files/ibm-plex-mono-latin-500-normal.woff2);font-weight:500}
+:root{--ink:#16181D;--soft:#4A505B;--mute:#7A808A;--line:#DADDE2;--bg2:#F3F4F6;--acc:#1F4FD8;--acc2:#E8EEFC;}
+@page{size:A4;margin:0}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#fff}
+body{font-family:'Plex',sans-serif;color:var(--ink);font-size:8.2pt;line-height:1.38;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.page{width:210mm;height:297mm;padding:9mm 14mm 11mm;position:relative;overflow:hidden;page-break-after:always}
+.page:last-child{page-break-after:auto}
+.eyebrow{font-family:'PlexMono';font-size:7pt;letter-spacing:.12em;color:var(--acc);text-transform:uppercase}
+h1{font-size:19pt;font-weight:600;line-height:1.15;margin-top:2.5mm;letter-spacing:-.01em}
+.sub{font-size:9.5pt;color:var(--soft);margin-top:1.2mm}
+.intro{margin-top:3.5mm;font-size:8.6pt;color:var(--ink);max-width:182mm}
+h2{font-size:10.2pt;font-weight:600;margin-top:4.2mm;padding-top:2.2mm;border-top:1.2px solid var(--ink)}
+h3{font-size:8.4pt;font-weight:600;margin-top:2.6mm}
+p{margin-top:1.6mm}
+.lbl{font-family:'PlexMono';font-size:6.6pt;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);margin-top:3.5mm}
+.cards{display:grid;grid-template-columns:repeat(6,1fr);gap:2mm;margin-top:1.6mm}
+.card{background:var(--bg2);border-radius:2mm;padding:2.6mm 2.6mm 2.4mm;align-self:stretch}
+.card .n{font-size:17pt;font-weight:600;line-height:1;letter-spacing:-.01em}
+.card .t{font-size:7.2pt;color:var(--soft);margin-top:1.4mm;line-height:1.3}
+.card.acc{background:var(--acc);color:#fff}.card.acc .t{color:#DCE5FF}
+.strip{display:grid;grid-template-columns:repeat(3,1fr);gap:2mm;margin-top:2.4mm}
+.strip .s{border:1px solid var(--line);border-radius:2mm;padding:2.2mm 2.6mm}
+.strip .n{font-size:12.5pt;font-weight:600;line-height:1.05}
+.strip .n span{font-size:8pt;font-weight:400;color:var(--mute)}
+.strip .t{font-size:7.1pt;color:var(--soft);margin-top:1mm;line-height:1.3}
+.cap{font-size:7.4pt;color:var(--soft);margin-top:2.2mm;max-width:182mm}
+table{width:100%;border-collapse:collapse;margin-top:1.6mm;font-size:7.4pt}
+th{font-weight:600;text-align:left;font-size:7pt;color:var(--soft);padding:1.2mm 1.6mm;border-bottom:1px solid var(--ink)}
+th.r,td.r{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+td{padding:.7mm 1.6mm;border-bottom:1px solid var(--line);vertical-align:top}
+tr.g td{font-weight:600;background:var(--bg2);font-size:6.9pt;letter-spacing:.06em;text-transform:uppercase;color:var(--soft);padding-top:1mm;padding-bottom:1mm}
+td.hl{background:var(--acc2);font-weight:600}
+th.hl{background:var(--acc2)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:5mm}
+.two td,.two th{padding-left:1.1mm;padding-right:1.1mm}
+ul.obs{list-style:none;margin-top:1.4mm}
+ul.obs li{margin-top:1.1mm;break-inside:avoid;padding-left:3mm;position:relative}
+ul.obs li:before{content:'';position:absolute;left:0;top:1.6mm;width:1.2mm;height:1.2mm;background:var(--acc);border-radius:50%}
+ul.obs li b{font-weight:600;display:block}
+.traits{display:grid;grid-template-columns:repeat(3,1fr);gap:2mm;margin-top:2mm}
+.tr{border:1px solid var(--line);border-radius:2mm;padding:2.2mm 2.6mm;align-self:stretch}
+.tr h4{font-size:8.3pt;font-weight:600;line-height:1.25}
+.tr .n{font-size:14pt;font-weight:600;color:var(--acc);margin-top:1.4mm;line-height:1}
+.tr .n span{font-size:7.6pt;font-weight:500;color:var(--acc)}
+.tr .c{font-size:7pt;color:var(--mute);margin-top:.8mm}
+.tr .d{font-size:7.4pt;color:var(--soft);margin-top:1.4mm;line-height:1.35}
+.tr .q{font-size:7.2pt;font-style:italic;color:var(--ink);margin-top:1.4mm;line-height:1.35;border-left:2px solid var(--acc);padding-left:2mm}
+.foot{position:absolute;left:14mm;right:14mm;bottom:7mm;font-size:6.6pt;color:var(--mute);display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:1.6mm}
+.note{font-size:6.8pt;color:var(--mute);margin-top:2.2mm;line-height:1.4}
+td{padding-top:.55mm;padding-bottom:.55mm}
+.tbl-num td,.tbl-num th{padding-left:1.4mm;padding-right:1.4mm}
+td.sm{font-size:6.9pt;color:var(--soft)}
+tr.tot td{font-weight:600;border-top:1px solid var(--ink)}
+table{font-size:7pt}
+td{padding-top:.35mm;padding-bottom:.35mm}
+tr.g td{padding-top:.6mm;padding-bottom:.6mm;font-size:6.4pt}
+th{padding-top:.8mm;padding-bottom:.8mm}
+td{padding-top:.4mm;padding-bottom:.4mm}
+table{font-size:7.1pt}
+.reads{display:grid;grid-template-columns:repeat(3,1fr);gap:2.4mm;margin-top:1.2mm}
+.rd{background:var(--bg2);border-radius:2mm;padding:1.8mm 2.6mm 2mm;border-top:2.2px solid var(--acc)}
+.rd .k{font-family:'PlexMono';font-size:6.4pt;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+.rd .f{font-size:13pt;font-weight:600;color:var(--acc);line-height:1;margin-top:1mm}
+.rd .fl{font-size:7pt;color:var(--soft);margin-top:.8mm;line-height:1.3}
+.rd .x{font-size:7.4pt;color:var(--ink);margin-top:1.2mm;line-height:1.34;border-top:1px solid var(--line);padding-top:1.1mm}
+.hero{margin:-9mm -14mm 0;padding:8mm 14mm 4.5mm;background:var(--ink);color:#fff}
+.hero .eyebrow{color:#9DB6FF}
+.hero h1{color:#fff;margin-top:2mm}
+.hero .sub{color:#B9BEC8}
+.lead{display:grid;grid-template-columns:1fr 58mm;gap:6mm;margin-top:4mm}
+.lead p{margin:0;font-size:8.6pt;line-height:1.45}
+.ficha{border-left:2.2px solid var(--acc);padding-left:3mm}
+.ficha .row{margin-top:1.3mm}
+.ficha .row:first-child{margin-top:0}
+.ficha .k{font-family:'PlexMono';font-size:6.2pt;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+.ficha .v{font-size:7.8pt;font-weight:500;line-height:1.3}
+.bars td.b{white-space:nowrap}
+.bars td{vertical-align:middle}
+.bar{height:2.4mm;background:var(--acc);border-radius:.6mm;display:inline-block;vertical-align:middle}
+.bar.g{background:#B9C0CC}
+.bars .n{display:inline-block;min-width:11mm;font-variant-numeric:tabular-nums;font-size:7pt;color:var(--soft);margin-left:1.4mm}
+.funnel{display:grid;grid-template-columns:repeat(6,1fr);gap:1.6mm;margin-top:2mm}
+.fs{background:var(--bg2);border-radius:2mm;padding:2.2mm 2.4mm;position:relative}
+.fs .n{font-size:15pt;font-weight:600;line-height:1}
+.fs .t{font-size:7pt;color:var(--soft);margin-top:1mm;line-height:1.3}
+.fs.done{background:var(--ink);color:#fff}.fs.done .t{color:#C9CED6}
+.fs.now{background:var(--acc);color:#fff}.fs.now .t{color:#DCE5FF}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:2.4mm;margin-top:2.4mm}
+.st{border:1px solid var(--line);border-radius:2mm;padding:2.6mm 2.8mm}
+.st .k{font-family:'PlexMono';font-size:6.4pt;letter-spacing:.1em;text-transform:uppercase;color:var(--acc)}
+.st h4{font-size:9pt;font-weight:600;margin-top:1mm}
+.st .meta{font-size:7pt;color:var(--mute);margin-top:.6mm}
+.st p{font-size:7.6pt;margin-top:1.4mm;line-height:1.38}
+.st ul{margin:1.2mm 0 0 3.4mm;font-size:7.3pt;line-height:1.38}
+.tt{width:100%;border-collapse:collapse;margin-top:1.6mm;font-size:7.4pt}
+.tt th{font-weight:600;text-align:left;font-size:7pt;color:var(--soft);padding:1.2mm 1.6mm;border-bottom:1px solid var(--ink)}
+.tt td{padding:.9mm 1.6mm;border-bottom:1px solid var(--line);vertical-align:middle;white-space:nowrap}
+.tt td.ex{color:var(--mute);font-size:6.8pt;white-space:normal}
+.trk{display:inline-block;width:70mm;height:2.6mm;background:#E6E8EC;border-radius:.6mm;vertical-align:middle;overflow:hidden}
+.trk i{display:block;height:100%;background:var(--acc)}
+.trk.g i{background:#9AA2AF}
+.tt .v{display:inline-block;width:14mm;margin-left:2mm;font-variant-numeric:tabular-nums;color:var(--ink)}
+.rd .sub,.tr .sub{font-size:7.2pt;color:var(--mute);font-weight:500;margin-top:.5mm}
+h2{font-size:12.5pt!important;letter-spacing:-.005em}
+h3{font-size:9.2pt;font-weight:600;color:var(--ink);margin-top:7mm;line-height:1.2;border-left:2.6px solid var(--acc);padding:.3mm 0 .3mm 2.2mm}
+h3+.cap{margin-top:1mm}
+.two>div>h3:first-child{margin-top:0}
+.two{margin-top:6mm}
+.tr{display:flex;flex-direction:column}
+.tr h4{min-height:2.6em}
+.rd .fl{min-height:2.7em}
+.flow{position:relative;width:182mm;height:80mm;margin-top:3mm}
+.flow svg{position:absolute;left:0;top:0;width:182mm;height:80mm}
+.fb{position:absolute;top:0;width:38mm;height:17mm;border-radius:2mm;padding:2mm 2.6mm;background:var(--bg2)}
+.fb .n{font-size:15pt;font-weight:600;line-height:1}
+.fb .t{font-size:6.9pt;color:var(--soft);margin-top:1mm;line-height:1.25}
+.fb.now{background:var(--acc);color:#fff}.fb.now .t{color:#DCE5FF}
+.fc{position:absolute;top:27mm;width:46mm;border:1px solid var(--line);border-top:2.2px solid var(--acc);border-radius:2mm;padding:2.4mm 2.6mm;background:#fff}
+.fc .k{font-family:'PlexMono';font-size:6.2pt;letter-spacing:.1em;text-transform:uppercase;color:var(--acc)}
+.fc h4{font-size:9pt;font-weight:600;margin-top:.8mm}
+.fc .meta{font-size:6.8pt;color:var(--mute);margin-top:.5mm;line-height:1.3}
+.fc p{font-size:7.2pt;margin-top:1.2mm;line-height:1.36}
+.fc ul{margin:1mm 0 0 3.2mm;font-size:7pt;line-height:1.34}
+.rd .k{font-family:'Plex';font-size:8pt;letter-spacing:0;text-transform:none;color:var(--ink);font-weight:600;line-height:1.25;min-height:2.5em}
+.rd .f{margin-top:1.2mm}
+.fc{height:44mm}
+.fc .meta{min-height:2.6em}
+.fb .n{color:var(--acc)}
+.flow2{display:grid;grid-template-columns:repeat(3,1fr);column-gap:4mm;margin-top:3mm}
+.col{display:flex;flex-direction:column}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:3mm}
+.pb{background:var(--bg2);border-radius:2mm;padding:2mm 2.4mm;height:17mm}
+.pb .n{font-size:15pt;font-weight:600;line-height:1;color:var(--acc)}
+.pb .t{font-size:6.8pt;color:var(--soft);margin-top:1mm;line-height:1.25}
+.pb.out{background:var(--acc)}.pb.out .n{color:#fff}.pb.out .t{color:#DCE5FF}
+.conn{height:8mm;width:100%;display:block}
+.cd{border:1px solid var(--line);border-top:2.2px solid var(--acc);border-radius:2mm;padding:2.6mm 3mm;height:40mm}
+.cd .k{font-family:'PlexMono';font-size:6.2pt;letter-spacing:.1em;text-transform:uppercase;color:var(--acc)}
+.cd h4{font-size:9.4pt;font-weight:600;margin-top:.8mm}
+.cd .meta{font-size:6.9pt;color:var(--mute);margin-top:.5mm}
+.cd p{font-size:7.4pt;margin-top:1.4mm;line-height:1.38}
+.flow3{display:grid;grid-template-columns:1fr 6mm 1fr 6mm 1fr 6mm .62fr;align-items:stretch;margin-top:3.5mm}
+.ar{display:flex;align-items:center;justify-content:center}
+.st2{border:1px solid var(--line);border-top:2.2px solid var(--acc);border-radius:2mm;padding:2.6mm 2.8mm}
+.st2 .k{font-family:'PlexMono';font-size:6.2pt;letter-spacing:.1em;text-transform:uppercase;color:var(--acc)}
+.st2 h4{font-size:9.4pt;font-weight:600;margin-top:.8mm}
+.st2 .meta{font-size:6.8pt;color:var(--mute);margin-top:.5mm;min-height:2.6em}
+.st2 .big{font-size:20pt;font-weight:600;color:var(--acc);line-height:1;margin-top:1.6mm}
+.st2 .big span{font-size:7.6pt;font-weight:500;color:var(--soft);margin-left:1.4mm}
+.st2 p{font-size:7.3pt;margin-top:1.6mm;line-height:1.38}
+.st2.win{background:var(--acc);border-color:var(--acc);color:#fff}
+.st2.win .k,.st2.win .meta,.st2.win .big span{color:#DCE5FF}.st2.win .big{color:#fff}
+.card,.tr,.rd,.st2{border:0!important;border-top:2.2px solid var(--acc)!important;border-radius:2mm;background:var(--bg2)}
+.card.acc,.st2.win{background:var(--acc)}
+.two .cap{min-height:2.9em}
+</style>
+</head>
+<body>
+
+
+
+<section class="page">
+  <div class="hero">
+    <div class="eyebrow">Maratona IA · Academia LED Globo</div>
+    <h1>Relatório de encerramento da fase 1</h1>
+    <div class="sub">Inscrições, avaliação e perfil dos 80 selecionados · outubro de 2026</div>
+  </div>
+  <div class="lead">
+    <p>A Maratona IA da Academia LED Globo reúne estudantes de graduação em uma trilha de formação e produção com inteligência artificial. Na primeira fase, cada pessoa enviou uma apresentação pessoal, um vídeo criativo feito com apoio de IA e um relato sobre o uso das ferramentas. Cinco pareceristas avaliaram as 150 candidaturas, e 80 pessoas seguem adiante. Este documento fecha a fase com as inscrições, a avaliação e o perfil dos selecionados.</p>
+    <div class="ficha">
+      <div class="row"><div class="k">Inscrições</div><div class="v">19/08 a 20/09/2026</div></div>
+      <div class="row"><div class="k">Avaliação</div><div class="v">3 a 10/10/2026</div></div>
+      <div class="row"><div class="k">Próximas etapas</div><div class="v">Workshop em 20/10 · Mentoria de 3 a 19/11 · Maratona presencial de 14 a 18/12</div></div>
+    </div>
+  </div>
+
+  <div class="lbl">Destaques</div>
+  <div class="cards">
+    <div class="card"><div class="n">714</div><div class="t">cadastros abertos na plataforma de inscrição</div></div>
+    <div class="card"><div class="n">150</div><div class="t">candidaturas completas enviadas, com vídeo</div></div>
+    <div class="card"><div class="n">55</div><div class="t">instituições de ensino representadas entre os 80 selecionados</div></div>
+    <div class="card"><div class="n">3,36</div><div class="t">nota média dos 80 selecionados, em escala de 0 a 4</div></div>
+    <div class="card"><div class="n">2,67</div><div class="t">nota final do 80º colocado, que definiu o corte</div></div>
+    <div class="card acc"><div class="n">11</div><div class="t">selecionados com nota máxima nos três pareceristas</div></div>
+  </div>
+
+  <h2>Processo de inscrição</h2>
+  <p>A pessoa abria um cadastro na plataforma e depois enviava a candidatura completa, com vídeo e respostas. Dos 714 cadastros, 150 chegaram ao envio (21%). Em 8 de setembro havia 354 cadastros (50% do total) e só 35 envios (23%).</p>
+  <div>
+      <h3>Cadastros por semana</h3>
+      <p class="cap">Cadastros por semana de abertura, quantos chegaram ao envio e quantos foram selecionados.</p>
+      <table class="tbl-num">
+        <thead><tr><th>Semana</th><th class="r">Cadastros</th><th class="r">Acumulado</th><th class="r hl">Enviaram</th><th class="r">Conversão</th><th class="r">Selecionados</th></tr></thead>
+        <tbody>
+          <tr><td>19/08 a 25/08</td><td class="r">132</td><td class="r">18%</td><td class="r hl">19</td><td class="r">14%</td><td class="r">12</td></tr>
+          <tr><td>26/08 a 01/09</td><td class="r">148</td><td class="r">39%</td><td class="r hl">21</td><td class="r">14%</td><td class="r">11</td></tr>
+          <tr><td>02/09 a 08/09</td><td class="r">84</td><td class="r">51%</td><td class="r hl">18</td><td class="r">21%</td><td class="r">10</td></tr>
+          <tr><td>09/09 a 15/09</td><td class="r">171</td><td class="r">75%</td><td class="r hl">29</td><td class="r">17%</td><td class="r">12</td></tr>
+          <tr><td>16/09 a 21/09</td><td class="r">179</td><td class="r">100%</td><td class="r hl">63</td><td class="r">35%</td><td class="r">35</td></tr>
+          <tr class="tot"><td>Total</td><td class="r">714</td><td class="r"></td><td class="r hl">150</td><td class="r">21%</td><td class="r">80</td></tr>
+        </tbody>
+      </table>
+  </div>
+  <div class="lbl" style="margin-top:3mm">Leitura das inscrições</div>
+  <div class="reads">
+    <div class="rd"><div class="k">Selecionados que se cadastraram nas duas primeiras semanas</div><div class="f">29%</div><div class="sub">23 de 80 selecionados</div><div class="x">Cadastros feitos entre 19/08 e 01/09, quando as inscrições tinham acabado de abrir.</div></div>
+    <div class="rd"><div class="k">Selecionados que se cadastraram entre 02/09 e 15/09</div><div class="f">28%</div><div class="sub">22 de 80 selecionados</div><div class="x">Período em que a base de cadastros passou de 39% para 75% do total.</div></div>
+    <div class="rd"><div class="k">Selecionados que se cadastraram na última semana</div><div class="f">44%</div><div class="sub">35 de 80 selecionados</div><div class="x">Destes, 33 se cadastraram nos três últimos dias. Metade dos selecionados se cadastrou a seis dias ou menos do fim das inscrições.</div></div>
+  </div>
+
+  <h2>Como as candidaturas foram avaliadas</h2>
+  <p>Cada candidatura recebeu três pareceres de cinco pareceristas (duas ficaram com dois). Em cada parecer, comunicação, criatividade e habilidade no uso da IA receberam um conceito, convertido em nota. A nota final é a média dos pareceres, de 0 a 4,00, e o desempate favorece o uso da IA.</p>
+  <div class="two">
+    <div>
+      <h3>Correspondência entre conceito e nota</h3>
+      <p class="cap">Valor de cada conceito no parecer e faixa da nota final equivalente. Na nota final, tudo abaixo de 3,00 é lido como Regular.</p>
+      <table class="tbl-num">
+        <thead><tr><th>Conceito</th><th class="r">Nota no parecer</th><th class="r">Faixa da nota final</th><th class="r">Sobre a máxima</th></tr></thead>
+        <tbody>
+          <tr><td>Ótimo</td><td class="r">4</td><td class="r">3,50 a 4,00</td><td class="r">88% a 100%</td></tr>
+          <tr><td>Bom</td><td class="r">3</td><td class="r">3,00 a 3,49</td><td class="r">75% a 87%</td></tr>
+          <tr><td>Regular</td><td class="r">2</td><td class="r">abaixo de 3,00</td><td class="r">abaixo de 75%</td></tr>
+          <tr><td>Insuficiente</td><td class="r">1</td><td class="r" colspan="2">sem faixa própria na nota final</td></tr>
+          <tr><td>Nota zero</td><td class="r">0</td><td class="r"></td><td class="r"></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <h3>Notas finais por conceito</h3>
+      <p class="cap">As 150 candidaturas pelo conceito da nota final.</p>
+      <table class="tbl-num">
+        <thead><tr><th>Conceito da nota final</th><th class="r">Candidaturas</th><th class="r hl">Selecionados</th></tr></thead>
+        <tbody>
+          <tr><td>Ótimo (3,50 a 4,00)</td><td class="r">33 (22%)</td><td class="r hl">33</td></tr>
+          <tr><td>Bom (3,00 a 3,49)</td><td class="r">27 (18%)</td><td class="r hl">27</td></tr>
+          <tr><td>Regular (abaixo de 3,00)</td><td class="r">90 (60%)</td><td class="r hl">20</td></tr>
+          <tr class="tot"><td>Total</td><td class="r">150</td><td class="r hl">80</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="foot"><span>Maratona IA · Academia LED Globo · Relatório de encerramento da fase 1</span><span>1 de 5</span></div>
+</section>
+
+<section class="page">
+  <h2 style="margin-top:0">Leitura das notas</h2>
+  <div class="reads">
+    <div class="rd"><div class="k">Selecionados com conceito final Ótimo (3,50 ou mais)</div><div class="f">41%</div><div class="sub">33 de 80 selecionados</div><div class="x">Outros 27 (34%) ficaram em Bom e 20 (25%) em Regular, com nota entre 2,67 e 2,99.</div></div>
+    <div class="rd"><div class="k">Selecionados com Ótimo em habilidade no uso da IA</div><div class="f">41%</div><div class="sub">33 de 80 selecionados</div><div class="x">É o critério central do desafio e o de desempate. Em comunicação foram 40 (50%) e em criatividade, 36 (45%).</div></div>
+    <div class="rd"><div class="k">Nota do 80º colocado, sobre a nota máxima</div><div class="f">67%</div><div class="sub">2,67 de 4,00</div><div class="x">O corte caiu dentro do conceito Regular. Oito candidaturas têm 2,67, e duas delas ficaram fora pelo desempate em habilidade no uso da IA.</div></div>
+  </div>
+
+  <h2>Perfil dos selecionados em relação às candidaturas</h2>
+  <p class="cap">As tabelas comparam as 150 candidaturas com os 80 selecionados, com a proporção dentro de cada grupo entre parênteses. A taxa de seleção indica quantas pessoas de cada linha foram selecionadas, e a taxa geral é de 53%. Dados autodeclarados na inscrição.</p>
+  <div class="two">
+    <div>
+      <h3 style="margin-top:0">Gênero, raça, idade e região</h3>
+      <table>
+      <thead><tr><th></th><th class="r">Candidaturas</th><th class="r hl">Selecionados</th><th class="r">Taxa de seleção</th></tr></thead>
+      <tbody>
+        <tr class="g"><td colspan="4">Gênero</td></tr>
+        <tr><td>Mulheres</td><td class="r">60 (40%)</td><td class="r hl">33 (41%)</td><td class="r">55%</td></tr>
+        <tr><td>Homens</td><td class="r">90 (60%)</td><td class="r hl">47 (59%)</td><td class="r">52%</td></tr>
+        <tr class="g"><td colspan="4">Raça e cor</td></tr>
+        <tr><td>Branca</td><td class="r">63 (42%)</td><td class="r hl">32 (40%)</td><td class="r">51%</td></tr>
+        <tr><td>Parda</td><td class="r">57 (38%)</td><td class="r hl">31 (39%)</td><td class="r">54%</td></tr>
+        <tr><td>Preta</td><td class="r">27 (18%)</td><td class="r hl">15 (19%)</td><td class="r">56%</td></tr>
+        <tr><td>Não informou</td><td class="r">3 (2%)</td><td class="r hl">2 (3%)</td><td class="r">67%</td></tr>
+        <tr class="g"><td colspan="4">Idade</td></tr>
+        <tr><td>18 a 20 anos</td><td class="r">27 (18%)</td><td class="r hl">13 (16%)</td><td class="r">48%</td></tr>
+        <tr><td>21 a 24 anos</td><td class="r">49 (33%)</td><td class="r hl">31 (39%)</td><td class="r">63%</td></tr>
+        <tr><td>25 a 29 anos</td><td class="r">22 (15%)</td><td class="r hl">6 (8%)</td><td class="r">27%</td></tr>
+        <tr><td>30 anos ou mais</td><td class="r">52 (35%)</td><td class="r hl">30 (38%)</td><td class="r">58%</td></tr>
+        <tr class="g"><td colspan="4">Região</td></tr>
+        <tr><td>Sudeste</td><td class="r">97 (65%)</td><td class="r hl">56 (70%)</td><td class="r">58%</td></tr>
+        <tr><td>Nordeste</td><td class="r">27 (18%)</td><td class="r hl">10 (13%)</td><td class="r">37%</td></tr>
+        <tr><td>Centro-Oeste</td><td class="r">12 (8%)</td><td class="r hl">7 (9%)</td><td class="r">58%</td></tr>
+        <tr><td>Sul</td><td class="r">9 (6%)</td><td class="r hl">4 (5%)</td><td class="r">44%</td></tr>
+        <tr><td>Norte</td><td class="r">5 (3%)</td><td class="r hl">3 (4%)</td><td class="r">60%</td></tr>
+      </tbody>
+      </table>
+    </div>
+    <div>
+      <h3 style="margin-top:0">Estado de residência e condição de vida</h3>
+      <table>
+      <thead><tr><th></th><th class="r">Candidaturas</th><th class="r hl">Selecionados</th><th class="r">Taxa de seleção</th></tr></thead>
+      <tbody>
+                <tr class="g"><td colspan="4">Estado</td></tr>
+        <tr><td>Rio de Janeiro</td><td class="r">61</td><td class="r hl">36</td><td class="r">59%</td></tr>
+        <tr><td>São Paulo</td><td class="r">29</td><td class="r hl">18</td><td class="r">62%</td></tr>
+        <tr><td>Bahia</td><td class="r">14</td><td class="r hl">5</td><td class="r">36%</td></tr>
+        <tr><td>Pernambuco</td><td class="r">7</td><td class="r hl">4</td><td class="r">57%</td></tr>
+        <tr><td>Distrito Federal</td><td class="r">6</td><td class="r hl">3</td><td class="r">50%</td></tr>
+        <tr><td>Minas Gerais</td><td class="r">5</td><td class="r hl">1</td><td class="r">20%</td></tr>
+        <tr><td>Paraná</td><td class="r">4</td><td class="r hl">3</td><td class="r">75%</td></tr>
+        <tr><td>Goiás</td><td class="r">4</td><td class="r hl">2</td><td class="r">50%</td></tr>
+        <tr><td>Rio Grande do Sul</td><td class="r">4</td><td class="r hl">1</td><td class="r">25%</td></tr>
+        <tr><td>Amazonas</td><td class="r">2</td><td class="r hl">2</td><td class="r">100%</td></tr>
+        <tr><td>Mato Grosso do Sul</td><td class="r">2</td><td class="r hl">2</td><td class="r">100%</td></tr>
+        <tr><td>Espírito Santo</td><td class="r">2</td><td class="r hl">1</td><td class="r">50%</td></tr>
+        <tr><td>Pará</td><td class="r">2</td><td class="r hl">1</td><td class="r">50%</td></tr>
+        <tr><td>Sergipe</td><td class="r">1</td><td class="r hl">1</td><td class="r">100%</td></tr>
+        <tr><td>AC, AL, CE, PB, PI, RN e SC (uma cada)</td><td class="r">7</td><td class="r hl">0</td><td class="r">0%</td></tr>
+        <tr class="tot"><td>Total</td><td class="r">150</td><td class="r hl">80</td><td class="r">53%</td></tr>
+        <tr class="g"><td colspan="4">Condição de vida</td></tr>
+        <tr><td>Comunidade ou bairro de classe baixa</td><td class="r">81 (54%)</td><td class="r hl">40 (50%)</td><td class="r">49%</td></tr>
+        <tr><td>Pessoa com deficiência</td><td class="r">15 (10%)</td><td class="r hl">7 (9%)</td><td class="r">47%</td></tr>
+      </tbody>
+      </table>
+    </div>
+  </div>
+
+
+
+  <div class="lbl" style="margin-top:2.6mm">Leitura do perfil</div>
+  <div class="reads">
+    <div class="rd"><div class="k">Selecionados que se declaram pretos ou pardos</div><div class="f">58%</div><div class="sub">46 de 80 selecionados</div><div class="x">As mulheres somam 33 selecionadas (41%), proporção próxima à das 150 candidaturas (40%).</div></div>
+    <div class="rd"><div class="k">Selecionados com 21 a 24 anos, a faixa mais numerosa</div><div class="f">39%</div><div class="sub">31 de 80 selecionados</div><div class="x">A idade mediana dos selecionados é 23,5 anos. Outros 30 (38%) têm 30 anos ou mais.</div></div>
+    <div class="rd"><div class="k">Selecionados que moram no Sudeste</div><div class="f">70%</div><div class="sub">56 de 80 selecionados</div><div class="x">Rio de Janeiro e São Paulo somam 54 selecionados (68%). O Nordeste tem 10 (13%), com 5 na Bahia.</div></div>
+  </div>
+
+  <div class="foot"><span>Maratona IA · Academia LED Globo · Relatório de encerramento da fase 1</span><span>2 de 5</span></div>
+</section>
+
+<section class="page">
+  <h2 style="margin-top:0">Selecionados por instituição de ensino</h2>
+  <p class="cap">As 150 candidaturas vêm de 92 instituições, e os 80 selecionados, de 55. O bloco por rede soma públicas e privadas, com o número de instituições entre parênteses. O bloco por instituição lista as que tiveram três ou mais candidaturas, as sete que tiveram duas candidaturas e dois selecionados, e agrupa as demais.</p>
+  <table class="tbl-num compact">
+    <thead><tr><th>Instituição</th><th>Rede</th><th class="r">Candidaturas</th><th class="r hl">Selecionados</th><th class="r">Taxa de seleção</th></tr></thead>
+    <tbody>
+      <tr class="g"><td colspan="5">Por rede</td></tr>
+      <tr><td>Instituições públicas (28)</td><td>Pública</td><td class="r">41 (27%)</td><td class="r hl">24 (30%)</td><td class="r">59%</td></tr>
+      <tr><td>Instituições privadas (64)</td><td>Privada</td><td class="r">109 (73%)</td><td class="r hl">56 (70%)</td><td class="r">51%</td></tr>
+      <tr class="g"><td colspan="5">Por instituição</td></tr>
+      <tr><td>Universidade Federal do Rio de Janeiro (UFRJ)</td><td>Pública</td><td class="r">7</td><td class="r hl">6</td><td class="r">86%</td></tr>
+      <tr><td>Universidade Estácio de Sá (Unesa)</td><td>Privada</td><td class="r">10</td><td class="r hl">3</td><td class="r">30%</td></tr>
+      <tr><td>Universidade Veiga de Almeida (UVA)</td><td>Privada</td><td class="r">6</td><td class="r hl">3</td><td class="r">50%</td></tr>
+      <tr><td>Centro Universitário das Faculdades Metropolitanas Unidas (FMU)</td><td>Privada</td><td class="r">5</td><td class="r hl">3</td><td class="r">60%</td></tr>
+      <tr><td>Universidade São Judas Tadeu</td><td>Privada</td><td class="r">3</td><td class="r hl">3</td><td class="r">100%</td></tr>
+      <tr><td>Centro Universitário Augusto Motta (Unisuam)</td><td>Privada</td><td class="r">4</td><td class="r hl">2</td><td class="r">50%</td></tr>
+      <tr><td>Centro Universitário UniFatecie</td><td>Privada</td><td class="r">4</td><td class="r hl">2</td><td class="r">50%</td></tr>
+      <tr><td>Faculdade ESPM do Rio de Janeiro</td><td>Privada</td><td class="r">3</td><td class="r hl">2</td><td class="r">67%</td></tr>
+      <tr><td>Universidade do Estado do Rio de Janeiro (UERJ)</td><td>Pública</td><td class="r">3</td><td class="r hl">2</td><td class="r">67%</td></tr>
+      <tr><td>Instituto Federal de São Paulo (IFSP)</td><td>Pública</td><td class="r">3</td><td class="r hl">2</td><td class="r">67%</td></tr>
+      <tr><td>Centro Universitário UniCarioca</td><td>Privada</td><td class="r">3</td><td class="r hl">1</td><td class="r">33%</td></tr>
+      <tr><td>PUC-Rio, PUCPR, Unicamp, UFF, Hélio Alonso, Uninove e Cruzeiro do Sul</td><td class="sm">2 públicas e 5 privadas</td><td class="r">14</td><td class="r hl">14</td><td class="r">100%</td></tr>
+      <tr><td>Outras 11 instituições com duas candidaturas</td><td class="sm"></td><td class="r">22</td><td class="r hl">8</td><td class="r">36%</td></tr>
+      <tr><td>63 instituições com uma candidatura</td><td class="sm"></td><td class="r">63</td><td class="r hl">29</td><td class="r">46%</td></tr>
+      <tr class="tot"><td>Total (92 instituições)</td><td></td><td class="r">150</td><td class="r hl">80</td><td class="r">53%</td></tr>
+    </tbody>
+  </table>
+  
+
+  <h2>Apresentações pessoais</h2>
+  <p>Os textos de apresentação dos 80 selecionados foram lidos um a um, e em cada texto foram marcados os traços presentes. Um mesmo texto pode ter vários deles. Seis elementos ajudam a descrever o grupo, com a proporção de selecionados em que cada um aparece.</p>
+  <div class="traits">
+    <div class="tr"><h4>Produção criativa própria anterior à Maratona</h4><div class="n">53%</div><div class="sub">42 de 80 selecionados</div><div class="d">Relatam trabalho autoral em música, audiovisual, canais de conteúdo, design, fotografia ou jogos, com ou sem IA.</div><div class="q">“A IA virou a ponte entre o que eu imagino e o que eu consigo realizar.”</div></div>
+    <div class="tr"><h4>Experiência profissional</h4><div class="n">59%</div><div class="sub">47 de 80 selecionados</div><div class="d">Declaram trabalho, estágio, freelance, negócio próprio ou docência, muitas vezes ligados à comunicação e ao audiovisual.</div></div>
+    <div class="tr"><h4>Posição sobre o limite da IA já na apresentação</h4><div class="n">50%</div><div class="sub">40 de 80 selecionados</div><div class="d">Afirmam que a ferramenta amplia o trabalho e que o olhar crítico e a responsabilidade continuam com quem cria.</div><div class="q">“[A ferramenta] não substitui a apuração, o olhar crítico e a responsabilidade de quem produz informação.”</div></div>
+    <div class="tr"><h4>Origem social e acesso à universidade</h4><div class="n">18%</div><div class="sub">14 de 80 selecionados</div><div class="d">Mencionam escola pública, periferia, bolsa de estudos ou o fato de serem a primeira geração da família no ensino superior.</div><div class="q">“Sendo o primeiro da minha família a ingressar em uma universidade federal.”</div></div>
+    <div class="tr"><h4>Trajetória com mudanças de rota</h4><div class="n">28%</div><div class="sub">22 de 80 selecionados</div><div class="d">Relatam troca de curso, segunda graduação, mudança de carreira ou retomada dos estudos.</div></div>
+    <div class="tr"><h4>Formação técnica</h4><div class="n">33%</div><div class="sub">26 de 80 selecionados</div><div class="d">Cursam computação, dados, IA ou engenharias. Comunicação (publicidade, jornalismo, cinema e mídia) vem em seguida, com 25 (31%). Outros 11 cursam áreas como biologia e medicina, e 12 não informam o curso.</div></div>
+  </div>
+
+  <div class="foot"><span>Maratona IA · Academia LED Globo · Relatório de encerramento da fase 1</span><span>3 de 5</span></div>
+</section>
+
+<section class="page">
+  <h2 style="margin-top:0">Como os selecionados usaram e supervisionaram a IA</h2>
+  <p>O formulário pedia duas respostas sobre o vídeo. A primeira descrevia em quais etapas a IA foi usada e com qual finalidade, e a segunda, como ocorreu a supervisão humana e quais verificações foram feitas. As respostas dos 80 selecionados foram lidas uma a uma. Em cada resposta foram marcadas as etapas citadas e os padrões de supervisão presentes, e uma mesma resposta pode ter vários deles. As tabelas mostram em quantas respostas cada item aparece. Por ser leitura de texto livre, as contagens são aproximadas.</p>
+
+  <h3>Etapas do vídeo em que a IA foi usada</h3>
+  <p class="cap">Selecionados que citaram o uso de IA em cada etapa da produção do vídeo, com a proporção sobre os 80.</p>
+  <table class="tt">
+    <thead><tr><th>Etapa</th><th>Selecionados (80)</th></tr></thead>
+    <tbody>
+      <tr><td>Geração de vídeo ou animação</td><td><span class="trk"><i style="width:67.5%"></i></span><span class="v">54 (68%)</span></td></tr>
+      <tr><td>Edição e montagem</td><td><span class="trk"><i style="width:62.5%"></i></span><span class="v">50 (63%)</span></td></tr>
+      <tr><td>Roteiro e ideia</td><td><span class="trk"><i style="width:55.0%"></i></span><span class="v">44 (55%)</span></td></tr>
+      <tr><td>Criação de imagens</td><td><span class="trk"><i style="width:52.5%"></i></span><span class="v">42 (53%)</span></td></tr>
+      <tr><td>Música e trilha</td><td><span class="trk"><i style="width:46.2%"></i></span><span class="v">37 (46%)</span></td></tr>
+      <tr><td>Voz e narração</td><td><span class="trk"><i style="width:45.0%"></i></span><span class="v">36 (45%)</span></td></tr>
+    </tbody>
+  </table>
+  <p>Os relatos descrevem, na maior parte, um fluxo parecido. O roteiro nasce com apoio de um assistente de texto, as cenas são geradas em clipes curtos e encadeados, a voz e a trilha vêm de ferramentas de áudio e a montagem final é feita em um editor de vídeo. A geração de vídeo, citada por 54 selecionados (68%), aparece com mais frequência do que o uso de IA para o roteiro, citado por 44 (55%).</p>
+
+  <h3>Como descrevem a supervisão</h3>
+  <p class="cap">Padrões encontrados nas respostas sobre supervisão humana, com um trecho de resposta que ilustra cada um e o número de selecionados em que o padrão aparece.</p>
+  <table class="tt">
+    <thead><tr><th>Padrão</th><th>Selecionados (80)</th></tr></thead>
+    <tbody>
+      <tr><td style="white-space:normal">Descreve um processo encadeado, com o papel da IA em cada etapa<br><span style="font-size:6.6pt;color:var(--mute);font-style:italic">“Gerei em pequenos takes e fui corrigindo as falhas 1 por 1.”</span></td><td><span class="trk"><i style="width:63.8%"></i></span><span class="v">51 (64%)</span></td></tr>
+      <tr><td style="white-space:normal">Relata iterações, com prompts refeitos e versões descartadas<br><span style="font-size:6.6pt;color:var(--mute);font-style:italic">“Gerei várias opções de música, descartei as que não tinham a pegada que eu queria.”</span></td><td><span class="trk"><i style="width:52.5%"></i></span><span class="v">42 (53%)</span></td></tr>
+      <tr><td style="white-space:normal">Faz checagens técnicas de continuidade, sincronia, áudio ou legenda<br><span style="font-size:6.6pt;color:var(--mute);font-style:italic">“Assisti cada clipe de 8s gerado antes de encadear o próximo.”</span></td><td><span class="trk"><i style="width:51.2%"></i></span><span class="v">41 (51%)</span></td></tr>
+      <tr><td style="white-space:normal">Intervém manualmente sobre o material gerado<br><span style="font-size:6.6pt;color:var(--mute);font-style:italic">“Consegui usar os takes apenas mascarando as partes que deram erradas.”</span></td><td><span class="trk"><i style="width:46.2%"></i></span><span class="v">37 (46%)</span></td></tr>
+      <tr><td style="white-space:normal">Trata a IA como ferramenta e reserva para si a decisão final<br><span style="font-size:6.6pt;color:var(--mute);font-style:italic">“A autoria, a seleção, a direção e a responsabilidade pelo resultado permaneceram humanas.”</span></td><td><span class="trk"><i style="width:41.2%"></i></span><span class="v">33 (41%)</span></td></tr>
+      <tr><td style="white-space:normal">Nomeia falhas e limites das ferramentas<br><span style="font-size:6.6pt;color:var(--mute);font-style:italic">“O modelo de vez em quando alucinava membros adicionais.”</span></td><td><span class="trk"><i style="width:22.5%"></i></span><span class="v">18 (23%)</span></td></tr>
+      <tr><td style="white-space:normal">Confere se o conteúdo gerado é verdadeiro<br><span style="font-size:6.6pt;color:var(--mute);font-style:italic">“Verifiquei se não foram inventadas experiências, resultados ou qualificações.”</span></td><td><span class="trk"><i style="width:22.5%"></i></span><span class="v">18 (23%)</span></td></tr>
+      <tr><td style="white-space:normal">Discute direitos autorais, imagem de terceiros ou viés<br><span style="font-size:6.6pt;color:var(--mute);font-style:italic">Ajustes de prompt para corrigir a tendência das ferramentas de gerar pessoas brancas.</span></td><td><span class="trk"><i style="width:15.0%"></i></span><span class="v">12 (15%)</span></td></tr>
+    </tbody>
+  </table>
+  <p>O que aparece com mais frequência é a pessoa dirigindo o processo. A IA gera opções, e quem cria escolhe, corrige, refaz e monta. Mais da metade dos selecionados descreve o trabalho em etapas, relata iterações e faz checagens técnicas. Nos 80 textos, a IA não aparece como coautora. Quatro textos trazem trechos colados sem revisão, como instruções de modelo esquecidas na apresentação.</p>
+  <div class="foot"><span>Maratona IA · Academia LED Globo · Relatório de encerramento da fase 1</span><span>4 de 5</span></div>
+</section>
+
+<section class="page">
+  <h2 style="margin-top:0">Ferramentas citadas</h2>
+  <p>No formulário, cada pessoa marcou as ferramentas de IA usadas no vídeo e pôde registrar outras fora da lista. Os 80 selecionados citaram em média 3,5 ferramentas.</p>
+  <h3>Por tipo de ferramenta</h3>
+  <p class="cap">Selecionados que citaram ao menos uma ferramenta de cada tipo, com a proporção sobre os 80.</p>
+  <table class="tt">
+    <thead><tr><th>Tipo</th><th>Ferramentas incluídas</th><th>Selecionados (80)</th></tr></thead>
+    <tbody>
+      <tr><td>Texto e roteiro</td><td class="ex">ChatGPT, Gemini, Claude, DeepSeek, Copilot, Perplexity</td><td><span class="trk"><i style="width:97.5%"></i></span><span class="v">78 (98%)</span></td></tr>
+      <tr><td>Edição de vídeo e design</td><td class="ex">CapCut, Canva, Premiere, DaVinci Resolve</td><td><span class="trk"><i style="width:61.2%"></i></span><span class="v">49 (61%)</span></td></tr>
+      <tr><td>Geração de vídeo</td><td class="ex">Veo 3, Kling, Runway, Sora, Pika</td><td><span class="trk"><i style="width:41.2%"></i></span><span class="v">33 (41%)</span></td></tr>
+      <tr><td>Áudio, voz e música</td><td class="ex">ElevenLabs, Suno, Udio, Adobe Podcast</td><td><span class="trk"><i style="width:18.8%"></i></span><span class="v">15 (19%)</span></td></tr>
+      <tr><td>Imagem</td><td class="ex">Midjourney, Firefly, Leonardo</td><td><span class="trk"><i style="width:7.5%"></i></span><span class="v">6 (8%)</span></td></tr>
+    </tbody>
+  </table>
+  <h3>Ferramentas mais citadas</h3>
+  <p class="cap">As dez ferramentas mais citadas pelos selecionados, com a proporção sobre os 80. O Google Flow foi registrado no campo livre do formulário.</p>
+  <table class="tt">
+    <thead><tr><th>Ferramenta</th><th>Tipo</th><th>Selecionados (80)</th></tr></thead>
+    <tbody>
+      <tr><td>Google Gemini</td><td class="ex">Texto e roteiro</td><td><span class="trk"><i style="width:62.5%"></i></span><span class="v">50 (63%)</span></td></tr>
+      <tr><td>ChatGPT</td><td class="ex">Texto e roteiro</td><td><span class="trk"><i style="width:62.5%"></i></span><span class="v">50 (63%)</span></td></tr>
+      <tr><td>CapCut</td><td class="ex">Edição de vídeo</td><td><span class="trk"><i style="width:47.5%"></i></span><span class="v">38 (48%)</span></td></tr>
+      <tr><td>Google Veo 3</td><td class="ex">Geração de vídeo</td><td><span class="trk"><i style="width:35.0%"></i></span><span class="v">28 (35%)</span></td></tr>
+      <tr><td>Claude</td><td class="ex">Texto e roteiro</td><td><span class="trk"><i style="width:21.2%"></i></span><span class="v">17 (21%)</span></td></tr>
+      <tr><td>Canva (Magic Studio)</td><td class="ex">Edição e design</td><td><span class="trk"><i style="width:16.2%"></i></span><span class="v">13 (16%)</span></td></tr>
+      <tr><td>Suno AI</td><td class="ex">Música</td><td><span class="trk"><i style="width:12.5%"></i></span><span class="v">10 (13%)</span></td></tr>
+      <tr><td>ElevenLabs</td><td class="ex">Voz</td><td><span class="trk"><i style="width:10.0%"></i></span><span class="v">8 (10%)</span></td></tr>
+      <tr><td>Adobe Premiere</td><td class="ex">Edição de vídeo</td><td><span class="trk"><i style="width:8.8%"></i></span><span class="v">7 (9%)</span></td></tr>
+      <tr><td>Google Flow</td><td class="ex">Geração de vídeo</td><td><span class="trk"><i style="width:8.8%"></i></span><span class="v">7 (9%)</span></td></tr>
+    </tbody>
+  </table>
+  
+
+
+  <h2>Próximas etapas</h2>
+  <p>Pelo regulamento da Maratona IA, os 80 selecionados seguem para três etapas, com seleções sucessivas até a definição do trio vencedor. Cada etapa mostra quantas pessoas participam dela.</p>
+  <div class="flow3"><div class="st2"><div class="k">Etapa 05</div><h4>Workshop</h4><div class="meta">20/10/2026 · remoto</div><div class="big">80<span>participantes</span></div><p>Aprimoramento técnico e prototipagem, conduzido pela Globo e pela Mastertech. Os 15 melhores protótipos seguem para a mentoria.</p></div><div class="ar"><svg viewBox="0 0 10 20" width="6mm" height="12mm"><path d="M1 10 H8 M5 6 L8.5 10 L5 14" fill="none" stroke="#1F4FD8" stroke-width="1.1"/></svg></div><div class="st2"><div class="k">Etapa 06</div><h4>Mentoria</h4><div class="meta">3 a 19/11/2026 · remoto</div><div class="big">15<span>participantes</span></div><p>Desenvolvimento de produtos com IA, com conteúdo sobre IA na Globo, uso responsável, entretenimento e futuro da IA. Os participantes seguem como finalistas.</p></div><div class="ar"><svg viewBox="0 0 10 20" width="6mm" height="12mm"><path d="M1 10 H8 M5 6 L8.5 10 L5 14" fill="none" stroke="#1F4FD8" stroke-width="1.1"/></svg></div><div class="st2"><div class="k">Etapa 07</div><h4>Maratona presencial</h4><div class="meta">14 a 18/12/2026 · Globo, Rio de Janeiro</div><div class="big">5<span>trios de finalistas</span></div><p>Em cinco dias, cada trio cria uma solução para um desafio proposto por especialistas da Globo, e uma banca escolhe o vencedor.</p></div><div class="ar"><svg viewBox="0 0 10 20" width="6mm" height="12mm"><path d="M1 10 H8 M5 6 L8.5 10 L5 14" fill="none" stroke="#1F4FD8" stroke-width="1.1"/></svg></div><div class="st2 win"><div class="k">Resultado</div><h4>Trio vencedor</h4><div class="meta">ao fim da Maratona</div><div class="big">1<span>trio</span></div><p>Cada integrante recebe prêmio bruto de R$&nbsp;10.000.</p></div></div>
+
+  <p class="note" style="margin-top:5mm">Fontes. Ranking do sistema de avaliação em 10/10/2026, sem avaliações de teste, as 150 inscrições enviadas da planilha de 25/09/2026 e o Regulamento Maratona IA, Academia LED Globo. As contagens sobre os textos vêm de leitura qualitativa de um único leitor e são aproximadas. Citações anonimizadas.</p>
+
+  <div class="foot"><span>Maratona IA · Academia LED Globo · Relatório de encerramento da fase 1</span><span>5 de 5</span></div>
+</section>
+
+</body>
+</html>
