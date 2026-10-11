@@ -326,6 +326,7 @@ let DURACOES_VIDEO = {};
 const inicioAvaliacaoPorInscricao = new Map();
 const videosAbertos = new Set();
 const videosComProblema = new Set();
+const videosRetornadosDaAuditoria = new Set();
 const AMBIENTE = "homolog";
 const SENHA_ACESSO = "MIA26";
 const NOTA_NUMERO = {"0":0, Insuficiente:1, Regular:2, Bom:3, "Ótimo":4};
@@ -421,11 +422,17 @@ async function carregarMaratona(){
   if(parRes.error) throw parRes.error;
   if(!parRes.data) throw new Error("Parecerista não encontrado.");
   videosComProblema.clear();
+  videosRetornadosDaAuditoria.clear();
   eventosVideo.forEach(evento=>{
     const inscricaoId=String(evento.inscricao_id||evento.payload_json?.inscricao_id||"");
     if(!inscricaoId) return;
-    if(evento.event_type==="video_problema_resolvido") videosComProblema.delete(inscricaoId);
-    else videosComProblema.add(inscricaoId);
+    if(evento.event_type==="video_problema_resolvido"){
+      videosComProblema.delete(inscricaoId);
+      // Uma candidatura devolvida pela auditoria deve permanecer com a mesma
+      // parecerista, mas sempre fechar a fila, mesmo que houve mais de um
+      // reporte para o mesmo vídeo.
+      videosRetornadosDaAuditoria.add(inscricaoId);
+    } else videosComProblema.add(inscricaoId);
   });
   const reviewerIsTest=!!parRes.data.is_teste;
   const ordem=new Map(atribuicoes.map((a,i)=>[String(a.inscricao_id_externo),i]));
@@ -434,7 +441,11 @@ async function carregarMaratona(){
     .sort((a,b)=>reviewerIsTest
       ? Number(a.id_curto||0)-Number(b.id_curto||0)
       : ordem.get(String(a.id_externo))-ordem.get(String(b.id_externo)));
-  const linhas=[...linhasOrdenadas.filter(i=>!videosComProblema.has(String(i.id_externo))),...linhasOrdenadas.filter(i=>videosComProblema.has(String(i.id_externo)))];
+  const deveIrParaFimDaFila=i=>{
+    const id=String(i.id_externo);
+    return videosComProblema.has(id)||videosRetornadosDaAuditoria.has(id);
+  };
+  const linhas=[...linhasOrdenadas.filter(i=>!deveIrParaFimDaFila(i)),...linhasOrdenadas.filter(deveIrParaFimDaFila)];
   INSCRICOES=linhas.map(row=>{
     const raw=row.raw_json||{};
     return {

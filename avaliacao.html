@@ -679,7 +679,6 @@ tr:hover td.sticky{background:#FAFAFA}
   margin:22px 0 18px;
   border:1px solid #D7E2F1;
   border-radius:8px;
-  overflow:hidden;
   background:#FFF;
   box-shadow:0 6px 18px rgba(31,56,88,.07);
 }
@@ -704,10 +703,13 @@ tr:hover td.sticky{background:#FAFAFA}
 #view-resultados .results-report-title{color:#202124;font-size:15px;font-weight:650;line-height:1.25}
 #view-resultados .results-report-sub{margin-top:2px;color:#6B7280;font-size:12px;line-height:1.35}
 #view-resultados .results-report-download{flex:0 0 auto;white-space:nowrap;text-decoration:none}
-#view-resultados .results-report-frame{display:block;width:100%;height:min(72vh,720px);min-height:520px;border:0;background:#F3F5F8}
+#overlayResultsReport{z-index:250}
+#overlayResultsReport .modal{max-width:min(1180px,calc(100vw - 36px));height:min(88vh,920px);overflow:hidden}
+.results-report-modal-body{flex:1;min-height:0;padding:0;background:#F3F5F8}
+.results-report-frame{display:block;width:100%;height:100%;min-height:0;border:0;background:#F3F5F8}
 @media (max-width:720px){
   #view-resultados .results-report-head{align-items:flex-start;flex-direction:column}
-  #view-resultados .results-report-frame{height:68vh;min-height:460px}
+  #overlayResultsReport .modal{height:calc(100vh - 28px);max-width:calc(100vw - 20px)}
 }
 #view-resultados:not(.results-summary-open) .results-table .s0{left:0;width:5.5%;min-width:0;max-width:none}
 #view-resultados:not(.results-summary-open) .results-table .s5{left:5.5%;width:24.5%;min-width:0;max-width:none}
@@ -4939,11 +4941,8 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
         <div class="results-report-title" id="resultsReportTitle">Encerramento da fase de seleção</div>
         <div class="results-report-sub">Panorama das inscrições, avaliações e perfil das 80 pessoas selecionadas.</div>
       </div>
-      <a class="btn btn-secondary btn-sm results-report-download" href="relatorio_fase1/Maratona%20IA%20-%20Encerramento%20fase%201.pdf" download>
-        <i class="ti ti-download"></i>Baixar relatório
-      </a>
+      <button class="btn btn-secondary btn-sm results-report-download" type="button" onclick="openResultsReport()"><i class="ti ti-file-analytics"></i>Abrir relatório</button>
     </div>
-    <iframe class="results-report-frame" src="relatorio_fase1/Maratona%20IA%20-%20Encerramento%20fase%201.pdf#view=FitH" title="Relatório analítico do encerramento da fase de seleção"></iframe>
   </section>
 
   <div class="tbl-card">
@@ -5018,6 +5017,25 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
     </div>
     <div class="mf">
       <button class="btn btn-primary" type="button" onclick="closeRelativeRankingHelp()">Entendi</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlayResultsReport" onclick="if(event.target===this)closeResultsReport()">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="resultsReportModalTitle">
+    <div class="mh">
+      <div>
+        <div class="mh-ey">RELATÓRIO ANALÍTICO</div>
+        <div class="mh-title" id="resultsReportModalTitle">Encerramento da fase de seleção</div>
+        <div class="mh-sub">Panorama das inscrições, avaliações e perfil das 80 pessoas selecionadas.</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <a class="btn btn-secondary btn-sm" href="relatorio_fase1/Maratona%20IA%20-%20Encerramento%20fase%201.pdf" download><i class="ti ti-download"></i>Baixar</a>
+        <button class="icon-btn" type="button" onclick="closeResultsReport()" title="Fechar"><i class="ti ti-x"></i></button>
+      </div>
+    </div>
+    <div class="results-report-modal-body">
+      <iframe class="results-report-frame" src="relatorio_fase1/Maratona%20IA%20-%20Encerramento%20fase%201.pdf#view=FitH" title="Relatório analítico do encerramento da fase de seleção"></iframe>
     </div>
   </div>
 </div>
@@ -9292,6 +9310,14 @@ function openRelativeRankingHelp() {
 
 function closeRelativeRankingHelp() {
   document.getElementById('overlayRelativeRankingHelp')?.classList.remove('open');
+}
+
+function openResultsReport() {
+  document.getElementById('overlayResultsReport')?.classList.add('open');
+}
+
+function closeResultsReport() {
+  document.getElementById('overlayResultsReport')?.classList.remove('open');
 }
 
 function toggleRes(i) {
