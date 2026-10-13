@@ -4516,6 +4516,10 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
 }
 #view-dashboard .dash-chart-featured{margin-bottom:14px!important}
 #view-dashboard .dash-chart-featured .dash-chart-slot{overflow:hidden!important}
+#view-dashboard .dash-chart-featured.is-minimized{height:auto!important;min-height:0!important;padding:12px 16px!important;background:#FBFCFE}
+#view-dashboard .dash-chart-featured.is-minimized .section-label{margin:0!important}
+#view-dashboard .dash-chart-featured.is-minimized .dash-chart-slot{display:none!important}
+#view-dashboard .dash-chart-featured.is-minimized::after{content:"Série histórica de todas as inscrições recolhida neste recorte.";margin-top:3px;color:#7B8797;font-size:11px;line-height:1.4}
 #view-dashboard .dash-chart-filter{
   display:inline-flex;
   width:auto;
@@ -4672,7 +4676,7 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
     <div class="dash-page active" id="dash-page-overview">
       <div class="kpi-row" id="dashKpis" style="grid-template-columns:repeat(3,minmax(0,1fr));margin-bottom:20px"></div>
 
-      <div class="card dash-chart-card dash-chart-featured">
+      <div class="card dash-chart-card dash-chart-featured" id="dashEvolutionCard">
         <div class="section-label">Inscrições acumuladas</div>
         <div class="dash-chart-slot" id="slotEvolucao" style="position:relative;height:210px"><canvas id="cEvolucao"></canvas></div>
       </div>
@@ -11693,7 +11697,6 @@ function getSupabaseFunctionsBaseUrl() {
 }
 
 function shouldUseAttachmentProxy(url = '') {
-  if (!hasSupabaseCredentials()) return false;
   try {
     const parsed = new URL(String(url || '').trim());
     return parsed.protocol === 'https:' && parsed.hostname === 'inscricoes.led.globo';
@@ -11704,9 +11707,7 @@ function shouldUseAttachmentProxy(url = '') {
 
 function buildAttachmentProxyUrl(url = '') {
   if (!shouldUseAttachmentProxy(url)) return String(url || '').trim();
-  const base = getSupabaseFunctionsBaseUrl();
-  if (!base) return String(url || '').trim();
-  return `${base}/file-proxy?url=${encodeURIComponent(String(url || '').trim())}`;
+  return `/api/file-proxy?url=${encodeURIComponent(String(url || '').trim())}`;
 }
 
 function updateSupabaseStatus(msg, tone) {
@@ -14683,6 +14684,7 @@ function renderDashboard() {
   let dashSubText = `${insc.length.toLocaleString('pt-BR')} inscrições carregadas`;
   const chartScope = dashboardChartScope();
   const chartInsc = chartScope.rows;
+  document.getElementById('dashEvolutionCard')?.classList.toggle('is-minimized', chartScope.mode === 'top80');
   const chartScopeNote = document.getElementById('dashChartScoreFilterNote');
   if (chartScopeNote) {
     chartScopeNote.textContent = chartScope.mode === 'top80'
