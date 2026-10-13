@@ -4622,7 +4622,7 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
   <div class="snav" data-view="auditoria" style="display:none"><span class="icon icon-sm"><i class="ti ti-shield-check"></i></span>Auditoria</div>
   <div class="snav" data-view="config" style="display:none"><span class="icon icon-sm"><i class="ti ti-adjustments-horizontal"></i></span>Configurações</div>
   <div class="snav-right">
-    <button class="snav snav-report" type="button" onclick="openResultsReport()"><span class="icon icon-sm"><i class="ti ti-file-analytics"></i></span>Relatório analítico</button>
+    <button class="snav snav-report" type="button" onclick="openResultsReport()"><span class="icon icon-sm"><i class="ti ti-file-analytics"></i></span>Report Final — Fase 1</button>
     <button class="snav snav-report snav-contacts-report" type="button" onclick="openContactsReport()" title="Abrir a lista de contatos das pessoas selecionadas"><span class="icon icon-sm"><i class="ti ti-address-book"></i></span>Lista dos 80+ (contatos)</button>
     <button class="snav snav-report" id="resultsScoreCutoffsBtn" type="button" onclick="openScoreCutoffsDrawer()" title="Ver quantas candidaturas alcançam cada corte de nota"><span class="icon icon-sm"><i class="ti ti-chart-bar"></i></span>Cortes de nota</button>
   </div>
@@ -5092,7 +5092,7 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="resultsReportModalTitle">
     <div class="mh">
       <div>
-        <div class="mh-ey">RELATÓRIO ANALÍTICO</div>
+        <div class="mh-ey">REPORT FINAL — FASE 1</div>
         <div class="mh-title" id="resultsReportModalTitle">Encerramento da fase de seleção</div>
         <div class="mh-sub">Panorama das inscrições, avaliações e perfil das 80 pessoas selecionadas.</div>
       </div>
@@ -5102,7 +5102,7 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
       </div>
     </div>
     <div class="results-report-modal-body">
-      <iframe class="results-report-frame" src="relatorio_fase1/Maratona%20IA%20-%20Encerramento%20fase%201.pdf#view=FitH" title="Relatório analítico do encerramento da fase de seleção"></iframe>
+      <iframe class="results-report-frame" src="relatorio_fase1/Maratona%20IA%20-%20Encerramento%20fase%201.pdf#view=FitH" title="Report final do encerramento da fase 1"></iframe>
     </div>
   </div>
 </div>
@@ -5113,7 +5113,7 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
       <div>
         <div class="mh-ey">RELATÓRIO DE CONTATOS</div>
         <div class="mh-title" id="contactsReportModalTitle">80 pessoas selecionadas</div>
-        <div class="mh-sub">Nome, e-mail, telefone, cidade, universidade e curso.</div>
+        <div class="mh-sub">Nome, e-mail, telefone, cidade e universidade.</div>
       </div>
       <div style="display:flex;align-items:center;gap:8px">
         <button class="btn btn-primary btn-sm" type="button" onclick="printContactsReportPDF()"><i class="ti ti-printer"></i>Imprimir / salvar PDF</button>
@@ -8106,6 +8106,20 @@ function extractVimeoId(url = '') {
   } catch {}
   return '';
 }
+function extractGoogleDriveFileId(url = '') {
+  const text = String(url || '').trim();
+  if (!text) return '';
+  try {
+    const parsed = new URL(text);
+    const hostname = parsed.hostname.toLowerCase();
+    if (!hostname.endsWith('drive.google.com') && !hostname.endsWith('docs.google.com')) return '';
+    const pathMatch = parsed.pathname.match(/\/(?:file|document|spreadsheets|presentation)\/d\/([^/?#]+)/i);
+    if (pathMatch?.[1]) return pathMatch[1];
+    return parsed.searchParams.get('id') || '';
+  } catch {
+    return '';
+  }
+}
 function buildAttachmentViewerConfig(url = '', tipo = '') {
   const normalizedUrl = String(url || '').trim();
   const lowerUrl = normalizedUrl.toLowerCase();
@@ -8124,6 +8138,14 @@ function buildAttachmentViewerConfig(url = '', tipo = '') {
     return {
       kind: 'iframe',
       src: `https://player.vimeo.com/video/${vimeoId}`,
+      note: ''
+    };
+  }
+  const googleDriveFileId = extractGoogleDriveFileId(normalizedUrl);
+  if (googleDriveFileId) {
+    return {
+      kind: 'iframe',
+      src: `https://drive.google.com/file/d/${encodeURIComponent(googleDriveFileId)}/preview`,
       note: ''
     };
   }
@@ -9487,7 +9509,6 @@ function selectedContactsReportRows() {
         city,
         state: ufDisplayLabel(e.uf) || 'Não informado',
         institution: e.inst || 'Não informada',
-        course: e.curso || firstRawValue(raw, ['Curso de graduação que você cursa', 'Curso no qual você tem matrícula ativa?', 'Curso']) || 'Não informado',
       };
     });
 }
@@ -9498,11 +9519,11 @@ function contactsReportDocumentHTML(rows) {
     <td>${row.position}</td><td>${escapeHtmlAttr(row.id)}</td><td class="contact-name">${escapeHtmlAttr(contactReportTitleCase(row.name))}</td>
     <td>${escapeHtmlAttr(row.email)}</td><td>${escapeHtmlAttr(row.phone)}</td>
     <td class="contact-location"><span class="contact-city">${escapeHtmlAttr(row.city)}</span><span class="contact-state">${escapeHtmlAttr(contactReportTitleCase(row.state))}</span></td>
-    <td class="contact-institution">${escapeHtmlAttr(row.institution)}</td><td>${escapeHtmlAttr(row.course)}</td>
+    <td class="contact-institution">${escapeHtmlAttr(row.institution)}</td>
   </tr>`).join('');
   return `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Maratona IA 2026 - contatos das 80 pessoas selecionadas</title><style>
-    @page{size:A4 landscape;margin:12mm}*{box-sizing:border-box}html{background:#F3F5F8}body{max-width:1440px;margin:0 auto;padding:28px 32px 44px;color:#202124;background:#fff;font-family:Arial,sans-serif;font-size:8.5pt}.head{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #1A73E8;padding-bottom:10px;margin-bottom:12px}h1{margin:0;font-size:16pt}.sub{margin-top:4px;color:#5F6368;font-size:9pt}.meta{color:#5F6368;font-size:8pt;text-align:right}table{border-collapse:collapse;width:100%;table-layout:fixed}th{background:#E8F0FE;color:#174EA6;text-align:left;font-size:7.5pt;font-weight:700;padding:6px;border:1px solid #C9D8F2}td{padding:5px 6px;border:1px solid #DADCE0;vertical-align:top;line-height:1.25;word-break:break-word}.contact-name,.contact-location{text-transform:none}.contact-city{display:block;text-transform:uppercase}.contact-state{display:block;margin-top:2px}.contact-institution{text-transform:uppercase;font-size:7.5pt}tbody tr:nth-child(even){background:#F8FAFD}th:nth-child(1),td:nth-child(1){width:4%;text-align:center}th:nth-child(2),td:nth-child(2){width:5%;text-align:center}th:nth-child(3),td:nth-child(3){width:18%}th:nth-child(4),td:nth-child(4){width:20%}th:nth-child(5),td:nth-child(5){width:12%}th:nth-child(6),td:nth-child(6){width:12%}th:nth-child(7),td:nth-child(7){width:18%}th:nth-child(8),td:nth-child(8){width:11%}footer{position:fixed;bottom:0;left:0;right:0;color:#5F6368;font-size:7.5pt;text-align:center}@media print{html{background:#fff}body{max-width:none;padding:0}footer{position:fixed}}
-  </style></head><body><div class="head"><div><h1>Maratona IA 2026</h1><div class="sub">Lista de contatos das 80 pessoas selecionadas - fase de seleção</div></div><div class="meta">Gerado em ${escapeHtmlAttr(generatedAt)}<br>${rows.length} contatos</div></div><table><thead><tr><th>#</th><th>ID</th><th>Nome</th><th>E-mail</th><th>Telefone</th><th>Cidade / UF</th><th>Universidade</th><th>Curso</th></tr></thead><tbody>${body}</tbody></table><footer>Maratona IA 2026 - Sistema de Avaliação de Candidaturas</footer></body></html>`;
+    @page{size:A4 landscape;margin:12mm}*{box-sizing:border-box}html{background:#F3F5F8}body{max-width:1440px;margin:0 auto;padding:28px 32px 44px;color:#202124;background:#fff;font-family:Arial,sans-serif;font-size:8.5pt}.head{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #1A73E8;padding-bottom:10px;margin-bottom:12px}h1{margin:0;font-size:16pt}.sub{margin-top:4px;color:#5F6368;font-size:9pt}.meta{color:#5F6368;font-size:8pt;text-align:right}table{border-collapse:collapse;width:100%;table-layout:fixed}th{background:#E8F0FE;color:#174EA6;text-align:left;font-size:7.5pt;font-weight:700;padding:6px;border:1px solid #C9D8F2}td{padding:5px 6px;border:1px solid #DADCE0;vertical-align:top;line-height:1.25;word-break:break-word}.contact-name,.contact-location{text-transform:none}.contact-city{display:block;text-transform:uppercase}.contact-state{display:block;margin-top:2px}.contact-institution{text-transform:uppercase;font-size:7.5pt}tbody tr:nth-child(even){background:#F8FAFD}th:nth-child(1),td:nth-child(1){width:4%;text-align:center}th:nth-child(2),td:nth-child(2){width:5%;text-align:center}th:nth-child(3),td:nth-child(3){width:20%}th:nth-child(4),td:nth-child(4){width:22%}th:nth-child(5),td:nth-child(5){width:12%}th:nth-child(6),td:nth-child(6){width:14%}th:nth-child(7),td:nth-child(7){width:23%}footer{position:fixed;bottom:0;left:0;right:0;color:#5F6368;font-size:7.5pt;text-align:center}@media print{html{background:#fff}body{max-width:none;padding:0}footer{position:fixed}}
+  </style></head><body><div class="head"><div><h1>Maratona IA 2026</h1><div class="sub">Lista de contatos das 80 pessoas selecionadas - fase de seleção</div></div><div class="meta">Gerado em ${escapeHtmlAttr(generatedAt)}<br>${rows.length} contatos</div></div><table><thead><tr><th>#</th><th>ID</th><th>Nome</th><th>E-mail</th><th>Telefone</th><th>Cidade / UF</th><th>Universidade</th></tr></thead><tbody>${body}</tbody></table><footer>Maratona IA 2026 - Sistema de Avaliação de Candidaturas</footer></body></html>`;
 }
 
 function contactReportTitleCase(value) {
