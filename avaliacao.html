@@ -8986,7 +8986,9 @@ function renderResultados() {
       : '';
     const projectSummary = projectSummaries.get(String(shortInscId(e.id))) || e.defesa || '';
     const videoUrl = materialLinks(e).video || '';
-    const candidateState = ufDisplayLabel(e.uf) || 'Não informado';
+    // UF é um dado declarado pela pessoa candidata, não a localização da instituição.
+    // O rótulo evita leituras como “Guarulhos, Rio de Janeiro” quando os dois campos diferem.
+    const candidateState = e.uf ? `Estado informado: ${ufDisplayLabel(e.uf)}` : 'Estado não informado';
     const candidateGenders = [...generosTimeInscricao(e)].join(' · ') || 'Não informado';
     const candidateRaces = [...racasTimeInscricao(e)].join(' · ') || 'Não informada';
     const rowClass = [
