@@ -4075,13 +4075,18 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
   letter-spacing:0!important;
 }
 #view-resultados .res-tie-label{
-  display:block;
-  margin-top:3px;
-  color:#8B95A5;
-  font-size:10px;
-  font-weight:600;
-  line-height:1.25;
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  margin-top:5px;
+  color:#1A73E8;
+  font-size:9px;
+  font-weight:700;
+  line-height:1;
+  letter-spacing:.07em;
+  text-transform:uppercase;
 }
+#view-resultados .res-tie-label i{font-size:12px;line-height:1}
 
 /* Andamento das avaliações sem bolinhas e sem etiquetas pesadas. */
 #view-resultados .nota-actions{gap:3px;margin-top:4px}
@@ -8920,6 +8925,7 @@ function renderResultados() {
     const pt = mediaNotasRanking(e.id, rankingMode);
     const isVisibleTie = Number.isFinite(pt) && rows.some(({ e: other }) => other !== e && sameRankingPosition(e, other, rankingMode));
     const ranking = absoluteRankingById.get(String(e.id)) || { rank:'—', tied:false };
+    const hasRankingTie = Boolean(ranking.tied || isVisibleTie);
     const previousRanking = i > 0
       ? (absoluteRankingById.get(String(rows[i - 1].e.id)) || { rank:'—' })
       : { rank:'—' };
@@ -8982,7 +8988,7 @@ function renderResultados() {
     }).join('');
 
     return `<tr class="${rowClass}">
-      <td class="sticky s0">${isBaseOfficialTop ? `<span class="res-cut-label rank-top-label">Top ${topLimit}</span>` : ''}<div class="res-rank-line"><span class="res-primary-rank ${rankingModeClass}">${ranking.rank}</span><span class="res-rank-axis">${primaryRankingCode || bancaToggleHTML(e.id)}</span>${primaryRankingCode ? bancaToggleHTML(e.id) : ''}</div>${baseRankingLabel}${isAnyTopMarginOnly || (!isBaseOfficialTop && isNearCut) ? `<span class="res-cut-label res-near-label">Margem ${variacaoPct}%</span>` : ''}${isConvergentTop ? '<span class="res-convergence-label">Convergência</span>' : ''}${comparisonRankLabel}</td>
+      <td class="sticky s0">${isBaseOfficialTop ? `<span class="res-cut-label rank-top-label">Top ${topLimit}</span>` : ''}<div class="res-rank-line"><span class="res-primary-rank ${rankingModeClass}">${ranking.rank}</span><span class="res-rank-axis">${primaryRankingCode || bancaToggleHTML(e.id)}</span>${primaryRankingCode ? bancaToggleHTML(e.id) : ''}</div>${hasRankingTie ? '<span class="res-tie-label" title="Há outras candidaturas nesta mesma posição"><i class="ti ti-equal" aria-hidden="true"></i>Empate</span>' : ''}${baseRankingLabel}${isAnyTopMarginOnly || (!isBaseOfficialTop && isNearCut) ? `<span class="res-cut-label res-near-label">Margem ${variacaoPct}%</span>` : ''}${isConvergentTop ? '<span class="res-convergence-label">Convergência</span>' : ''}${comparisonRankLabel}</td>
       <td class="res-id-number-col">${escapeHtmlAttr(shortInscId(e.id))}</td>
       <td class="sticky s5">
         <div class="leader-cell">
@@ -9493,7 +9499,7 @@ function contactsReportDocumentHTML(rows) {
     <td class="contact-institution">${escapeHtmlAttr(row.institution)}</td><td>${escapeHtmlAttr(row.course)}</td>
   </tr>`).join('');
   return `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Maratona IA 2026 - contatos das 80 pessoas selecionadas</title><style>
-    @page{size:A4 landscape;margin:12mm}*{box-sizing:border-box}html{background:#F3F5F8}body{max-width:1440px;margin:0 auto;padding:28px 32px 44px;color:#202124;background:#fff;font-family:Arial,sans-serif;font-size:8.5pt}.head{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #1A73E8;padding-bottom:10px;margin-bottom:12px}h1{margin:0;font-size:16pt}.sub{margin-top:4px;color:#5F6368;font-size:9pt}.meta{color:#5F6368;font-size:8pt;text-align:right}table{border-collapse:collapse;width:100%;table-layout:fixed}th{background:#E8F0FE;color:#174EA6;text-align:left;font-size:7.5pt;font-weight:700;padding:6px;border:1px solid #C9D8F2}td{padding:5px 6px;border:1px solid #DADCE0;vertical-align:top;line-height:1.25;word-break:break-word}.contact-name,.contact-location{text-transform:none}.contact-city{display:block;text-transform:uppercase}.contact-state{display:block;margin-top:2px}.contact-institution{text-transform:uppercase;font-size:7.5pt}tbody tr:nth-child(even){background:#F8FAFD}th:nth-child(1),td:nth-child(1){width:4%;text-align:center}th:nth-child(2),td:nth-child(2){width:8%}th:nth-child(3),td:nth-child(3){width:16%}th:nth-child(4),td:nth-child(4){width:19%}th:nth-child(5),td:nth-child(5){width:12%}th:nth-child(6),td:nth-child(6){width:12%}th:nth-child(7),td:nth-child(7){width:18%}th:nth-child(8),td:nth-child(8){width:11%}footer{position:fixed;bottom:0;left:0;right:0;color:#5F6368;font-size:7.5pt;text-align:center}@media print{html{background:#fff}body{max-width:none;padding:0}footer{position:fixed}}
+    @page{size:A4 landscape;margin:12mm}*{box-sizing:border-box}html{background:#F3F5F8}body{max-width:1440px;margin:0 auto;padding:28px 32px 44px;color:#202124;background:#fff;font-family:Arial,sans-serif;font-size:8.5pt}.head{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #1A73E8;padding-bottom:10px;margin-bottom:12px}h1{margin:0;font-size:16pt}.sub{margin-top:4px;color:#5F6368;font-size:9pt}.meta{color:#5F6368;font-size:8pt;text-align:right}table{border-collapse:collapse;width:100%;table-layout:fixed}th{background:#E8F0FE;color:#174EA6;text-align:left;font-size:7.5pt;font-weight:700;padding:6px;border:1px solid #C9D8F2}td{padding:5px 6px;border:1px solid #DADCE0;vertical-align:top;line-height:1.25;word-break:break-word}.contact-name,.contact-location{text-transform:none}.contact-city{display:block;text-transform:uppercase}.contact-state{display:block;margin-top:2px}.contact-institution{text-transform:uppercase;font-size:7.5pt}tbody tr:nth-child(even){background:#F8FAFD}th:nth-child(1),td:nth-child(1){width:4%;text-align:center}th:nth-child(2),td:nth-child(2){width:5%;text-align:center}th:nth-child(3),td:nth-child(3){width:18%}th:nth-child(4),td:nth-child(4){width:20%}th:nth-child(5),td:nth-child(5){width:12%}th:nth-child(6),td:nth-child(6){width:12%}th:nth-child(7),td:nth-child(7){width:18%}th:nth-child(8),td:nth-child(8){width:11%}footer{position:fixed;bottom:0;left:0;right:0;color:#5F6368;font-size:7.5pt;text-align:center}@media print{html{background:#fff}body{max-width:none;padding:0}footer{position:fixed}}
   </style></head><body><div class="head"><div><h1>Maratona IA 2026</h1><div class="sub">Lista de contatos das 80 pessoas selecionadas - fase de seleção</div></div><div class="meta">Gerado em ${escapeHtmlAttr(generatedAt)}<br>${rows.length} contatos</div></div><table><thead><tr><th>#</th><th>ID</th><th>Nome</th><th>E-mail</th><th>Telefone</th><th>Cidade / UF</th><th>Universidade</th><th>Curso</th></tr></thead><tbody>${body}</tbody></table><footer>Maratona IA 2026 - Sistema de Avaliação de Candidaturas</footer></body></html>`;
 }
 
