@@ -4077,16 +4077,17 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
 #view-resultados .res-tie-label{
   display:inline-flex;
   align-items:center;
-  gap:4px;
-  margin-top:5px;
+  gap:3px;
+  margin-top:4px;
   color:#1A73E8;
+  font-family:"Inter",system-ui,sans-serif;
   font-size:9px;
-  font-weight:700;
+  font-weight:500;
   line-height:1;
-  letter-spacing:.07em;
-  text-transform:uppercase;
+  letter-spacing:0;
+  opacity:.58;
 }
-#view-resultados .res-tie-label i{font-size:12px;line-height:1}
+#view-resultados .res-tie-label i{font-size:10px;line-height:1}
 
 /* Andamento das avaliações sem bolinhas e sem etiquetas pesadas. */
 #view-resultados .nota-actions{gap:3px;margin-top:4px}
@@ -8929,6 +8930,7 @@ function renderResultados() {
     const previousRanking = i > 0
       ? (absoluteRankingById.get(String(rows[i - 1].e.id)) || { rank:'—' })
       : { rank:'—' };
+    const isTieContinuation = hasRankingTie && i > 0 && String(previousRanking.rank) === String(ranking.rank);
     const baseRanking = baseRankingById.get(String(e.id)) || { rank:'—', tied:false };
     const isOfficialTop = topLimit > 0 && i < officialTopRows.length;
     const isNearCut = topLimit > 0 && !isOfficialTop;
@@ -8988,7 +8990,7 @@ function renderResultados() {
     }).join('');
 
     return `<tr class="${rowClass}">
-      <td class="sticky s0">${isBaseOfficialTop ? `<span class="res-cut-label rank-top-label">Top ${topLimit}</span>` : ''}<div class="res-rank-line"><span class="res-primary-rank ${rankingModeClass}">${ranking.rank}</span><span class="res-rank-axis">${primaryRankingCode || bancaToggleHTML(e.id)}</span>${primaryRankingCode ? bancaToggleHTML(e.id) : ''}</div>${hasRankingTie ? '<span class="res-tie-label" title="Há outras candidaturas nesta mesma posição"><i class="ti ti-equal" aria-hidden="true"></i>Empate</span>' : ''}${baseRankingLabel}${isAnyTopMarginOnly || (!isBaseOfficialTop && isNearCut) ? `<span class="res-cut-label res-near-label">Margem ${variacaoPct}%</span>` : ''}${isConvergentTop ? '<span class="res-convergence-label">Convergência</span>' : ''}${comparisonRankLabel}</td>
+      <td class="sticky s0">${isBaseOfficialTop ? `<span class="res-cut-label rank-top-label">Top ${topLimit}</span>` : ''}<div class="res-rank-line"><span class="res-primary-rank ${rankingModeClass}">${ranking.rank}</span><span class="res-rank-axis">${primaryRankingCode || bancaToggleHTML(e.id)}</span>${primaryRankingCode ? bancaToggleHTML(e.id) : ''}</div>${isTieContinuation ? '<span class="res-tie-label" title="Empata com a candidatura anterior nesta mesma posição"><i class="ti ti-equal" aria-hidden="true"></i>Empate</span>' : ''}${baseRankingLabel}${isAnyTopMarginOnly || (!isBaseOfficialTop && isNearCut) ? `<span class="res-cut-label res-near-label">Margem ${variacaoPct}%</span>` : ''}${isConvergentTop ? '<span class="res-convergence-label">Convergência</span>' : ''}${comparisonRankLabel}</td>
       <td class="res-id-number-col">${escapeHtmlAttr(shortInscId(e.id))}</td>
       <td class="sticky s5">
         <div class="leader-cell">
