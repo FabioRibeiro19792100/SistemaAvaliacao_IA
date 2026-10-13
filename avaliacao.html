@@ -11707,7 +11707,12 @@ function shouldUseAttachmentProxy(url = '') {
 
 function buildAttachmentProxyUrl(url = '') {
   if (!shouldUseAttachmentProxy(url)) return String(url || '').trim();
-  return `/api/file-proxy?url=${encodeURIComponent(String(url || '').trim())}`;
+  // O servidor de desenvolvimento atual entrega apenas arquivos estáticos.
+  // Para que a ficha local também visualize comprovantes, usa a mesma função
+  // publicada pelo projeto; em produção, mantém a rota relativa do próprio host.
+  const isLocalPreview = ['localhost', '127.0.0.1'].includes(String(location.hostname || '').toLowerCase());
+  const proxyBase = isLocalPreview ? 'https://sistemaavaliacaoia.vercel.app' : '';
+  return `${proxyBase}/api/file-proxy?url=${encodeURIComponent(String(url || '').trim())}`;
 }
 
 function updateSupabaseStatus(msg, tone) {
