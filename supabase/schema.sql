@@ -225,6 +225,7 @@ create table if not exists configuracoes_sistema (
   evitar_conflito_institucional boolean not null default true,
   criterios_pesos jsonb not null default '[33.33,33.33,33.34]'::jsonb,
   banca_selecionados jsonb not null default '[]'::jsonb,
+  finalistas_selecionados jsonb not null default '[]'::jsonb,
   banca_modelo_ativo text not null default 'grade_completa' check (banca_modelo_ativo in ('grade_completa', 'grade_banca', 'nota_direta')),
   banca_modelos_config jsonb not null default '{"grade_completa":{"pesos":[33.33,33.33,33.34]},"grade_banca":{"pesos":[33.33,33.33,33.34]},"nota_direta":{"pesos":[100]}}'::jsonb,
   theme_name text not null default 'default',
