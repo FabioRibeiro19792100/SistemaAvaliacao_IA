@@ -574,21 +574,21 @@ body {
   box-shadow:none;
 }
 
-.subnav{background:var(--nav-bg);border-bottom:0;padding:0 28px;display:flex;align-items:center;height:58px;overflow:hidden;transition:background .2s;flex-shrink:0}
+.subnav{background:var(--nav-bg);border-bottom:0;padding:0 24px;display:flex;align-items:center;height:58px;overflow:hidden;transition:background .2s;flex-shrink:0}
 .subnav::-webkit-scrollbar{display:none}
-.snav{position:relative;display:flex;align-items:center;gap:8px;padding:0 16px;height:58px;font-size:16px;font-weight:var(--font-weight-medium);color:var(--text-secondary);cursor:pointer;white-space:nowrap;user-select:none}
+.snav{position:relative;display:flex;align-items:center;gap:6px;padding:0 11px;height:58px;font-size:14px;font-weight:var(--font-weight-medium);color:var(--text-secondary);cursor:pointer;white-space:nowrap;user-select:none}
 .snav svg{width:14px;height:14px;flex-shrink:0}
 .snav:hover{color:var(--text-primary)}
 .snav.active{color:var(--nav-active-text)}
 .snav.active::after{content:'';position:absolute;left:14px;right:14px;bottom:0;height:2px;background:var(--nav-active-border)}
 .snav.snav-report{
-  margin-left:4px;
+  margin-left:3px;
   height:32px;
-  padding:0 10px;
+  padding:0 8px;
   border:1px solid #1A73E8;
   border-radius:7px;
   color:#FFF;
-  font-size:12px;
+  font-size:11px;
   font-weight:650;
   background:#1A73E8;
 }
@@ -596,17 +596,156 @@ body {
 .snav.snav-report::after{display:none}
 .snav-right{margin-left:auto;display:flex}
 
-/* Cabeçalho administrativo: uma faixa azul contínua dá unidade ao título
-   e à navegação, sem competir com o conteúdo da página. */
-.topnav{background:#1A73E8;border-bottom:1px solid rgba(255,255,255,.34)}
-.topnav-brand,.topnav-right,.topnav-right span,.topnav-brand-divider{color:#FFF!important}
-.subnav{background:#1A73E8;border-bottom:0}
-.snav{color:rgba(255,255,255,.78)}
-.snav:hover,.snav.active{color:#FFF}
-.snav.active{background:transparent}
-.snav.active::after{bottom:7px;background:#FFF}
-.snav.snav-report{border-color:rgba(255,255,255,.5);background:transparent;color:#FFF}
-.snav.snav-report:hover{border-color:#FFF;background:rgba(255,255,255,.1);color:#FFF}
+/* Cabeçalho administrativo — mesma arquitetura visual do ambiente Workshop. */
+.topnav{
+  min-height:106px;
+  height:auto;
+  padding:24px 42px 18px;
+  align-items:flex-start;
+  background:#230D56;
+  border:0;
+  color:#fff;
+  overflow:hidden;
+  isolation:isolate;
+}
+.topnav::before,
+.topnav::after{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  pointer-events:none;
+}
+.topnav::before{
+  right:-56px;
+  top:-92px;
+  width:250px;
+  height:250px;
+  border-radius:50%;
+  background:repeating-conic-gradient(from 5deg,#BCFF4D 0 4deg,transparent 4deg 12deg,#8464F3 12deg 17deg,transparent 17deg 25deg,#D400A8 25deg 30deg,transparent 30deg 38deg);
+  opacity:.92;
+}
+.topnav::after{
+  right:24px;
+  top:14px;
+  width:86px;
+  height:86px;
+  border-radius:50%;
+  background:#230D56;
+}
+.topnav-brand{
+  display:grid;
+  align-items:start;
+  gap:7px;
+  min-width:0;
+  color:#fff;
+  white-space:normal;
+}
+.topnav-brand-meta{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:baseline;
+  gap:5px 18px;
+  color:#D9CCFF;
+  font-size:13px;
+  font-weight:500;
+  letter-spacing:0;
+}
+.topnav-brand-meta strong{color:#BCFF4D;font-size:14px;font-weight:650}
+.topnav-brand-title{
+  color:#fff;
+  font-size:30px;
+  font-weight:600;
+  line-height:1.12;
+  letter-spacing:-.018em;
+}
+.topnav-right{
+  position:relative;
+  z-index:2;
+  align-items:flex-start;
+  padding:2px 126px 0 20px;
+  color:#D9CCFF;
+}
+.topnav-right .topnav-credit{
+  display:inline-flex;
+  align-items:center;
+  min-height:30px;
+  padding:0 10px;
+  border:1px solid rgba(217,204,255,.58);
+  color:#D9CCFF!important;
+  font-size:11px;
+  font-weight:600;
+  white-space:nowrap;
+}
+.topnav-brand-divider{display:none}
+.subnav{
+  height:54px;
+  padding:0 42px;
+  align-items:stretch;
+  overflow-x:auto;
+  overflow-y:hidden;
+  background:#230D56;
+  border-top:1px solid rgba(217,204,255,.16);
+  border-bottom:0;
+  scrollbar-width:none;
+}
+.snav{
+  flex:0 0 auto;
+  height:54px;
+  margin-right:25px;
+  padding:0;
+  border-top:3px solid transparent;
+  color:#D9CCFF;
+  font-size:14px;
+  font-weight:600;
+}
+.snav svg,.snav .icon{color:inherit}
+.snav:hover,.snav.active{color:#fff}
+.subnav a.snav{color:#D9CCFF!important}
+.subnav a.snav:hover{color:#fff!important}
+.snav.active{background:transparent;border-top-color:#BCFF4D}
+.snav.active::after{display:none}
+.snav-right{
+  flex:0 0 auto;
+  align-items:center;
+  gap:7px;
+  margin-left:auto;
+  padding-left:18px;
+}
+.snav.snav-report{
+  height:32px;
+  margin:0;
+  padding:0 9px;
+  border:1px solid rgba(217,204,255,.62);
+  border-radius:0;
+  background:transparent;
+  color:#fff;
+  font-size:10.5px;
+  font-weight:650;
+}
+.snav.snav-report:hover{border-color:#BCFF4D;background:rgba(188,255,77,.1);color:#fff}
+.snav.snav-report::after{display:none}
+@media (max-width:1100px){
+  .topnav{padding-inline:24px}
+  .topnav-brand-title{font-size:27px}
+  .topnav-right{padding-right:112px}
+  .subnav{padding-inline:24px}
+  .snav{margin-right:20px}
+  .snav-right{margin-left:0}
+}
+@media (max-width:760px){
+  .topnav{min-height:116px;padding:20px 16px 16px}
+  .topnav::before{right:-78px;top:-104px;transform:scale(.82)}
+  .topnav::after{right:7px;top:9px;transform:scale(.82)}
+  .topnav-brand-meta{max-width:calc(100vw - 100px);gap:4px 11px;font-size:11.5px}
+  .topnav-brand-meta strong{font-size:12.5px}
+  .topnav-brand-title{max-width:calc(100vw - 68px);font-size:23px;line-height:1.16}
+  .topnav-right{align-self:flex-start;padding:0}
+  .topnav-right .topnav-credit{display:none}
+  .subnav{height:52px;padding-inline:16px}
+  .snav{height:52px;margin-right:18px;font-size:13px}
+  .snav-right{gap:6px;padding-left:2px}
+  .snav.snav-report{height:30px;font-size:10px}
+}
 
 /* ── VIEWS ── */
 .view{display:none;padding:24px 28px 60px}
@@ -1248,6 +1387,119 @@ tr:hover td.sticky{background:#FAFAFA}
 #view-banca .results-table tbody > tr:hover > td.id-col{
   background:#ECEFF3;
 }
+/* A grade da segunda sessão compartilha exatamente a mesma geometria da grade
+   de Resultados. As diferenças entre as telas são apenas de conteúdo. */
+#view-banca .results-table{width:100%!important;min-width:1200px!important;table-layout:fixed}
+:is(#view-resultados,#view-banca):not(.results-summary-open) .results-table .s0{left:0;width:5.5%;min-width:0;max-width:none}
+:is(#view-resultados,#view-banca):not(.results-summary-open) .results-table .s5{left:5.5%;width:24.5%;min-width:0;max-width:none}
+:is(#view-resultados,#view-banca).results-id-open:not(.results-summary-open) .results-table .s5{left:10%;width:20%}
+#view-banca col.res-id-number-col,
+#view-banca th.res-id-number-col,
+#view-banca td.res-id-number-col{display:none}
+#view-banca.results-id-open col.res-id-number-col{display:table-column}
+#view-banca.results-id-open th.res-id-number-col,
+#view-banca.results-id-open td.res-id-number-col{display:table-cell}
+#view-banca:not(.results-summary-open) .results-table .res-id-number-col{width:4.5%;min-width:0;max-width:none}
+#view-banca .results-table th.res-id-number-col,
+#view-banca .results-table td.res-id-number-col{text-align:center}
+#view-banca .results-table td.res-id-number-col{color:#1A73E8;font-size:11px;font-weight:700;font-variant-numeric:tabular-nums}
+#view-banca.results-id-open:not(.results-summary-open) .results-table .res-id-number-col{position:sticky;left:5.5%;z-index:5;background:#fff}
+#view-banca col.res-project-summary-col,
+#view-banca th.res-project-summary-col,
+#view-banca td.res-project-summary-col{display:none}
+:is(#view-resultados,#view-banca):not(.results-summary-open) .results-table .res-university-col{width:15%;min-width:0;max-width:none}
+:is(#view-resultados,#view-banca) .results-table .res-university-col{text-transform:uppercase;font-size:10.5px;font-weight:400;font-style:normal;line-height:1.35;color:#202124}
+:is(#view-resultados,#view-banca) .results-table .res-university-col .res-muted{color:#202124!important}
+:is(#view-resultados,#view-banca) .res-university-location{display:grid;gap:1px;margin-top:3px;color:#202124;font-size:inherit;font-weight:400;font-style:normal;line-height:inherit;text-transform:uppercase}
+:is(#view-resultados,#view-banca):not(.results-summary-open) .results-table .res-gender-col{width:7.5%;min-width:90px;max-width:none}
+:is(#view-resultados,#view-banca):not(.results-summary-open) .results-table .res-race-col{width:7.5%;min-width:90px;max-width:none}
+:is(#view-resultados,#view-banca) .results-table .res-gender-col,
+:is(#view-resultados,#view-banca) .results-table .res-race-col{vertical-align:top;text-transform:uppercase;font-size:10.5px;font-weight:400;font-style:normal;line-height:1.35;color:#202124}
+:is(#view-resultados,#view-banca):not(.results-summary-open) .results-table .s7{width:10%;min-width:0;max-width:none}
+:is(#view-resultados,#view-banca):not(.results-summary-open) .results-table .crit,
+:is(#view-resultados,#view-banca):not(.results-summary-open) .results-table .crit-td{width:10%;min-width:0;max-width:none}
+#view-banca .results-table th,
+#view-banca .results-table td{border-right:1px solid #DDE3EA}
+#view-banca .results-table thead th{vertical-align:top;padding-left:8px;padding-right:8px;font-size:9.5px;font-weight:600;font-style:normal;line-height:1.25;letter-spacing:.04em;text-transform:uppercase;color:#3C4043}
+#view-banca .results-table thead th .peso{font-size:9.5px;font-weight:600;font-style:normal;line-height:1.2;letter-spacing:.04em;text-transform:uppercase;color:#3C4043}
+#view-banca .results-table th.rank-col-head{font-size:9.5px;padding-left:6px;padding-right:6px}
+:is(#view-resultados,#view-banca) .results-header-label{display:block;font-family:inherit!important;font-size:9.5px!important;font-weight:600!important;font-style:normal!important;line-height:1.25!important;letter-spacing:.04em!important;text-transform:uppercase!important;color:#3C4043!important}
+#view-banca .results-table th:last-child,
+#view-banca .results-table td:last-child{border-right:0}
+#view-banca .results-table .crit,
+#view-banca .results-table .crit-td{border-left:0}
+#view-banca .results-table thead tr:first-child th{height:58px;vertical-align:top;padding-top:8px;padding-bottom:8px}
+#view-banca .results-table thead tr:first-child th.crit{position:relative;vertical-align:top;padding-top:8px;padding-bottom:22px}
+#view-banca .results-table thead tr:first-child th.crit .peso{position:absolute;left:4px;right:4px;bottom:7px;margin:0;text-align:center}
+#view-banca .results-table tbody{position:relative;z-index:0}
+#view-banca .results-table tbody > tr:not(.sub-row) > td{height:92px;padding-top:8px;padding-bottom:8px;vertical-align:top}
+:is(#view-resultados,#view-banca) .results-table .leader-cell{min-height:0}
+:is(#view-resultados,#view-banca) .results-table .nota-cell{min-height:76px;gap:4px;padding-top:0;justify-content:flex-start}
+:is(#view-resultados,#view-banca) .results-table .nota-actions{flex-direction:column;gap:4px;margin-top:2px}
+:is(#view-resultados,#view-banca) .results-table .nota-progress-btn{flex-direction:row;gap:0;order:3}
+#view-banca .results-table thead th.s7{background:#EAF2FD}
+#view-banca .results-table tbody > tr:not(.sub-row) > td.s7{background:#F4F8FE}
+#view-banca .results-table tbody > tr.sub-row > td.s7{background:#F8FBFF}
+#view-banca .results-table tbody > tr:hover > td.s7{background:#EAF2FD}
+#view-banca .results-criteria-floating-label{height:24px;display:flex;align-items:center;justify-content:flex-end;background:#fff;pointer-events:none}
+#view-banca .results-criteria-floating-label > span{display:block;width:30%;color:#8B949E;font-size:9px;font-weight:500;line-height:1;letter-spacing:.05em;text-align:center;text-transform:uppercase;white-space:nowrap}
+.workshop-evidence{grid-column:1/-1;margin-top:22px;padding:0 0 28px;background:#fff;color:#170944}
+.workshop-evidence-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:18px;padding-top:2px}
+.workshop-evidence-title{font-size:19px;font-weight:650;line-height:1.25;letter-spacing:-.01em;color:#170944}
+.workshop-evidence-sub{max-width:62ch;margin-top:5px;font-size:12px;line-height:1.5;color:#716B85}
+.workshop-evidence-artifacts{display:flex;align-items:center;justify-content:space-between;gap:18px;margin:0 0 22px;padding:15px 16px;border:1px solid #D8CCFF;border-left:4px solid #6A48F0;background:#F7F4FF}
+.workshop-evidence-artifacts-label{display:grid;gap:3px;color:#170944;font-size:13px;font-weight:700;line-height:1.35}
+.workshop-evidence-artifacts-label small{color:#716B85;font-size:10px;font-weight:500}
+.workshop-artifact-link{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:9px 14px;border:1px solid #6A48F0;background:#6A48F0;color:#fff;font-size:12px;font-weight:700;text-decoration:none;white-space:nowrap}
+.workshop-artifact-link:hover{background:#5837D7;border-color:#5837D7}
+.workshop-artifact-link i{font-size:16px}
+.workshop-artifact-pending{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-width:158px;min-height:40px;padding:9px 14px;border:1px solid #D8D2E4;background:#fff;color:#8A8493;font-size:12px;font-weight:600;white-space:nowrap}
+.workshop-artifact-pending i{font-size:16px}
+.workshop-evidence-stage{--stage-accent:#6A48F0;margin:0 0 20px;border:1px solid #E6E2F2;border-top:3px solid var(--stage-accent);border-radius:0;background:#fff;overflow:hidden}
+.workshop-evidence-stage.stage-fase1{--stage-accent:#D400A8}
+.workshop-evidence-stage.stage-fase2{--stage-accent:#0B7A5C}
+.workshop-evidence-stage summary{display:grid;grid-template-columns:minmax(0,1fr) auto 18px;align-items:center;gap:14px;min-height:72px;padding:14px 16px;cursor:pointer;background:#fff;color:#170944;list-style:none}
+.workshop-evidence-stage summary::-webkit-details-marker{display:none}
+.workshop-evidence-stage summary::after{content:"+";align-self:center;color:var(--stage-accent);font-size:20px;font-weight:500;line-height:1}
+.workshop-evidence-stage[open] summary::after{content:"−"}
+.workshop-stage-heading{display:block;min-width:0}
+.workshop-stage-number{padding-top:2px;color:var(--stage-accent);font:600 11px/1.35 "IBM Plex Mono",ui-monospace,monospace}
+.workshop-stage-title{display:block;color:#170944;font-size:15px;font-weight:650;line-height:1.3}
+.workshop-stage-subtitle{display:block;margin-top:3px;color:#716B85;font-size:11px;font-weight:400;line-height:1.35}
+.workshop-stage-meta{display:grid;justify-items:end;gap:3px;min-width:92px}
+.workshop-stage-status{color:#8A8493;font-size:10px;font-weight:600;line-height:1.25}
+.workshop-stage-status.is-sent{color:#0B7A5C}
+.workshop-stage-date{color:#9A94A2;font-size:9px;font-weight:400;line-height:1.3;white-space:nowrap}
+.workshop-evidence-stage-body{padding:0 16px 8px;border-top:1px solid #E6E2F2}
+.workshop-evidence-group{padding:18px 0 2px}
+.workshop-evidence-group+.workshop-evidence-group{margin-top:8px;border-top:1px solid #E6E2F2}
+.workshop-evidence-group-title{margin:0 0 2px;color:#716B85;font-size:11px;font-weight:600;line-height:1.35}
+.workshop-evidence-fields{padding:0}
+.workshop-evidence-field{display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;padding:18px 0;border-bottom:1px solid #F0EDF4}
+.workshop-evidence-field:last-child{border-bottom:0}
+.workshop-question-number{padding-top:2px;color:var(--stage-accent);font:600 11px/1.45 "IBM Plex Mono",ui-monospace,monospace}
+.workshop-evidence-question{color:#170944;font-size:14px;font-weight:600;line-height:1.48;letter-spacing:0;text-transform:none}
+.workshop-evidence-help{margin-top:5px;color:#817A8B;font-size:11px;line-height:1.45}
+.workshop-evidence-answer{margin-top:10px;padding-left:13px;border-left:3px solid #D9CCFF;white-space:pre-wrap;color:#30284A;font-size:13px;line-height:1.62}
+.workshop-answer-options{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.workshop-answer-chip{display:inline-flex;align-items:center;min-height:27px;padding:4px 8px;border:1px solid #D3C6FC;background:#F8F6FE;color:#3D2C70;font-size:11px;font-weight:550;line-height:1.35}
+.workshop-answer-pending{color:#9A94A2;font-size:12px;font-style:italic}
+.workshop-evidence-answer a{color:#5A38DA;overflow-wrap:anywhere}
+.workshop-evidence-empty,.workshop-evidence-loading{padding:16px 0;color:#817A8B;font-size:12px;line-height:1.5}
+.workshop-review-person{padding:0 0 16px;margin-bottom:4px;border-bottom:1px solid #E4E1EC;background:#fff}
+.workshop-review-person-kicker{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#8A8493}
+.workshop-review-person-name{margin-top:5px;color:#241B31;font-size:18px;font-weight:750;line-height:1.25;text-transform:uppercase}
+.workshop-review-person-sub{margin-top:4px;color:#817A8B;font-size:11px;line-height:1.4}
+.workshop-review-meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0;margin:14px 0 0;border-top:1px solid #EEEAF4;border-left:1px solid #EEEAF4}
+.workshop-review-meta>div{min-width:0;padding:12px 14px;border-right:1px solid #EEEAF4;border-bottom:1px solid #EEEAF4}
+.workshop-review-meta dt{margin:0 0 5px;color:#777083;font-size:10.5px;font-weight:700;line-height:1.25;letter-spacing:.055em;text-transform:uppercase}
+.workshop-review-meta dd{margin:0;overflow-wrap:anywhere;color:#241B31;font-size:14px;font-weight:650;line-height:1.42}
+#view-avaliacao.banca-evaluation-mode .workshop-evidence{margin:0;padding:24px 18px 40px;background:#fff}
+#view-avaliacao.banca-evaluation-mode .workshop-evidence-head{margin-bottom:16px}
+#view-avaliacao.banca-evaluation-mode .workshop-evidence-empty{border:0;border-radius:0}
+@media(max-width:720px){.workshop-evidence-artifacts{align-items:stretch;flex-direction:column}.workshop-artifact-link{width:100%}}
+#view-avaliacao.reviewer-direct-mode .avaliacao-panel .escala label{display:flex!important;align-items:center!important;justify-content:center!important;padding:0!important;line-height:1!important}
+#view-avaliacao.reviewer-direct-mode .avaliacao-panel .escala-title{display:flex!important;align-items:center!important;justify-content:center!important;width:100%!important;height:100%!important;min-height:0!important;margin:0!important;padding:0!important;color:inherit!important;font-size:13px!important;line-height:1!important}
 .banca-allocation-card{margin-bottom:16px}
 .banca-allocation-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:14px;flex-wrap:wrap}
 .banca-allocation-copy{font-size:12px;color:#7A828E;margin-top:5px;max-width:760px;line-height:1.5}
@@ -1710,6 +1962,170 @@ tr:hover td.sticky{background:#FAFAFA}
 .login-btn{justify-content:center;height:54px;border-radius:12px;font-size:16px;font-weight:600}
 .login-foot{padding-top:18px;border-top:1px solid #ECEFF3;text-align:center;font-size:12px;color:#BDC1C6;letter-spacing:.08em;text-transform:uppercase}
 .login-foot strong{color:#202124;font-weight:700;letter-spacing:.04em;margin-left:6px}
+#view-login.login-view{
+  position:relative;
+  isolation:isolate;
+  min-height:100%;
+  padding:48px!important;
+  background:#F7F5FC;
+  overflow:hidden;
+}
+#view-login.login-view::before{
+  content:"";
+  position:absolute;
+  inset:0 50% 0 0;
+  z-index:-2;
+  background:#230D56;
+}
+#view-login.login-view::after{
+  content:"";
+  position:absolute;
+  right:calc(50% - 118px);
+  top:-102px;
+  z-index:-1;
+  width:260px;
+  height:260px;
+  border:44px solid transparent;
+  border-radius:50%;
+  background:repeating-conic-gradient(from 4deg,#BCFF4D 0 4deg,transparent 4deg 12deg,#8464F3 12deg 17deg,transparent 17deg 25deg,#D400A8 25deg 30deg,transparent 30deg 38deg) border-box;
+  opacity:.94;
+}
+#view-login .login-card{
+  position:relative;
+  z-index:1;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(390px,1fr);
+  width:min(1040px,calc(100vw - 96px));
+  min-height:530px;
+  padding:0;
+  gap:0;
+  overflow:hidden;
+  border:1px solid rgba(35,13,86,.12);
+  border-radius:0;
+  background:#fff;
+  box-shadow:0 26px 70px rgba(23,9,68,.18);
+}
+#view-login .login-brand-panel{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  min-width:0;
+  padding:54px 58px;
+  overflow:hidden;
+  background:#230D56;
+  color:#fff;
+}
+#view-login .login-brand-panel::after{
+  content:"";
+  position:absolute;
+  left:58px;
+  bottom:154px;
+  width:78px;
+  height:4px;
+  background:#BCFF4D;
+}
+#view-login .login-brand-meta{
+  position:absolute;
+  left:58px;
+  top:46px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px 16px;
+  max-width:calc(100% - 116px);
+  color:#D9CCFF;
+  font-size:13px;
+  font-weight:500;
+}
+#view-login .login-brand-meta strong{color:#BCFF4D;font-size:14px;font-weight:650}
+#view-login .login-title{
+  max-width:520px;
+  margin-bottom:70px;
+  color:#fff;
+  text-align:left;
+  font-size:40px;
+  font-weight:600;
+  line-height:1.06;
+  letter-spacing:-.025em;
+}
+#view-login .login-sub{
+  max-width:440px;
+  margin:0;
+  color:#D9CCFF;
+  text-align:left;
+  font-size:15px;
+  line-height:1.5;
+}
+#view-login .login-access-panel{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  min-width:0;
+  padding:54px 48px 38px;
+  background:#fff;
+}
+#view-login .login-access-eyebrow{
+  color:#6A48F0;
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+#view-login .login-access-title{
+  margin:8px 0 8px;
+  color:#170944;
+  font-size:26px;
+  font-weight:650;
+  line-height:1.15;
+}
+#view-login .login-access-copy{margin:0 0 28px;color:#655E79;font-size:14px;line-height:1.45}
+#view-login .login-mark{
+  width:48px;
+  height:48px;
+  margin:0 0 22px;
+  border-radius:0;
+  background:#BCFF4D;
+  color:#230D56;
+}
+#view-login .login-mark i{font-size:23px}
+#view-login .login-field{
+  padding:15px 16px;
+  border:1px solid #CFC8DF;
+  border-bottom:2px solid #655E79;
+  border-radius:0;
+  color:#170944;
+}
+#view-login .login-field:focus{border-color:#6A48F0;box-shadow:0 0 0 2px rgba(106,72,240,.14)}
+#view-login .login-btn{
+  height:52px;
+  border:1px solid #BCFF4D;
+  border-radius:0;
+  background:#BCFF4D;
+  color:#170944;
+  box-shadow:none;
+  font-weight:700;
+}
+#view-login .login-btn:hover{border-color:#A8EE31;background:#A8EE31;color:#170944}
+#view-login .login-foot{
+  margin-top:28px;
+  padding-top:18px;
+  border-top:1px solid #E9E5F1;
+  color:#9B94AA;
+  text-align:left;
+  font-size:10.5px;
+}
+#view-login .login-foot strong{color:#170944}
+@media (max-width:820px){
+  #view-login.login-view{align-items:flex-start;padding:20px!important;background:#230D56;overflow-y:auto}
+  #view-login.login-view::before,#view-login.login-view::after{display:none}
+  #view-login .login-card{grid-template-columns:1fr;width:min(560px,100%);min-height:0;margin:auto}
+  #view-login .login-brand-panel{min-height:230px;padding:38px 34px 32px}
+  #view-login .login-brand-panel::after{left:34px;bottom:88px;width:58px}
+  #view-login .login-brand-meta{position:static;max-width:none;margin-bottom:54px}
+  #view-login .login-title{margin-bottom:38px;font-size:31px}
+  #view-login .login-sub{font-size:13.5px}
+  #view-login .login-access-panel{padding:36px 34px 30px}
+}
 .admin-fab{position:fixed;right:20px;bottom:18px;width:38px;height:38px;border-radius:999px;border:1px solid #DADCE0;background:#fff;color:#5F6368;display:none;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(15,23,42,.08);cursor:pointer;z-index:140;transition:all .15s}
 .admin-fab:hover{color:#1A73E8;border-color:#AECBFA;background:#F8FBFF}
 .admin-fab i{font-size:16px}
@@ -2946,7 +3362,7 @@ body:has(#view-avaliacao.active) #adminAccessFab{display:none!important}
   display:none !important;
 }
 #view-avaliacao.banca-evaluation-mode .parecer-box{
-  display:none;
+  display:block;
 }
 #view-avaliacao.banca-evaluation-mode .aval-side-card,
 #view-avaliacao.banca-evaluation-mode .aval-main-card{
@@ -2963,7 +3379,8 @@ body:has(#view-avaliacao.active) #adminAccessFab{display:none!important}
   padding-bottom:12px;
 }
 #view-avaliacao.banca-evaluation-mode .aval-side-scroll{
-  overflow:hidden;
+  overflow-x:hidden;
+  overflow-y:auto;
 }
 #view-avaliacao.banca-evaluation-mode .aval-main-scroll{
   overflow-x:hidden;
@@ -2991,7 +3408,7 @@ body:has(#view-avaliacao.active) #adminAccessFab{display:none!important}
   gap:1px;
 }
 #view-avaliacao.banca-evaluation-mode .split-hero{
-  background:#E2E6E9;
+  background:#fff;
   border-bottom:1px solid var(--banca-panel-divider);
   box-shadow:none;
   padding:22px 18px 20px;
@@ -3001,11 +3418,11 @@ body:has(#view-avaliacao.active) #adminAccessFab{display:none!important}
 #view-avaliacao.banca-evaluation-mode .split-reference-grid{
   height:100%;
   min-height:100%;
-  background:#E2E6E9;
+  background:#fff;
 }
 #view-avaliacao.banca-evaluation-mode .aval-side-card,
 #view-avaliacao.banca-evaluation-mode .aval-side-scroll{
-  background:#E2E6E9;
+  background:#fff;
 }
 #view-avaliacao.banca-evaluation-mode .aval-side-card,
 #view-avaliacao.banca-evaluation-mode .aval-main-card,
@@ -3039,7 +3456,7 @@ body:has(#view-avaliacao.active) #adminAccessFab{display:none!important}
   box-sizing:border-box;
   padding:16px 18px 12px;
   border-bottom:1px solid var(--banca-panel-divider);
-  background:#E2E6E9;
+  background:#fff;
 }
 #view-avaliacao.banca-evaluation-mode #critGridSplit{
   padding-top:11px;
@@ -3163,7 +3580,7 @@ body:has(#view-avaliacao.active) #adminAccessFab{display:none!important}
   padding:22px 18px;
   gap:22px;
   flex:0 0 auto;
-  background:#E2E6E9;
+  background:#fff;
   border-bottom:1px solid var(--banca-panel-divider);
 }
 #view-avaliacao.banca-evaluation-mode .split-materials-list .mat-btn{
@@ -3200,7 +3617,7 @@ body:has(#view-avaliacao.active) #adminAccessFab{display:none!important}
   padding:24px 18px 20px;
   flex:1 1 auto;
   min-height:0;
-  background:#E2E6E9;
+  background:#fff;
 }
 #view-avaliacao.banca-evaluation-mode #layoutSplit:not(.legacy-view) .criterio.numeric-scale{
   grid-template-columns:minmax(0,28%) minmax(0,72%);
@@ -3698,7 +4115,6 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnSalvarAvaliacao{grid-c
 /* Ficha do parecerista: cópia estrutural de AvaliacaoGoUp/avaliador-goup.html */
 #view-avaliacao.reviewer-direct-mode{padding-top:64px;color:#1A1533;font-family:"Inter",Arial,sans-serif}
 #view-avaliacao.reviewer-direct-mode .reviewer-eval-topbar{height:64px;padding:0 28px;border:0;background:linear-gradient(102deg,#251049 0%,#351567 55%,#6C2ED0 100%);color:#fff;box-shadow:0 3px 12px rgba(36,16,77,.18)}
-#view-avaliacao.reviewer-direct-mode .reviewer-eval-topbar::before{content:"GO\A UP";white-space:pre;display:grid;place-content:center;width:36px;height:36px;flex:none;margin-right:16px;background:#F4EA28;color:#7130D8;box-shadow:-4px 4px 0 #FF7F3F;font-size:11px;font-weight:700;line-height:.88;text-align:center;letter-spacing:-.03em}
 #view-avaliacao.reviewer-direct-mode .reviewer-eval-topbar strong{margin-right:auto;font-size:18px;font-weight:600;line-height:26px}
 #view-avaliacao.reviewer-direct-mode #reviewerEvalIdentity{color:#E2D9F3;font-size:13px;font-weight:500}
 #view-avaliacao.reviewer-direct-mode .aval-split-grid{grid-template-columns:290px minmax(0,3fr) minmax(390px,2fr)}
@@ -3710,7 +4126,6 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnSalvarAvaliacao{grid-c
 #view-avaliacao .reviewer-queue-item.completed{background:#EEF8F3;color:#145C3A}
 #view-avaliacao .reviewer-queue-item.completed.active{border-left-color:#1E7F4F;background:#E3F3EA}
 #view-avaliacao .reviewer-queue-status{width:18px;height:18px;border-color:#6B6880}
-#view-avaliacao .reviewer-queue-code{min-width:25px;color:#6B6880;font-size:13px;font-variant-numeric:tabular-nums}
 #view-avaliacao .reviewer-queue-name{text-transform:uppercase;font-size:13px;font-weight:400}
 #view-avaliacao .reviewer-queue-item.active .reviewer-queue-name{font-weight:650}
 #view-avaliacao.reviewer-direct-mode .aval-side-panel{padding:24px;background:#fff}
@@ -3771,7 +4186,6 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
 #view-avaliacao.reviewer-direct-mode .fila button.completed{background:#EEF8F3;color:#145C3A}
 #view-avaliacao.reviewer-direct-mode .fila button.completed.active{border-left-color:#1E7F4F;background:#E3F3EA}
 #view-avaliacao.reviewer-direct-mode .fila .reviewer-queue-status{display:grid;place-items:center;width:18px;height:18px;margin:0;flex:none;border:1.5px solid #6B6880;border-radius:50%;color:#fff}
-#view-avaliacao.reviewer-direct-mode .fila .reviewer-queue-code{min-width:25px;color:#6B6880;font-variant-numeric:tabular-nums}
 #view-avaliacao.reviewer-direct-mode .fila .reviewer-queue-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-transform:uppercase}
 #view-avaliacao.reviewer-direct-mode .fila button.active .reviewer-queue-name{font-weight:650}
 #view-avaliacao.reviewer-direct-mode .informacoes{margin:40px 0 20px;border:0;background:#fff}
@@ -3813,6 +4227,7 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
 #view-avaliacao.reviewer-direct-mode .avaliacao-panel .escala input:checked+label{background:#2B0A5A!important;border-color:#2B0A5A!important;color:#fff!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.22)!important}
 #view-avaliacao.reviewer-direct-mode .avaliacao-panel .parecer-box{margin:0;padding:10px 0 0;border:0;border-top:1px solid #E4E1EC;background:transparent}
 #view-avaliacao.reviewer-direct-mode .avaliacao-panel .parecer-box textarea{display:block;width:100%;height:76px;min-height:76px;max-height:76px;margin:6px 0 0;padding:12px;border:1px solid #DDD9E3;border-radius:0;background:#fff;color:#1A1533;font:13px/1.5 "Inter",system-ui,sans-serif;resize:none}
+#view-avaliacao.banca-evaluation-mode.reviewer-direct-mode #layoutSplit .avaliacao-panel .parecer-box textarea{height:160px;min-height:160px;max-height:240px;resize:vertical}
 
 /* ── PARECERES MODAL ── */
 .par-bloco { border: 1px solid #E0E0E0; border-radius: 8px; background: #fff; padding: 14px 16px; margin-bottom: 14px; }
@@ -4647,7 +5062,12 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
 
 <div class="topnav" id="mainTopnav" style="display:none">
   <div class="topnav-brand">
-    <span>Maratona IA 2026</span><span class="topnav-brand-divider" aria-hidden="true">|</span><span>Sistema de Avaliação de Candidaturas</span>
+    <div class="topnav-brand-meta">
+      <strong>Maratona de IA</strong>
+      <span>Academia LED Globo</span>
+      <span>Seleção 2026</span>
+    </div>
+    <div class="topnav-brand-title">Sistema de Avaliação de Candidaturas</div>
   </div>
     <div class="topnav-right">
     <div class="topnav-ficha-controls" id="topnavFichaControls">
@@ -4661,12 +5081,12 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
 
 <div class="subnav" id="mainSubnav" style="display:none">
   <div class="snav" data-view="resultados"><span class="icon icon-sm"><i class="ti ti-chart-histogram"></i></span>Resultados</div>
-  <div class="snav" data-view="selecionados"><span class="icon icon-sm"><i class="ti ti-list-check"></i></span>Selecionados</div>
-  <div class="snav" data-view="banca" style="display:none"><span class="icon icon-sm"><i class="ti ti-users-group"></i></span>Banca</div>
+  <div class="snav" data-view="banca"><span class="icon icon-sm"><i class="ti ti-users-group"></i></span>Banca dos 80</div>
   <div class="snav" data-view="dashboard"><span class="icon icon-sm"><i class="ti ti-chart-bar"></i></span>Dashboard</div>
   <div class="snav" data-view="pareceristas" style="display:none"><span class="icon icon-sm"><i class="ti ti-arrows-left-right"></i></span>Pareceristas e atribuições</div>
   <div class="snav" data-view="auditoria" style="display:none"><span class="icon icon-sm"><i class="ti ti-shield-check"></i></span>Auditoria</div>
   <div class="snav" data-view="config" style="display:none"><span class="icon icon-sm"><i class="ti ti-adjustments-horizontal"></i></span>Configurações</div>
+  <a class="snav" href="./workshop-admin.html" style="text-decoration:none;color:inherit"><span class="icon icon-sm"><i class="ti ti-school"></i></span>Workshop</a>
   <div class="snav-right">
     <button class="snav snav-report" type="button" onclick="openResultsReport()"><span class="icon icon-sm"><i class="ti ti-file-analytics"></i></span>Report Final — Fase 1</button>
     <button class="snav snav-report snav-contacts-report" type="button" onclick="openContactsReport()" title="Abrir a lista de contatos das pessoas selecionadas"><span class="icon icon-sm"><i class="ti ti-address-book"></i></span>Lista dos 80+ (contatos)</button>
@@ -4678,15 +5098,27 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
 
 <div class="view login-view active" id="view-login">
   <div class="login-card">
-    <div class="login-mark"><i class="ti ti-lock"></i></div>
-    <div class="login-title">Maratona IA</div>
-    <div class="login-sub">Academia LED Globo · Sistema de avaliação</div>
-    <div>
-      <input type="password" id="loginPassword" class="login-field" placeholder="••••••" onkeydown="if(event.key==='Enter')submitViewerLogin()">
-      <div class="auth-error" id="loginError" style="text-align:center;margin-top:10px"></div>
-    </div>
-    <button class="btn btn-primary login-btn" type="button" onclick="submitViewerLogin()">Entrar</button>
-    <div class="login-foot">Desenvolvido por <strong>Mastertech</strong></div>
+    <section class="login-brand-panel" aria-label="Maratona de IA">
+      <div class="login-brand-meta">
+        <strong>Maratona de IA</strong>
+        <span>Academia LED Globo</span>
+        <span>Seleção 2026</span>
+      </div>
+      <h1 class="login-title">Sistema de Avaliação de Candidaturas</h1>
+      <p class="login-sub">Ambiente administrativo para acompanhamento e avaliação da Maratona de IA.</p>
+    </section>
+    <section class="login-access-panel" aria-label="Acesso administrativo">
+      <div class="login-mark"><i class="ti ti-lock"></i></div>
+      <div class="login-access-eyebrow">Área administrativa</div>
+      <div class="login-access-title">Acesse o sistema</div>
+      <p class="login-access-copy">Informe a senha de acesso para continuar.</p>
+      <div>
+        <input type="password" id="loginPassword" class="login-field" aria-label="Senha administrativa" placeholder="••••••" onkeydown="if(event.key==='Enter')submitViewerLogin()">
+        <div class="auth-error" id="loginError" style="text-align:center;margin-top:10px"></div>
+      </div>
+      <button class="btn btn-primary login-btn" type="button" onclick="submitViewerLogin()">Entrar</button>
+      <div class="login-foot">Desenvolvido por <strong>Mastertech</strong></div>
+    </section>
   </div>
 </div>
 
@@ -5138,6 +5570,8 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
   </div>
 </div>
 
+<div class="view" id="view-workshop"></div>
+
 <div class="results-drawer-backdrop" id="resultsDrawerBackdrop" onclick="closeResultsStatsDrawer()"></div>
 <aside class="results-stats-drawer" id="resultsStatsDrawer" aria-hidden="true">
   <div class="results-drawer-head">
@@ -5219,11 +5653,11 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
 <div style="max-width:none;margin:0;padding-left:8px;padding-right:0">
   <div class="banca-head">
     <div>
-      <div class="page-title">Candidaturas selecionadas para a banca</div>
-      <div class="page-sub">Candidaturas em ordem alfabética, sem herdar a posição dos rankings anteriores.</div>
+      <div class="page-title">Banca dos 80</div>
+      <div class="page-sub">Segunda sessão de avaliação, em ordem alfabética e sem notas da fase anterior. Composição da nota final: Criatividade 45%, Uso de IA 35% e Marca Empregadora 20% (importada por planilha).</div>
     </div>
     <div class="banca-head-actions">
-      <div class="banca-count" id="bancaSummary">0 candidaturas selecionadas</div>
+      <div class="banca-count" id="bancaSummary">0 participantes carregados</div>
       <div class="banca-evaluation-progress" id="bancaEvaluationProgress" title="Progresso das avaliações da banca">
         <span>0 de 0 avaliações</span><strong class="banca-evaluation-progress-percent">0%</strong>
       </div>
@@ -5232,28 +5666,26 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
   </div>
   <div class="tbl-card">
     <div class="tbl-scroll" id="bancaBodyScroll">
+      <div class="results-criteria-floating-label"><span>Critérios da segunda sessão</span></div>
       <table class="results-table" style="width:max-content;min-width:100%">
         <colgroup>
-          <col style="width:86px"><col style="width:108px"><col style="width:262px"><col style="width:96px">
-          <col style="width:104px"><col style="width:104px"><col style="width:104px"><col style="width:104px">
-          <col style="width:104px"><col style="width:104px"><col style="width:104px"><col style="width:104px">
+          <col style="width:5.5%"><col class="res-id-number-col" style="width:4.5%"><col style="width:24.5%">
+          <col class="res-project-summary-col" style="width:320px"><col style="width:7.5%"><col style="width:7.5%">
+          <col style="width:15%"><col style="width:10%"><col style="width:10%"><col style="width:10%"><col style="width:10%">
         </colgroup>
         <thead>
           <tr>
-            <th class="sticky s0 rank-col-head" rowspan="2">Ranking</th>
-            <th class="sticky s3 id-col" rowspan="2">Identificação</th>
-            <th class="sticky s5" rowspan="2">Time (leader-first)</th>
-            <th class="sticky s7" rowspan="2" style="text-align:center;min-width:90px">Nota geral</th>
-            <th class="crit crit-group" colspan="2" style="text-align:center">Proposta</th>
-            <th class="crit crit-group" colspan="2" style="text-align:center">Impacto</th>
-            <th class="crit crit-group" colspan="2" style="text-align:center">Execução</th>
-            <th class="crit crit-group" colspan="2" style="text-align:center">Estratégia</th>
-          </tr>
-          <tr>
-            <th class="crit">Originalidade<span class="peso">Peso 12,5%</span></th><th class="crit">Clareza<span class="peso">12,5%</span></th>
-            <th class="crit">Engajamento<span class="peso">12,5%</span></th><th class="crit">Temática<span class="peso">12,5%</span></th>
-            <th class="crit">Narrativa<span class="peso">12,5%</span></th><th class="crit">Coerência<span class="peso">12,5%</span></th>
-            <th class="crit">Formatos<span class="peso">12,5%</span></th><th class="crit">Distribuição<span class="peso">12,5%</span></th>
+            <th class="sticky s0 rank-col-head"><span class="results-header-label">Ranking</span></th>
+            <th class="res-id-number-col"><span class="results-header-label">ID</span></th>
+            <th class="sticky s5"><span class="results-header-label">Candidato(a)</span></th>
+            <th class="res-project-summary-col"><span class="results-header-label">Entregas do workshop</span></th>
+            <th class="res-gender-col"><span class="results-header-label">Gênero</span></th>
+            <th class="res-race-col"><span class="results-header-label">Raça</span></th>
+            <th class="res-university-col"><span class="results-header-label">Universidade</span></th>
+            <th class="sticky s7" style="text-align:center"><span class="results-header-label">Nota geral</span></th>
+            <th class="crit"><span class="results-header-label">Marca Empregadora</span><span class="peso">Peso 20% · via planilha</span></th>
+            <th class="crit"><span class="results-header-label">Criatividade</span><span class="peso">Peso 45%</span></th>
+            <th class="crit"><span class="results-header-label">Uso de IA</span><span class="peso">Peso 35%</span></th>
           </tr>
         </thead>
         <tbody id="tblBanca"></tbody>
@@ -5408,7 +5840,7 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
     </div>
     <div id="critGridSeq"></div>
     <div class="parecer-box">
-      <div class="section-label" style="margin-bottom:8px">Parecer geral (opcional)</div>
+      <div class="section-label" id="parecerLabelSeq" style="margin-bottom:8px">Parecer geral (opcional)</div>
       <textarea id="parecerGeralSeq" placeholder="Campo opcional para registrar a síntese da avaliação, com pontos fortes, limitações e recomendação final."></textarea>
     </div>
   </div>
@@ -5459,7 +5891,7 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
             </div>
             <div id="critGridSplit"></div>
             <div class="parecer-box">
-              <div class="section-label" style="margin-bottom:8px">Parecer geral (opcional)</div>
+              <div class="section-label" id="parecerLabelSplit" style="margin-bottom:8px">Parecer geral (opcional)</div>
               <textarea id="parecerGeralSplit" placeholder="Campo opcional para registrar a síntese da avaliação, com pontos fortes, limitações e recomendação final."></textarea>
             </div>
           </div>
@@ -5967,10 +6399,12 @@ const BANCA_MODEL_DEFS = {
     'Abaixo do esperado.', 'Atende ao esperado.', 'Acima do esperado.', 'Excelente.'
   ]}]}
 };
+const BANCA_FINAL_WEIGHTS = Object.freeze([20,45,35]);
+const BANCA_EMPLOYER_BRAND_INDEX = 0;
 let bancaModeloAtivo = 'grade_completa';
 let bancaModelosConfig = {
-  grade_completa:{ pesos:[33.33,33.33,33.34] },
-  grade_banca:{ pesos:[33.33,33.33,33.34] },
+  grade_completa:{ pesos:[...BANCA_FINAL_WEIGHTS] },
+  grade_banca:{ pesos:[...BANCA_FINAL_WEIGHTS] },
   nota_direta:{ pesos:[100] },
 };
 const CRITERIO_PESOS_PADRAO = [33.33,33.33,33.34];
@@ -5986,6 +6420,7 @@ function normalizeBancaModelId(value) {
 
 function defaultBancaModelWeights(modelId) {
   const length = BANCA_MODEL_DEFS[normalizeBancaModelId(modelId)].criterios.length;
+  if (length === BANCA_FINAL_WEIGHTS.length) return [...BANCA_FINAL_WEIGHTS];
   return Array.from({ length }, () => 100 / length);
 }
 
@@ -5995,8 +6430,47 @@ function normalizeBancaModelsConfig(raw) {
     const expected = BANCA_MODEL_DEFS[modelId].criterios.length;
     const candidate = Array.isArray(source[modelId]?.pesos) ? source[modelId].pesos.map(Number) : [];
     const valid = candidate.length === expected && candidate.every(value => Number.isFinite(value) && value >= 0);
-    return [modelId, { pesos: valid ? candidate : defaultBancaModelWeights(modelId) }];
+    const weights = expected === BANCA_FINAL_WEIGHTS.length
+      ? [...BANCA_FINAL_WEIGHTS]
+      : valid ? candidate : defaultBancaModelWeights(modelId);
+    return [modelId, { pesos:weights }];
   }));
+}
+
+function bancaCriterionIndexes(definition = bancaModelDefinition()) {
+  return definition.criterios.map((_, index) => index);
+}
+
+function bancaCriterionComesFromSpreadsheet(index, definition = bancaModelDefinition()) {
+  return definition.criterios.length === BANCA_FINAL_WEIGHTS.length && index === BANCA_EMPLOYER_BRAND_INDEX;
+}
+
+function bancaReviewerCriterionIndexes(definition = bancaModelDefinition()) {
+  return bancaCriterionIndexes(definition).filter(index => !bancaCriterionComesFromSpreadsheet(index, definition));
+}
+
+function bancaCriterionDisplayName(criterion, index, definition = bancaModelDefinition()) {
+  if (bancaCriterionComesFromSpreadsheet(index, definition)) return 'Marca Empregadora';
+  return criterion?.nome === 'Habilidade no uso da IA' ? 'Uso de IA' : (criterion?.nome || `Critério ${index + 1}`);
+}
+
+function bancaCriterionWeightLabel(index, definition = bancaModelDefinition()) {
+  const weight = bancaCriterionWeights(definition)[index] || 0;
+  return bancaCriterionComesFromSpreadsheet(index, definition)
+    ? `Peso ${formatCriterionWeight(weight)}% · via planilha`
+    : `Peso ${formatCriterionWeight(weight)}%`;
+}
+
+function bancaCriterionWeights(definition = bancaModelDefinition(), modelId = bancaModeloAtivo) {
+  if (definition.criterios.length === BANCA_FINAL_WEIGHTS.length) return [...BANCA_FINAL_WEIGHTS];
+  const configured = normalizeBancaModelsConfig(bancaModelosConfig)[normalizeBancaModelId(modelId)].pesos;
+  return configured;
+}
+
+function evaluationCriterionIndexes() {
+  const indexes = CRITERIOS.map((_, index) => index);
+  if (!bancaReviewerBootMode) return indexes;
+  return bancaReviewerCriterionIndexes();
 }
 
 function applyBancaModelFromConfig(modelId = bancaModeloAtivo) {
@@ -6004,7 +6478,7 @@ function applyBancaModelFromConfig(modelId = bancaModeloAtivo) {
   bancaModelosConfig = normalizeBancaModelsConfig(bancaModelosConfig);
   const definition = BANCA_MODEL_DEFS[bancaModeloAtivo];
   CRITERIOS.splice(0, CRITERIOS.length, ...definition.criterios.map(item => ({ ...item, escala:Array.isArray(item.escala) ? [...item.escala] : undefined })));
-  CRITERIO_PESOS = [...bancaModelosConfig[bancaModeloAtivo].pesos];
+  CRITERIO_PESOS = bancaCriterionWeights(definition);
 }
 
 function bancaModelDefinition() {
@@ -6021,8 +6495,9 @@ const ACCESS_ROLE_KEY = 'maratonaia_access_role_v1';
 const AVALIACAO_SCALE_KEY = 'maratonaia_avaliacao_scale_v1';
 const BANCA_SELECTION_KEY = 'maratonaia_banca_selection_v1';
 const FINAL_SELECTION_KEY = 'maratonaia_final_selection_15_v1';
+const WORKSHOP_ROSTER_KEY = 'maratona-ia-workshop-roster-v1';
 const FINAL_SELECTION_LIMIT = 15;
-const ADMIN_VIEWS = ['pareceristas', 'auditoria', 'config'];
+const ADMIN_VIEWS = ['pareceristas', 'auditoria', 'config', 'workshop'];
 const VIEWER_VIEWS = ['dashboard', 'resultados', 'selecionados', 'banca', 'portal', 'avaliacao'];
 const RESULTS_VIEW_TEMPORARILY_HIDDEN = false;
 
@@ -6808,7 +7283,16 @@ function getAtribVisiveisNoPortal(parId) {
   // Nunca ordenar com um comparador dependente do último evento: uma mesma
   // candidatura pode ter aviso e resolução distintos. Se ela voltou da
   // auditoria e segue pendente, separamos explicitamente para o fim da fila.
-  const ids = getPortalUniverseByParecerista(parId);
+  const ids = getPortalUniverseByParecerista(parId).sort((aId, bId) => {
+    const a = INSCRICOES.find(item => item.id === aId);
+    const b = INSCRICOES.find(item => item.id === bId);
+    const byName = displayPersonName(a?.lider).localeCompare(
+      displayPersonName(b?.lider),
+      'pt-BR',
+      { sensitivity:'base', numeric:true }
+    );
+    return byName || String(aId).localeCompare(String(bId), 'pt-BR', { numeric:true });
+  });
   const returned = [];
   const regular = [];
   ids.forEach(inscId => {
@@ -7617,8 +8101,8 @@ function getBancaSelectionIds() {
 
 function updateBancaNavVisibility() {
   const tab = document.querySelector('.snav[data-view="banca"]');
-  if (tab) tab.style.display = 'none';
-  return false;
+  if (tab) tab.style.display = '';
+  return true;
 }
 
 function isSelectedForBanca(inscId) {
@@ -7685,6 +8169,28 @@ function rankedTop80Rows() {
     .map(row => ({ ...row, rank:Number(ranking.get(String(row.e.id))?.rank) || null }));
 }
 
+function officialTop80Ids() {
+  return INSCRICOES
+    .map(e => ({ e, score:mediaNotasRanking(e.id, 'Ranking normal') }))
+    .filter(row => Number.isFinite(row.score))
+    .sort((a, b) => compareResultadoRows(a.e, b.e, 'Ranking normal'))
+    .slice(0, 80)
+    .map(row => String(row.e.id));
+}
+
+function ensureBancaTop80Selection() {
+  const expected = officialTop80Ids();
+  if (!expected.length) return getBancaSelectionIds();
+  const current = getBancaSelectionIds();
+  const same = current.length === expected.length && current.every((id, index) => id === expected[index]);
+  if (same) return current;
+  try {
+    localStorage.setItem(bancaSelectionStorageKey(), JSON.stringify(expected));
+  } catch(e) {}
+  queueBancaSelectionRemotePersist(expected);
+  return expected;
+}
+
 function saveFinalSelection(ids, opts = {}) {
   const eligible = new Set(rankedTop80Rows().map(row => String(row.e.id)));
   const normalized = [...new Set((ids || []).map(String))]
@@ -7736,6 +8242,7 @@ function renderSelecionados() {
   const body = document.getElementById('selectedCandidatesBody');
   if (!body) return;
   const rows = rankedTop80Rows();
+  persistWorkshopSelectedRoster();
   const selected = new Set(saveFinalSelection(getFinalSelectionIds(), { persist:false }));
   const count = document.getElementById('selectionTop80Count');
   const counter = document.getElementById('selection15Counter');
@@ -9003,17 +9510,18 @@ function syncResultsSummaryColumn() {
 }
 
 function syncResultsIdColumn() {
-  const view = document.getElementById('view-resultados');
-  const toggle = document.getElementById('resultsIdToggle');
-  view?.classList.toggle('results-id-open', resultsIdColumnOpen);
-  if (!toggle) return;
-  const sign = toggle.querySelector('.results-id-toggle-sign');
-  const label = toggle.querySelector('.results-id-toggle-label');
-  if (sign) sign.textContent = resultsIdColumnOpen ? '−' : '+';
-  if (label) label.textContent = resultsIdColumnOpen ? 'Ocultar ID' : 'Mostrar ID';
-  toggle.title = resultsIdColumnOpen ? 'Ocultar coluna de ID' : 'Mostrar coluna de ID';
-  toggle.setAttribute('aria-label', toggle.title);
-  toggle.setAttribute('aria-expanded', String(resultsIdColumnOpen));
+  ['view-resultados','view-banca'].forEach(id => document.getElementById(id)?.classList.toggle('results-id-open', resultsIdColumnOpen));
+  ['resultsIdToggle','bancaResultsIdToggle'].forEach(id => {
+    const toggle = document.getElementById(id);
+    if (!toggle) return;
+    const sign = toggle.querySelector('.results-id-toggle-sign');
+    const label = toggle.querySelector('.results-id-toggle-label');
+    if (sign) sign.textContent = resultsIdColumnOpen ? '−' : '+';
+    if (label) label.textContent = resultsIdColumnOpen ? 'Ocultar ID' : 'Mostrar ID';
+    toggle.title = resultsIdColumnOpen ? 'Ocultar coluna de ID' : 'Mostrar coluna de ID';
+    toggle.setAttribute('aria-label', toggle.title);
+    toggle.setAttribute('aria-expanded', String(resultsIdColumnOpen));
+  });
 }
 
 function toggleResultsIdColumn(forceOpen) {
@@ -9361,16 +9869,42 @@ function renderBancaReviewers() {
   }).join('') : '<tr><td colspan="7" style="padding:24px;text-align:center;color:#9AA0A6">Nenhum parecerista foi designado para a banca.</td></tr>';
 }
 
+const BANCA_EMPLOYER_BRAND_COLUMNS = Object.freeze([
+  'Marca Empregadora',
+  'Nota Marca Empregadora',
+  'Nota de Marca Empregadora',
+  'Marca Empregadora (1 a 4)',
+  'marca_empregadora',
+]);
+
+function parseBancaCriterionScore(value) {
+  const text = String(value ?? '').trim();
+  if (!text) return null;
+  const concept = Object.entries(NV).find(([label, numeric]) => Number(numeric) >= 1 && label.toLocaleLowerCase('pt-BR') === text.toLocaleLowerCase('pt-BR'));
+  if (concept) return Number(concept[1]);
+  const numeric = Number(text.replace(',', '.'));
+  return Number.isFinite(numeric) && numeric >= 1 && numeric <= 4 ? numeric : null;
+}
+
+function bancaEmployerBrandScore(inscId) {
+  const participant = INSCRICOES.find(item => String(item.id) === String(inscId));
+  if (!participant) return null;
+  const rawValue = participant.marcaEmpregadora ?? firstRawValue(participant._raw || {}, BANCA_EMPLOYER_BRAND_COLUMNS);
+  return parseBancaCriterionScore(rawValue);
+}
+
 function bancaTeamMetrics(inscId) {
   const definition = bancaModelDefinition();
-  const weights = normalizeBancaModelsConfig(bancaModelosConfig)[bancaModeloAtivo].pesos;
+  const weights = bancaCriterionWeights(definition);
+  const scoredIndexes = bancaCriterionIndexes(definition);
   const completed = bancaPareceristas.map(p => bancaAvaliacoes[p.id]?.[String(inscId)]).filter(av => av?.done);
   const criteria = definition.criterios.map((_, index) => {
+    if (bancaCriterionComesFromSpreadsheet(index, definition)) return bancaEmployerBrandScore(inscId);
     const values = completed.map(av => NV[av.notas?.[index]]).filter(Number.isFinite);
     return values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null;
   });
-  const total = criteria.every(Number.isFinite)
-    ? criteria.reduce((sum, value, index) => sum + value * ((weights[index] || 0) / 100), 0)
+  const total = scoredIndexes.every(index => Number.isFinite(criteria[index]))
+    ? scoredIndexes.reduce((sum, index) => sum + criteria[index] * ((weights[index] || 0) / 100), 0)
     : null;
   return { completed:completed.length, expected:bancaPareceristas.length, criteria, total };
 }
@@ -9414,15 +9948,7 @@ function toggleBancaRes(rowIdx) {
 
 function bancaTableHeaderHTML() {
   const definition = bancaModelDefinition();
-  const weights = normalizeBancaModelsConfig(bancaModelosConfig)[bancaModeloAtivo].pesos;
-  if (bancaModeloAtivo === 'grade_completa') {
-    const resultLabels = ['Originalidade','Clareza','Engajamento','Temática','Narrativa','Coerência','Formatos','Distribuição'];
-    return `<tr>
-    <th class="sticky s0 rank-col-head" rowspan="2">Ranking</th><th class="sticky s3 id-col" rowspan="2">Identificação</th><th class="sticky s5" rowspan="2">Time (leader-first)</th><th class="sticky s7" rowspan="2" style="text-align:center;min-width:90px">Nota geral</th>
-    <th class="crit crit-group" colspan="2" style="text-align:center;border-left:1px solid #E0E0E0">Proposta</th><th class="crit crit-group" colspan="2" style="text-align:center;border-left:1px solid #E0E0E0">Impacto</th><th class="crit crit-group" colspan="2" style="text-align:center;border-left:1px solid #E0E0E0">Execução</th><th class="crit crit-group" colspan="2" style="text-align:center;border-left:1px solid #E0E0E0">Estratégia</th></tr>
-    <tr>${definition.criterios.map((criterion, index) => `<th class="crit">${resultLabels[index]}<span class="peso">${index === 0 ? 'Peso ' : ''}${formatCriterionWeight(weights[index])}%</span></th>`).join('')}</tr>`;
-  }
-  return `<tr><th class="sticky s0 rank-col-head" rowspan="2">Ranking</th><th class="sticky s3 id-col" rowspan="2">Identificação</th><th class="sticky s5" rowspan="2">Time (leader-first)</th><th class="sticky s7" rowspan="2" style="text-align:center;min-width:90px">Nota geral</th><th class="crit crit-group banca-model-group" colspan="${definition.criterios.length}">${bancaModeloAtivo === 'nota_direta' ? 'AVALIAÇÃO' : 'GRADE DA BANCA'}</th></tr><tr>${definition.criterios.map((criterion, index) => `<th class="crit banca-model-criterion">${escapeHtmlAttr(criterion.nome)}<span class="peso">${index === 0 ? 'Peso ' : ''}${formatCriterionWeight(weights[index])}%</span></th>`).join('')}</tr>`;
+  return `<tr><th class="sticky s0 rank-col-head"><span class="results-header-label">Ranking</span></th><th class="res-id-number-col"><span class="results-header-label">ID</span></th><th class="sticky s5"><div class="results-team-head"><div class="results-team-title"><span class="results-header-label">Candidato(a)</span><button class="results-id-toggle" id="bancaResultsIdToggle" type="button" onclick="toggleResultsIdColumn()" title="Mostrar coluna de ID" aria-label="Mostrar coluna de ID" aria-expanded="false"><span class="results-id-toggle-sign">+</span><span class="results-id-toggle-label">Mostrar ID</span></button></div></div></th><th class="res-project-summary-col res-project-summary-head"><span class="results-header-label">Entregas do workshop</span></th><th class="res-gender-col"><span class="results-header-label">Gênero</span></th><th class="res-race-col"><span class="results-header-label">Raça</span></th><th class="res-university-col"><span class="results-header-label">Universidade</span></th><th class="s7" style="text-align:center"><span class="results-header-label">Nota geral</span></th>${definition.criterios.map((criterion, index) => `<th class="crit"><span class="results-header-label">${escapeHtmlAttr(bancaCriterionDisplayName(criterion, index, definition))}</span><span class="peso">${escapeHtmlAttr(bancaCriterionWeightLabel(index, definition))}</span></th>`).join('')}</tr>`;
 }
 
 function syncBancaTableStructure() {
@@ -9431,22 +9957,22 @@ function syncBancaTableStructure() {
   const definition = bancaModelDefinition();
   const colgroup = table.querySelector('colgroup');
   const thead = table.querySelector('thead');
-  const criterionWidth = bancaModeloAtivo === 'grade_completa' ? 104 : bancaModeloAtivo === 'grade_banca' ? 160 : 180;
-  if (colgroup) colgroup.innerHTML = '<col style="width:86px"><col style="width:108px"><col style="width:262px"><col style="width:96px">' + definition.criterios.map(() => `<col style="width:${criterionWidth}px">`).join('');
+  if (colgroup) colgroup.innerHTML = '<col style="width:5.5%"><col class="res-id-number-col" style="width:4.5%"><col style="width:24.5%"><col class="res-project-summary-col" style="width:320px"><col style="width:7.5%"><col style="width:7.5%"><col style="width:15%"><col style="width:10%">' + definition.criterios.map(() => '<col style="width:10%">').join('');
   if (thead) thead.innerHTML = bancaTableHeaderHTML();
+  syncResultsIdColumn();
 }
 
 function renderBanca() {
   syncBancaTableStructure();
   const body = document.getElementById('tblBanca');
   if (!body) return;
-  const selectedIds = new Set(getBancaSelectionIds());
+  const selectedIds = new Set(ensureBancaTop80Selection());
   const rows = INSCRICOES.map((e, idx) => ({ e, idx }))
     .filter(({ e }) => selectedIds.has(String(e.id)))
     .sort((a, b) => displayPersonName(a.e.lider).localeCompare(displayPersonName(b.e.lider), 'pt-BR', { sensitivity:'base', numeric:true }) || String(a.e.id).localeCompare(String(b.e.id), 'pt-BR', { numeric:true }));
   renderBancaReviewers();
   const summary = document.getElementById('bancaSummary');
-  if (summary) summary.textContent = `${rows.length} ${rows.length === 1 ? 'candidatura selecionada' : 'candidaturas selecionadas'} · ${bancaModelDefinition().label}`;
+  if (summary) summary.textContent = `${rows.length} ${rows.length === 1 ? 'participante carregado' : 'participantes carregados'} · ${bancaModelDefinition().label}`;
   const expectedEvaluations = rows.length * bancaPareceristas.length;
   const completedEvaluations = bancaPareceristas.reduce((sum, reviewer) => {
     return sum + rows.filter(({ e }) => bancaAvaliacoes[reviewer.id]?.[String(e.id)]?.done).length;
@@ -9481,34 +10007,41 @@ function renderBanca() {
   });
   body.innerHTML = metricRows.length ? metricRows.map(({ e, idx, metrics }, rowIdx) => {
     const rank = rankById.get(String(e.id));
-    const weights = normalizeBancaModelsConfig(bancaModelosConfig)[bancaModeloAtivo].pesos;
+    const definition = bancaModelDefinition();
+    const weights = bancaCriterionWeights(definition);
+    const reviewerIndexes = bancaReviewerCriterionIndexes(definition);
     const subRows = bancaPareceristas.map(reviewer => {
       const evaluation = bancaAvaliacoes[reviewer.id]?.[String(e.id)];
       const completed = !!evaluation?.done;
-      const criteria = bancaModelDefinition().criterios.map((_, criterionIndex) => completed ? NV[evaluation.notas?.[criterionIndex]] : null);
-      const total = completed && criteria.every(Number.isFinite)
-        ? criteria.reduce((sum, value, criterionIndex) => sum + value * ((weights[criterionIndex] || 0) / 100), 0)
+      const criteria = definition.criterios.map((_, criterionIndex) => completed && reviewerIndexes.includes(criterionIndex) ? NV[evaluation.notas?.[criterionIndex]] : null);
+      const reviewerWeight = reviewerIndexes.reduce((sum, index) => sum + (weights[index] || 0), 0);
+      const total = completed && reviewerWeight && reviewerIndexes.every(index => Number.isFinite(criteria[index]))
+        ? reviewerIndexes.reduce((sum, index) => sum + criteria[index] * (weights[index] || 0), 0) / reviewerWeight
         : null;
       return `<tr class="sub-row sub-banca-${rowIdx}">
         <td class="sticky s0"></td>
-        <td class="res-actions-col"></td>
+        <td class="res-id-number-col"></td>
         <td class="sticky s5" style="padding-left:22px"><div style="font-size:11px;font-weight:500;color:#5F6368">${escapeHtmlAttr(reviewer.nome)}</div><div class="res-faint" style="font-size:10px">Parecerista da banca</div></td>
-        <td class="res-state-col"></td>
+        <td class="res-project-summary-col"></td>
+        <td class="res-gender-col"></td>
+        <td class="res-race-col"></td>
         <td class="res-university-col"></td>
         <td class="s7" style="text-align:center">${bancaReviewerScoreHTML(total, { total:true })}</td>
-        ${criteria.map(value => `<td class="crit-td">${bancaReviewerScoreHTML(value)}</td>`).join('')}
+        ${criteria.map((value, criterionIndex) => `<td class="crit-td">${bancaCriterionComesFromSpreadsheet(criterionIndex, definition) ? '<span class="res-faint">Via planilha</span>' : bancaReviewerScoreHTML(value)}</td>`).join('')}
       </tr>`;
     }).join('');
     return `<tr>
       <td class="sticky s0"><div class="res-rank-line"><span class="res-primary-rank">${rank || '—'}</span></div></td>
-      <td class="res-actions-col"><div class="res-id-actions" style="justify-content:center"><button class="icon-btn" onclick="openModal(${idx})" title="Ver inscrição"><i class="ti ti-eye"></i></button><button class="icon-btn" onclick="openModalPar(${idx})" title="Ver notas dos pareceristas"><i class="ti ti-notes"></i></button></div></td>
-      <td class="sticky s5"><div class="leader-cell"><div style="font-size:12.5px;font-weight:600;color:#202124">${formatResultadoLeaderName(e.lider)}</div><div class="res-muted" style="font-size:10px;margin-top:4px">ID ${shortInscId(e.id)}</div></div></td>
-      <td class="res-state-col" style="font-size:12.5px;font-weight:500;color:#5F6368;line-height:1.4">${escapeHtmlAttr(ufDisplayLabel(e.uf))}</td>
-      <td class="res-university-col"><div class="res-muted" style="font-size:12.5px;line-height:1.4">${escapeHtmlAttr(compactInstitutionLabel(e.inst) || 'Instituição não informada')}</div></td>
+      <td class="res-id-number-col">${escapeHtmlAttr(shortInscId(e.id))}</td>
+      <td class="sticky s5"><div class="leader-cell"><div class="res-leader-head"><div class="res-leader-identity"><div class="res-leader-copy"><div class="res-leader-name">${formatResultadoLeaderName(e.lider)}</div></div></div><div class="res-name-actions"><button class="icon-btn" onclick="openModal(${idx},true)" title="Ver os três formulários do workshop" aria-label="Ver os três formulários do workshop"><i class="ti ti-eye"></i></button><button class="icon-btn" onclick="openModalPar(${idx})" title="Ver notas dos pareceristas" aria-label="Ver notas dos pareceristas"><i class="ti ti-notes"></i></button></div></div></div></td>
+      <td class="res-project-summary-col"><div class="res-project-summary-text">Check-in · Fase 1 · Fase 2</div><div class="res-muted" style="font-size:10px;margin-top:4px">Abra pelo olhinho para consultar</div></td>
+      <td class="res-gender-col">${escapeHtmlAttr([...generosTimeInscricao(e)].join(' · ') || 'Não informado')}</td>
+      <td class="res-race-col">${escapeHtmlAttr([...racasTimeInscricao(e)].join(' · ') || 'Não informada')}</td>
+      <td class="res-university-col"><div class="res-muted">${escapeHtmlAttr(compactInstitutionLabel(e.inst) || 'Instituição não informada')}</div><div class="res-university-location">${escapeHtmlAttr(e.uf ? `Estado informado: ${ufDisplayLabel(e.uf)}` : 'Estado não informado')}</div></td>
       <td class="s7" style="text-align:center;vertical-align:top"><div class="nota-cell"><div class="nota-main">${metrics.total !== null ? fmtResultadoFinal(metrics.total) : '<span style="color:#D5D9E0;font-size:15px">—</span>'}</div><div class="nota-actions">${bancaReviewerProgressHTML(e.id, rowIdx)}</div></div></td>
-      ${metrics.criteria.map((value, ci) => `<td class="crit-td">${value !== null ? `<div class="criterion-score-main">${value.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}</div><div class="res-faint" style="font-size:8.5px">peso ${formatCriterionWeight(normalizeBancaModelsConfig(bancaModelosConfig)[bancaModeloAtivo].pesos[ci])}%</div>` : '<span style="color:#D5D9E0">—</span>'}</td>`).join('')}
+      ${metrics.criteria.map((value, ci) => `<td class="crit-td">${value !== null ? `<div class="criterion-score-main">${value.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}</div><div class="res-faint" style="font-size:8.5px">peso ${formatCriterionWeight(weights[ci])}%</div>` : bancaCriterionComesFromSpreadsheet(ci, definition) ? '<span class="res-faint">Pendente da planilha</span>' : '<span style="color:#D5D9E0">—</span>'}</td>`).join('')}
     </tr>${subRows}`;
-  }).join('') : `<tr><td colspan="${6 + bancaModelDefinition().criterios.length}" style="padding:38px 14px;text-align:center;color:#9AA0A6">Nenhuma candidatura foi selecionada para a banca.</td></tr>`;
+  }).join('') : `<tr><td colspan="${8 + bancaModelDefinition().criterios.length}" style="padding:38px 14px;text-align:center;color:#9AA0A6">Os 80 participantes serão carregados assim que o ranking final estiver disponível.</td></tr>`;
 }
 
 function resultadoParticipantRows(e) {
@@ -9561,6 +10094,32 @@ function renderResultsStatsDrawer(source = 'resultados') {
   const rows = source === 'banca'
     ? (Array.isArray(window.currentBancaRows) ? window.currentBancaRows : [])
     : (Array.isArray(window.currentResultsTopRows) ? window.currentResultsTopRows : []);
+  const body = document.getElementById('resultsStatsDrawerBody');
+  if (source === 'banca') {
+    const selectedIds = new Set(rows.map(({ e }) => String(e.id)));
+    const reviewers = bancaPareceristas.map(reviewer => ({
+      reviewer,
+      done:bancaReviewerCompletedCount(reviewer.id, selectedIds),
+      assigned:selectedIds.size,
+    }));
+    const done = reviewers.reduce((sum, item) => sum + item.done, 0);
+    const expected = reviewers.reduce((sum, item) => sum + item.assigned, 0);
+    const percent = expected ? Math.round((done / expected) * 100) : 0;
+    const reviewerRows = reviewers.map(({ reviewer, done:reviewerDone, assigned }) => {
+      const reviewerPercent = assigned ? Math.round((reviewerDone / assigned) * 100) : 0;
+      return `<div class="evaluation-progress-row">
+        <div class="evaluation-progress-row-head"><span>${escapeHtmlAttr(reviewer.nome || 'Parecerista')}</span><strong>${reviewerDone}</strong></div>
+        <div class="evaluation-progress-row-meta">${reviewerDone} de ${assigned} avaliações concluídas</div>
+        <div class="evaluation-progress-track" aria-hidden="true"><span style="width:${reviewerPercent}%"></span></div>
+      </div>`;
+    }).join('');
+    if (body) body.innerHTML = `<div class="evaluation-progress-overview">
+      <div class="evaluation-progress-total"><strong>${done.toLocaleString('pt-BR')} / ${expected.toLocaleString('pt-BR')}</strong><span>${percent}% concluídas</span></div>
+      <div class="evaluation-progress-track" aria-hidden="true"><span style="width:${percent}%"></span></div>
+    </div>
+    <div class="evaluation-progress-list">${reviewerRows || '<div class="res-faint">Nenhum parecerista ativo na banca.</div>'}</div>`;
+    return;
+  }
   const teams = rows.map(({ e }) => e);
   const participants = teams.flatMap(team => resultadoParticipantRows(team).map(row => ({ row, team })));
   const modalidades = countResultsStats(teams.map(e => e.mod || 'N/D'));
@@ -9572,7 +10131,6 @@ function renderResultsStatsDrawer(source = 'resultados') {
   const generos = countResultsStats(participants.map(({ row }) => normalizeResultsGender(firstRawValue(row, ['Como você se identifica?', 'Gênero', 'genero'])) || 'N/D'));
   const racas = countResultsStats(participants.map(({ row }) => normalizeResultsRace(firstRawValue(row, ['Raça/etnia', 'Cor/raça', 'Cor/Raça', 'raca'])) || 'N/D'));
   const usoIA = countResultsStats(teams.map(e => normalizeResultsIA(e.ia)));
-  const body = document.getElementById('resultsStatsDrawerBody');
   const peopleCount = participants.length;
   const teamsCount = teams.length;
   const topLimit = source === 'resultados' ? Number(document.getElementById('resFiltroTop')?.value || 0) : 0;
@@ -9589,7 +10147,7 @@ function openResultsStatsDrawer(source = 'resultados') {
   const rows = source === 'banca' ? window.currentBancaRows : window.currentResultsTopRows;
   if (!rows?.length) return;
   const title = document.getElementById('resultsStatsDrawerTitle');
-  if (title) title.textContent = source === 'banca' ? 'Estatísticas da banca' : 'Estatísticas rápidas';
+  if (title) title.textContent = source === 'banca' ? 'Andamento da banca' : 'Estatísticas rápidas';
   renderResultsStatsDrawer(source);
   resultsDrawerMode = 'stats';
   document.getElementById('resultsStatsDrawer')?.classList.add('open');
@@ -9720,6 +10278,21 @@ function selectedContactsReportRows() {
     });
 }
 
+function persistWorkshopSelectedRoster() {
+  try {
+    const roster = selectedContactsReportRows().map(row => ({
+      id: String(row.id),
+      nome: String(row.name || ''),
+      email: String(row.email || ''),
+    }));
+    if (roster.length) localStorage.setItem(WORKSHOP_ROSTER_KEY, JSON.stringify(roster));
+    return roster;
+  } catch (error) {
+    console.warn('Falha ao preparar participantes do workshop:', error);
+    return [];
+  }
+}
+
 function contactsReportDocumentHTML(rows) {
   const generatedAt = new Intl.DateTimeFormat('pt-BR', { dateStyle:'long', timeStyle:'short' }).format(new Date());
   const body = rows.map(row => `<tr>
@@ -9749,6 +10322,7 @@ function contactReportTitleCase(value) {
 
 function openContactsReport() {
   const rows = selectedContactsReportRows();
+  persistWorkshopSelectedRoster();
   if (!rows.length) {
     notify('Ainda não há avaliações concluídas suficientes para gerar o relatório de contatos.');
     return;
@@ -9779,14 +10353,182 @@ function toggleRes(i) {
 }
 
 // ═══ MODAL INSCRIÇÃO ══════════════════════════════════════
-function openModal(idx) {
+const workshopEvidenceCache = new Map();
+async function loadWorkshopEvidence(inscId) {
+  const key = shortInscId(inscId);
+  if (workshopEvidenceCache.has(key)) return workshopEvidenceCache.get(key);
+  const payload = { action:'banca-participant', participantExternalId:key };
+  if (bancaReviewerBootMode) payload.reviewerId = currentParId || requestedBancaParId;
+  else payload.adminKey = ADMIN_PASSWORD;
+  const request = fetch('/api/workshop', {
+    method:'POST',
+    headers:{ 'Content-Type':'application/json' },
+    body:JSON.stringify(payload),
+  }).then(async response => {
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.error || 'Não foi possível carregar as respostas do workshop.');
+    return data;
+  }).catch(error => {
+    workshopEvidenceCache.delete(key);
+    throw error;
+  });
+  workshopEvidenceCache.set(key, request);
+  return request;
+}
+function workshopAnswerHTML(field) {
+  const values = Array.isArray(field.value) ? field.value : [field.value];
+  let normalized = values.map(value => String(value ?? '').trim()).filter(Boolean);
+  const otherValue = String(field.otherValue || '').trim();
+  if (otherValue) normalized = normalized.map(value => /^(outra ferramenta|outro)$/i.test(value) ? `${value} · ${otherValue}` : value);
+  if (!normalized.length) return '<span class="workshop-answer-pending">Sem resposta enviada.</span>';
+  if (field.type === 'url') {
+    const url = normalized[0];
+    return `<a href="${escapeHtmlAttr(url)}" target="_blank" rel="noopener noreferrer">${escapeHtmlAttr(url)}</a>`;
+  }
+  if (['radio','checkbox','check'].includes(field.type)) {
+    return `<div class="workshop-answer-options">${normalized.map(value => `<span class="workshop-answer-chip">${escapeHtmlAttr(value)}</span>`).join('')}</div>`;
+  }
+  return normalized.map(escapeHtmlAttr).join(Array.isArray(field.value) ? '<br>' : '');
+}
+function bancaWorkshopIdentityHTML(e) {
+  const profile = resultadoParticipantRows(e)[0] || e?._raw || {};
+  const city = firstRawValue(profile, ['Cidade', 'Cidade onde você mora', 'Cidade em que você reside', 'Município', 'Municipio']);
+  const state = ufDisplayLabel(e?.uf) || firstRawValue(profile, ['UF', 'Estado']);
+  const location = [city, state].filter(Boolean).join(' / ') || 'Não informada';
+  const rawGender = firstRawValue(profile, ['Como você se identifica?', 'Gênero', 'Genero', 'genero']);
+  const gender = generoCategoria(rawGender) || rawGender || 'Não informado';
+  const birthValue = firstRawValue(profile, ['Data Nascimento', 'Data de nascimento', 'Nascimento', 'Ano de nascimento']);
+  let age = null;
+  const birthYearMatch = String(birthValue || '').match(/^\s*(\d{4})\s*$/);
+  if (birthYearMatch) {
+    const birthYear = Number(birthYearMatch[1]);
+    const estimatedAge = new Date().getFullYear() - birthYear;
+    if (estimatedAge > 0 && estimatedAge < 120) age = estimatedAge;
+  } else {
+    const birthDate = parseBrDateTime(birthValue);
+    if (birthDate && !Number.isNaN(birthDate.getTime())) {
+      const today = new Date();
+      age = today.getFullYear() - birthDate.getFullYear();
+      if (today.getMonth() < birthDate.getMonth() || (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate())) age -= 1;
+      if (age <= 0 || age >= 120) age = null;
+    }
+  }
+  return `<div class="workshop-review-person">
+    <div class="workshop-review-person-name">${escapeHtmlAttr(displayPersonName(e?.lider) || 'Participante')}</div>
+    <dl class="workshop-review-meta">
+      <div><dt>Cidade / UF</dt><dd>${escapeHtmlAttr(location)}</dd></div>
+      <div><dt>Gênero</dt><dd>${escapeHtmlAttr(gender)}</dd></div>
+      <div><dt>Universidade</dt><dd>${escapeHtmlAttr(compactInstitutionLabel(e?.inst) || 'Não informada')}</dd></div>
+      <div><dt>Idade</dt><dd>${age !== null ? `${age} anos` : 'Não informada'}</dd></div>
+    </dl>
+  </div>`;
+}
+const WORKSHOP_REVIEW_STAGES = {
+  fase1:{ title:'Concepção do teaser' },
+  fase2:{ title:'Construção do protótipo' },
+};
+const WORKSHOP_REVIEW_GROUPS = {
+  checkin:[{ title:'Perguntas comportamentais', ids:['q1'] }],
+  fase1:[{ title:'A sua ideia', ids:['q1','q3','q2','q4','q5','q6'] }],
+  fase2:[
+    { title:'O protótipo', ids:['q1'] },
+    { title:'Uso de inteligência artificial', ids:['q2','q3','q4','q5'] },
+    { title:'Do conceito ao teaser', ids:['q6','q7','q8'] },
+  ],
+};
+function workshopQuestionParts(field) {
+  const match = String(field?.label || '').match(/^(\d+)\.\s*(.*)$/s);
+  return match ? { number:match[1].padStart(2, '0'), label:match[2] } : { number:'', label:String(field?.label || '') };
+}
+function workshopFieldHTML(field, submitted) {
+  const question = workshopQuestionParts(field);
+  return `<div class="workshop-evidence-field">
+    <div class="workshop-question-number">${escapeHtmlAttr(question.number)}</div>
+    <div class="workshop-question-content">
+      <div class="workshop-evidence-question">${escapeHtmlAttr(question.label)}</div>
+      ${field.help ? `<div class="workshop-evidence-help">${escapeHtmlAttr(field.help)}</div>` : ''}
+      <div class="workshop-evidence-answer">${submitted ? workshopAnswerHTML(field) : '<span class="workshop-answer-pending">Aguardando resposta.</span>'}</div>
+    </div>
+  </div>`;
+}
+function workshopFieldsHTML(response) {
+  const fields = (Array.isArray(response?.fields) ? response.fields : []).filter(field => field.type !== 'url');
+  if (!fields.length) return '<div class="workshop-evidence-empty">Nenhuma pergunta configurada para esta atividade.</div>';
+  const configuredGroups = WORKSHOP_REVIEW_GROUPS[response.activity] || [{ title:'Respostas', ids:fields.map(field => field.id) }];
+  const renderedIds = new Set();
+  const groups = configuredGroups.map(group => {
+    const groupFields = group.ids.map(id => fields.find(field => field.id === id)).filter(Boolean);
+    groupFields.forEach(field => renderedIds.add(field.id));
+    if (!groupFields.length) return '';
+    return `<section class="workshop-evidence-group">
+      <h4 class="workshop-evidence-group-title">${escapeHtmlAttr(group.title)}</h4>
+      <div class="workshop-evidence-fields">${groupFields.map(field => workshopFieldHTML(field, response.submitted)).join('')}</div>
+    </section>`;
+  });
+  const remaining = fields.filter(field => !renderedIds.has(field.id));
+  if (remaining.length) groups.push(`<section class="workshop-evidence-group"><h4 class="workshop-evidence-group-title">Outras respostas</h4><div class="workshop-evidence-fields">${remaining.map(field => workshopFieldHTML(field, response.submitted)).join('')}</div></section>`);
+  return groups.join('');
+}
+function workshopArtifactHTML(responses) {
+  const prototypeResponse = responses.find(response => response.activity === 'fase2');
+  const prototypeField = prototypeResponse?.fields?.find(field => field.type === 'url');
+  const prototypeUrl = String(prototypeField?.value || '').trim();
+  const artifactAction = prototypeUrl
+    ? `<a class="workshop-artifact-link" href="${escapeHtmlAttr(prototypeUrl)}" target="_blank" rel="noopener noreferrer"><i class="ti ti-player-play"></i><span>Abrir link do protótipo</span><i class="ti ti-external-link"></i></a>`
+    : '<span class="workshop-artifact-pending"><i class="ti ti-clock"></i>Aguardando envio</span>';
+  return `<div class="workshop-evidence-artifacts">
+    <span class="workshop-evidence-artifacts-label">Link do protótipo<small>${prototypeUrl ? 'Arquivo submetido na construção do protótipo' : 'Será disponibilizado aqui após o envio'}</small></span>
+    ${artifactAction}
+  </div>`;
+}
+function workshopSubmittedDate(value) {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  return date.toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+function workshopEvidenceHTML(data) {
+  const responses = (Array.isArray(data?.responses) ? data.responses : []).filter(response => ['fase1','fase2'].includes(response.activity));
+  if (!responses.length) return '<div class="workshop-evidence-empty">Esta pessoa ainda não enviou as entregas avaliadas pela banca.</div>';
+  return workshopArtifactHTML(responses) + responses.map((response, index) => {
+    const stage = WORKSHOP_REVIEW_STAGES[response.activity] || { title:response.label };
+    const submittedDate = workshopSubmittedDate(response.submittedAt);
+    return `<details class="workshop-evidence-stage stage-${escapeHtmlAttr(response.activity)}">
+      <summary>
+        <span class="workshop-stage-heading"><strong class="workshop-stage-title">${escapeHtmlAttr(stage.title)}</strong></span>
+        <span class="workshop-stage-meta"><span class="workshop-stage-status${response.submitted ? ' is-sent' : ''}">${response.submitted ? 'Resposta enviada' : 'Ainda não enviado'}</span>${submittedDate ? `<time class="workshop-stage-date">${escapeHtmlAttr(submittedDate)}</time>` : ''}</span>
+      </summary>
+      <div class="workshop-evidence-stage-body">${workshopFieldsHTML(response)}</div>
+    </details>`;
+  }).join('');
+}
+async function appendWorkshopEvidence(target, e) {
+  if (!target || !e) return;
+  const section = document.createElement('section');
+  section.className = 'workshop-evidence';
+  section.innerHTML = '<div class="workshop-evidence-loading">Carregando respostas do workshop…</div>';
+  target.appendChild(section);
+  try {
+    const data = await loadWorkshopEvidence(e.id);
+    if (!section.isConnected) return;
+    section.querySelector('.workshop-evidence-loading').outerHTML = workshopEvidenceHTML(data);
+  } catch(error) {
+    if (!section.isConnected) return;
+    section.querySelector('.workshop-evidence-loading').outerHTML = `<div class="workshop-evidence-empty">${escapeHtmlAttr(error.message || error)}</div>`;
+  }
+}
+function openModal(idx, includeWorkshop = false) {
   const e = INSCRICOES[idx];
   const grid = document.getElementById('mGrid');
   grid.className = 'split-reference-grid';
-  grid.innerHTML = avalGridHTML(e, 'split', 'modal').replaceAll('ficha_avaliacao', 'modal_inscricao').replace('id="avalIASplit"', 'id="modalIARef"');
-  document.getElementById('modalIARef').innerHTML = iaNoteHTML(e.ia);
+  grid.innerHTML = includeWorkshop
+    ? bancaWorkshopIdentityHTML(e)
+    : avalGridHTML(e, 'split', 'modal').replaceAll('ficha_avaliacao', 'modal_inscricao').replace('id="avalIASplit"', 'id="modalIARef"');
+  const modalIARef = document.getElementById('modalIARef');
+  if (modalIARef) modalIARef.innerHTML = iaNoteHTML(e.ia);
   document.getElementById('overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
+  if (includeWorkshop) appendWorkshopEvidence(grid, e);
 }
 function closeModal() { document.getElementById('overlay').classList.remove('open'); document.body.style.overflow = ''; }
 
@@ -9905,12 +10647,12 @@ function syncBancaPortalTableStructure() {
   const table = document.querySelector('#view-portal .results-table');
   if (!table) return;
   const definition = bancaModelDefinition();
-  const weights = normalizeBancaModelsConfig(bancaModelosConfig)[bancaModeloAtivo].pesos;
+  const weights = bancaCriterionWeights(definition);
   const colgroup = table.querySelector('colgroup');
   if (colgroup) colgroup.innerHTML = '<col style="width:268px"><col style="width:96px">' + definition.criterios.map(() => '<col style="width:130px">').join('');
   const thead = table.querySelector('thead');
   const alternativeModel = bancaModeloAtivo !== 'grade_completa';
-  if (thead) thead.innerHTML = `<tr><th class="sticky s5" rowspan="2">Time (leader-first)</th><th class="sticky s7" rowspan="2" style="text-align:center;min-width:90px">Nota geral</th><th class="crit crit-group${alternativeModel ? ' banca-model-group' : ''}" colspan="${definition.criterios.length}">${bancaModeloAtivo === 'grade_completa' ? 'Critérios' : bancaModeloAtivo === 'nota_direta' ? 'AVALIAÇÃO' : 'GRADE DA BANCA'}</th></tr><tr>${definition.criterios.map((criterion,index) => `<th class="crit${alternativeModel ? ' banca-model-criterion' : ''}">${escapeHtmlAttr(criterion.nome)}<span class="peso">${index === 0 ? 'Peso ' : ''}${formatCriterionWeight(weights[index])}%</span></th>`).join('')}</tr>`;
+  if (thead) thead.innerHTML = `<tr><th class="sticky s5" rowspan="2">Time (leader-first)</th><th class="sticky s7" rowspan="2" style="text-align:center;min-width:90px">Nota da banca</th><th class="crit crit-group${alternativeModel ? ' banca-model-group' : ''}" colspan="${definition.criterios.length}">${bancaModeloAtivo === 'grade_completa' ? 'Critérios' : bancaModeloAtivo === 'nota_direta' ? 'AVALIAÇÃO' : 'GRADE DA BANCA'}</th></tr><tr>${definition.criterios.map((criterion,index) => `<th class="crit${alternativeModel ? ' banca-model-criterion' : ''}">${escapeHtmlAttr(bancaCriterionDisplayName(criterion, index, definition))}<span class="peso">${escapeHtmlAttr(bancaCriterionWeightLabel(index, definition))}</span></th>`).join('')}</tr>`;
 }
 
 function renderPortal() {
@@ -10016,7 +10758,7 @@ function renderPortal() {
       : `${candidateCell}<td class="portal-id-col" style="text-align:center;font-size:12px;font-weight:600;color:#3C4043">${shortInscId(e.id)}</td><td class="portal-status-col"><span class="badge ${statusClass}">${statusLabel}</span></td><td class="portal-state-col" style="font-size:11.5px;font-weight:500;color:#5F6368">${escapeHtmlAttr(ufDisplayLabel(e.uf))}</td><td class="portal-university-col" style="font-size:11.5px;line-height:1.4;color:#6B7280">${escapeHtmlAttr(compactInstitutionLabel(e.inst) || 'Instituição não informada')}</td><td class="s7" style="text-align:center"><div class="nota-cell"><div class="nota-main">${isDone ? fmtNotaGeral(notaGeralParecerista) : '—'}</div></div></td>`;
     return `<tr class="portal-evaluation-row ${isDone ? 'is-complete' : ''} ${isDone && parecerResumo ? 'has-observation' : ''}" style="cursor:pointer" onclick="abrirFicha('${parId}','${inscId}'${isDone?', true':''})">
       ${identityCells}
-      ${CRITERIOS.map((_,ci) => `<td class="crit-td">${bancaReviewerBootMode && bancaModeloAtivo !== 'grade_completa' ? (isDone && av?.notas?.[ci] ? `<span style="font-size:13px;font-weight:600;color:#3C4043">${av.notas[ci]}</span>` : '<span style="color:#E0E0E0">—</span>') : nc(isDone ? av?.notas?.[ci] : null)}</td>`).join('')}
+      ${CRITERIOS.map((_,ci) => `<td class="crit-td">${bancaReviewerBootMode && bancaCriterionComesFromSpreadsheet(ci) ? '<span class="res-faint">Via planilha</span>' : bancaReviewerBootMode && bancaModeloAtivo !== 'grade_completa' ? (isDone && av?.notas?.[ci] ? `<span style="font-size:13px;font-weight:600;color:#3C4043">${av.notas[ci]}</span>` : '<span style="color:#E0E0E0">—</span>') : nc(isDone ? av?.notas?.[ci] : null)}</td>`).join('')}
     </tr>${isDone && parecerResumo ? `<tr class="portal-observation-row" onclick="abrirFicha('${parId}','${inscId}', true)"><td colspan="${(bancaReviewerBootMode ? 2 : 6) + CRITERIOS.length}"><div class="portal-observation"><i class="ti ti-corner-down-right" aria-hidden="true"></i><strong>Observação</strong><span class="portal-observation-text" title="${escapeHtmlAttr(parecerResumo)}">${escapeHtmlAttr(parecerResumo)}</span></div></td></tr>` : ''}`;
   }).join('');
   requestAnimationFrame(syncPortalTableScrollHeight);
@@ -10970,7 +11712,8 @@ function preencherFichaSplitOriginal(e) {
 function critSplitHTMLOriginal(av) {
   const LINHA1 = ['Insuficiente','Regular'];
   const LINHA2 = ['Bom','Ótimo'];
-  return `<div class="crit-compact">` + CRITERIOS.map((c,i) => {
+  return `<div class="crit-compact">` + evaluationCriterionIndexes().map(i => {
+    const c = CRITERIOS[i];
     const nota = av?.notas?.[i] || null;
     const just = av?.justificativas?.[i] || '';
     const pills = [...LINHA1,...LINHA2].map(v =>
@@ -10991,13 +11734,14 @@ function critSplitHTMLOriginal(av) {
 
 function critGridHTML(av, prefix) {
   const labels = ['Insuficiente','Regular','Bom','Ótimo'];
-  return CRITERIOS.map((c,i) => {
+  return evaluationCriterionIndexes().map(i => {
+    const c = CRITERIOS[i];
     const nota = av?.notas[i] || null;
     return `<section class="criterio crit" id="${prefix}crit-card-${i}">
       <div class="criterio-visivel">
         <div class="criterio-visivel-cab">
           <span class="crit-nome">${escapeHtmlAttr(c.nome)}</span>
-          <span class="criterio-peso">Peso ${Math.round(Number(CRITERIO_PESOS[i] || 0))}%</span>
+          ${bancaReviewerBootMode ? '' : `<span class="criterio-peso">Peso ${integerCriterionWeights(CRITERIO_PESOS)[i]}%</span>`}
         </div>
         <p class="crit-desc">${escapeHtmlAttr(c.desc)}</p>
       </div>
@@ -11098,7 +11842,7 @@ function renderReviewerEvaluationQueue(parId, activeInscId) {
   const ids = getAtribVisiveisNoPortal(parId);
   const done = ids.filter(id => isEvaluationConcluded(parId, id)).length;
   progress.textContent = `${done} de ${ids.length} avaliadas`;
-  list.innerHTML = ids.map((inscId, index) => {
+  list.innerHTML = ids.map(inscId => {
     const item = INSCRICOES.find(entry => entry.id === inscId);
     if (!item) return '';
     const completed = isEvaluationConcluded(parId, inscId);
@@ -11107,7 +11851,6 @@ function renderReviewerEvaluationQueue(parId, activeInscId) {
     const score = completed ? notaExibida(notaGeralAvaliacao(evaluation)) : null;
     return `<button type="button" class="reviewer-queue-item${active ? ' active ativa' : ''}${completed ? ' completed avaliada' : ''}" onclick="abrirFicha('${escapeHtmlAttr(parId)}','${escapeHtmlAttr(inscId)}'${completed ? ',true' : ''})">
       <span class="reviewer-queue-status st${completed ? ' feita' : active ? ' em-andamento' : ''}">${completed ? '✓' : ''}</span>
-      <span class="reviewer-queue-code cod">${String(index + 1).padStart(2, '0')}</span>
       <span class="reviewer-queue-name nome">${escapeHtmlAttr(displayPersonName(item.lider).toUpperCase() || 'CANDIDATURA')}</span>
       ${completed && score !== null ? `<span class="reviewer-queue-score nota-time">${fmtNotaGeral(score)}</span>` : ''}
     </button>`;
@@ -11159,13 +11902,33 @@ function abrirFicha(parId, inscId, abrirEmEdicao = false) {
   updateAvaliacaoStatus(effectiveDone);
   atualizarBotoesEdicao(av);
 
-  document.getElementById('avalGridSeq').innerHTML = avalGridHTML(e, 'seq');
+  document.querySelector('.reviewer-eval-topbar strong').textContent = bancaReviewerBootMode
+    ? 'MARATONA IA 2026 · Banca dos 80'
+    : 'MARATONA IA 2026 · Avaliação das candidaturas';
+
+  document.getElementById('avalGridSeq').innerHTML = bancaReviewerBootMode ? bancaWorkshopIdentityHTML(e) : avalGridHTML(e, 'seq');
   document.getElementById('critGridSeq').innerHTML = critGridHTML(av, 'seq_');
   document.getElementById('parecerGeralSeq').value = av?.parecer || '';
 
-  document.getElementById('avalGridSplit').innerHTML = avalGridHTML(e, 'split');
+  document.getElementById('avalGridSplit').innerHTML = bancaReviewerBootMode ? bancaWorkshopIdentityHTML(e) : avalGridHTML(e, 'split');
   document.getElementById('critGridSplit').innerHTML = critGridHTML(av, 'spl_');
   document.getElementById('parecerGeralSplit').value = av?.parecer || '';
+  const parecerLabel = bancaReviewerBootMode ? 'Observação (opcional)' : 'Parecer geral (opcional)';
+  const parecerPlaceholder = bancaReviewerBootMode
+    ? 'Registre uma observação complementar sobre esta avaliação.'
+    : 'Campo opcional para registrar a síntese da avaliação, com pontos fortes, limitações e recomendação final.';
+  ['parecerLabelSeq', 'parecerLabelSplit'].forEach(id => {
+    const label = document.getElementById(id);
+    if (label) label.textContent = parecerLabel;
+  });
+  ['parecerGeralSeq', 'parecerGeralSplit'].forEach(id => {
+    const field = document.getElementById(id);
+    if (field) field.placeholder = parecerPlaceholder;
+  });
+  if (bancaReviewerBootMode) {
+    appendWorkshopEvidence(document.getElementById('avalGridSeq'), e);
+    appendWorkshopEvidence(document.getElementById('avalGridSplit'), e);
+  }
 
   // A banca não usa controle de tempo; a primeira etapa mantém o timer invisível.
   if (bancaReviewerBootMode) {
@@ -11187,10 +11950,11 @@ function abrirFicha(parId, inscId, abrirEmEdicao = false) {
 
 function updateFooter() {
   const prefix = currentLayout === 'split' ? 'spl_' : 'seq_';
-  const notas = CRITERIOS.map((_,i) => document.querySelector(`input[name="${prefix}crit_${i}"]:checked`)?.value || null);
-  const n = notas.filter(Boolean).length;
-  const progressText = `${n} de ${CRITERIOS.length} ${CRITERIOS.length === 1 ? 'critério avaliado' : 'critérios avaliados'}`;
-  const progressWidth = Math.round(n/Math.max(CRITERIOS.length, 1)*100) + '%';
+  const activeIndexes = evaluationCriterionIndexes();
+  const notas = Object.fromEntries(activeIndexes.map(i => [i, document.querySelector(`input[name="${prefix}crit_${i}"]:checked`)?.value || null]));
+  const n = activeIndexes.filter(i => notas[i]).length;
+  const progressText = `${n} de ${activeIndexes.length} ${activeIndexes.length === 1 ? 'critério avaliado' : 'critérios avaliados'}`;
+  const progressWidth = Math.round(n/Math.max(activeIndexes.length, 1)*100) + '%';
   ['avalProgressLabelSeq', 'avalProgressLabelSplit'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.textContent = progressText;
@@ -11199,7 +11963,7 @@ function updateFooter() {
     const el = document.getElementById(id);
     if (el) el.style.width = progressWidth;
   });
-  CRITERIOS.forEach((_, i) => {
+  activeIndexes.forEach(i => {
     const card = document.getElementById(`${prefix}crit-card-${i}`);
     if (!card) return;
     if (notas[i]) card.classList.remove('is-missing');
@@ -11211,7 +11975,7 @@ function updateFooter() {
 
 function destacarCriteriosPendentes(prefix, notas) {
   let firstMissingCard = null;
-  CRITERIOS.forEach((_, i) => {
+  evaluationCriterionIndexes().forEach(i => {
     const card = document.getElementById(`${prefix}crit-card-${i}`);
     if (!card) return;
     const missing = !notas[i];
@@ -11263,14 +12027,19 @@ async function executarSalvarAvaliacao(forcarAntesDoTempo = false) {
     ? (avAnterior?.motivoCurtaDuracao || '')
     : pendingEarlySaveReason;
   const prefix = currentLayout === 'split' ? 'spl_' : 'seq_';
-  const notas = CRITERIOS.map((_,i) => document.querySelector(`input[name="${prefix}crit_${i}"]:checked`)?.value || null);
-  const justificativas = CRITERIOS.map((_,i) => document.getElementById(`${prefix}just_${i}`)?.value?.trim() || '');
+  const activeIndexes = evaluationCriterionIndexes();
+  const notas = CRITERIOS.map((_,i) => activeIndexes.includes(i)
+    ? (document.querySelector(`input[name="${prefix}crit_${i}"]:checked`)?.value || null)
+    : (avAnterior?.notas?.[i] || null));
+  const justificativas = CRITERIOS.map((_,i) => activeIndexes.includes(i)
+    ? (document.getElementById(`${prefix}just_${i}`)?.value?.trim() || '')
+    : (avAnterior?.justificativas?.[i] || ''));
   const parecer = document.getElementById(currentLayout === 'split' ? 'parecerGeralSplit' : 'parecerGeralSeq').value.trim();
-  const done = notas.every(Boolean);
+  const done = activeIndexes.every(i => !!notas[i]);
 
   if (!done) {
     destacarCriteriosPendentes(prefix, notas);
-    notify(`Preencha ${CRITERIOS.length === 1 ? 'o critério' : `todos os ${CRITERIOS.length} critérios`} antes de concluir a avaliação.`);
+    notify(`Preencha ${activeIndexes.length === 1 ? 'o critério' : `todos os ${activeIndexes.length} critérios`} antes de concluir a avaliação.`);
     return;
   }
 
@@ -11822,10 +12591,17 @@ function renderBancaModelSettings() {
   if (!select.value) select.value = bancaModeloAtivo;
   const modelId = normalizeBancaModelId(select.value);
   const definition = BANCA_MODEL_DEFS[modelId];
-  const weights = normalizeBancaModelsConfig(bancaModelosConfig)[modelId].pesos;
-  container.innerHTML = definition.criterios.map((criterion, index) => `<label style="display:grid;grid-template-columns:minmax(0,1fr) 92px;align-items:center;gap:12px;padding:11px 12px;border:1px solid #E2E5EA;border-radius:7px;background:#FBFCFE"><span style="font-size:12px;font-weight:500;color:#3C4043;line-height:1.35">${escapeHtmlAttr(criterion.nome)}</span><span style="display:flex;align-items:center;gap:5px"><input class="finput" data-banca-weight="${index}" type="number" min="0" max="100" step="0.1" value="${Number(weights[index].toFixed(2))}" oninput="updateBancaWeightsTotal()" style="width:70px;text-align:right"><span style="font-size:11px;color:#9AA0A6">%</span></span></label>`).join('');
+  const weights = bancaCriterionWeights(definition, modelId);
+  container.innerHTML = definition.criterios.map((criterion, index) => {
+    const spreadsheetOnly = bancaCriterionComesFromSpreadsheet(index, definition);
+    const fixedComposition = definition.criterios.length === BANCA_FINAL_WEIGHTS.length;
+    const inputState = fixedComposition
+      ? `disabled aria-label="Peso fixo de ${escapeHtmlAttr(bancaCriterionDisplayName(criterion, index, definition))}"`
+      : 'oninput="updateBancaWeightsTotal()"';
+    return `<label style="display:grid;grid-template-columns:minmax(0,1fr) 150px;align-items:center;gap:12px;padding:11px 12px;border:1px solid #E2E5EA;border-radius:7px;background:#FBFCFE"><span style="font-size:12px;font-weight:500;color:#3C4043;line-height:1.35">${escapeHtmlAttr(bancaCriterionDisplayName(criterion, index, definition))}</span><span style="display:flex;align-items:center;gap:5px"><input class="finput" data-banca-weight="${index}" type="number" min="0" max="100" step="0.1" value="${Number(weights[index].toFixed(2))}" ${inputState} style="width:70px;text-align:right"><span style="font-size:11px;color:#9AA0A6">%${spreadsheetOnly ? ' · via planilha' : ''}</span></span></label>`;
+  }).join('');
   const status = document.getElementById('bancaModelStatus');
-  if (status) status.textContent = modelId === bancaModeloAtivo ? 'Este é o modelo ativo da banca.' : 'A aplicação muda somente as próximas avaliações deste modelo.';
+  if (status) status.textContent = modelId === bancaModeloAtivo ? 'Pesos finais: 45% Criatividade, 35% Uso de IA e 20% Marca Empregadora via planilha.' : 'A aplicação muda somente as próximas avaliações deste modelo.';
   updateBancaWeightsTotal();
 }
 

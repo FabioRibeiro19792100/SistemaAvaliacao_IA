@@ -3,5 +3,10 @@
   "framework": null,
   "buildCommand": null,
   "outputDirectory": ".",
-  "cleanUrls": false
+  "cleanUrls": false,
+  "rewrites": [
+    { "source": "/checkin", "destination": "/workshop.html?atividade=checkin" },
+    { "source": "/fase1", "destination": "/workshop.html?atividade=fase1" },
+    { "source": "/fase2", "destination": "/workshop.html?atividade=fase2" }
+  ]
 }

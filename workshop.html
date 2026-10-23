@@ -1,0 +1,723 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Formulários Maratona de IA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: faixa roxa do Desafio LED no topo com abas; formulário em coluna de 720px alinhada à esquerda; painel de progresso fixo à direita no desktop e barra inferior no celular */
+:root{
+  --paper:#fbfaff; --card:#ffffff; --ink:#170944; --ink2:#4a4466; --muted:#7d7896; --rule:#e6e2f2; --soft:#f4f1fd;
+  --key:#6a48f0; --tint:#d3c6fc; --tint2:#ece6fe; --onkey:#ffffff;
+  --band:#230d56; --lime:#bcff4d; --lav:#d9ccff; --lav2:#b893fd; --mag:#d400a8;
+  --ok:#0b7a5c; --okbg:#e3f6ee; --warn:#a85d00; --err:#c4234f; --errbg:#fdecf1;
+  --sans:"IBM Plex Sans",-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#120a2e; --card:#180f3a; --ink:#f1eefb; --ink2:#c8c1e3; --muted:#958db5; --rule:#2e2456; --soft:#1b1240;
+  --key:#bcff4d; --tint:#4a3a8c; --tint2:#2d2160; --onkey:#170944;
+  --ok:#6fe0b4; --okbg:#0f2c2a; --warn:#ffc266; --err:#ff7aa0; --errbg:#3a1230; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#120a2e; --card:#180f3a; --ink:#f1eefb; --ink2:#c8c1e3; --muted:#958db5; --rule:#2e2456; --soft:#1b1240;
+  --key:#bcff4d; --tint:#4a3a8c; --tint2:#2d2160; --onkey:#170944;
+  --ok:#6fe0b4; --okbg:#0f2c2a; --warn:#ffc266; --err:#ff7aa0; --errbg:#3a1230; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+button,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--key);outline-offset:2px}
+
+/* Faixa superior */
+.band{background:var(--band);color:#fff;position:relative;overflow:hidden}
+.band-in{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 0;display:grid;gap:14px;position:relative;z-index:1}
+.brand{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;font-size:14px;color:var(--lav)}
+.brand b{color:var(--lime);font-weight:600;font-size:15px}
+.band h1{margin:0;font-size:34px;line-height:1.12;font-weight:600;letter-spacing:-.015em;text-wrap:balance;max-width:720px}
+.band .sub{margin:0;color:var(--lav);font-size:16px;max-width:640px}
+.band svg.burst{position:absolute;right:-30px;top:-30px;width:170px;height:170px;opacity:.9;z-index:0}
+.tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;font-size:14px;color:var(--lav)}
+.switch{display:inline-flex;gap:8px;align-items:center;cursor:pointer;user-select:none}
+.switch input{appearance:none;width:34px;height:18px;border:1px solid var(--lav2);background:transparent;position:relative;cursor:pointer;margin:0}
+.switch input::after{content:"";position:absolute;top:2px;left:2px;width:12px;height:12px;background:var(--lav2);transition:left .15s}
+.switch input:checked{background:var(--lime);border-color:var(--lime)}
+.switch input:checked::after{left:18px;background:var(--band)}
+
+.tabs{display:flex;gap:0;margin-top:10px;overflow-x:auto;scrollbar-width:none}
+.tab{flex:0 0 auto;display:grid;grid-template-columns:auto auto;gap:2px 10px;align-items:baseline;text-align:left;background:transparent;border:0;border-top:3px solid transparent;color:var(--lav);padding:12px 22px 14px 0;margin-right:22px;cursor:pointer}
+.tab .tn{font-family:var(--mono);font-size:13px;color:var(--lav2);grid-row:span 2}
+.tab .tt{font-weight:600;font-size:16px;color:#fff}
+.tab .ts{font-size:13px;color:var(--lav2)}
+.tab.on{border-top-color:var(--lime)}
+.tab.on .tn{color:var(--lime)}
+.tab .ts.sent{color:var(--lime)}
+
+/* Corpo */
+.page{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:36px 120px;display:grid;grid-template-columns:minmax(0,720px) minmax(0,300px);gap:48px;align-items:start}
+.form{display:grid;gap:28px;min-width:0}
+.intro{display:grid;gap:10px}
+.intro h2{margin:0;font-size:26px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.intro p{margin:0;color:var(--ink2);max-width:66ch}
+.attn{background:var(--soft);border-left:3px solid var(--key);padding:16px 18px;display:grid;gap:8px;font-size:15px;color:var(--ink)}
+.attn b{font-weight:600}
+.asset-download{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px 16px;align-items:center;padding:18px;background:var(--band);border-left:4px solid var(--lime);color:#fff}
+.asset-download .asset-icon{display:grid;place-items:center;width:42px;height:42px;background:var(--lime);color:var(--band)}
+.asset-download .asset-icon svg,.asset-download .asset-action svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.asset-download .asset-copy{display:grid;gap:2px;min-width:0}
+.asset-download strong{font-size:16px;line-height:1.3}
+.asset-download .asset-copy span{color:var(--lav);font-size:13px;line-height:1.45}
+.asset-download .asset-action{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;padding:0 16px;background:var(--lime);color:var(--band);font-weight:700;text-decoration:none;white-space:nowrap}
+.asset-download .asset-action:hover{background:#a8ee31}
+.linkbtn{background:none;border:0;padding:0;color:var(--key);font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:3px;justify-self:start}
+.legend{font-size:13px;color:var(--muted)}
+.legend .req{color:var(--mag)}
+
+.errsum{background:var(--errbg);border-left:3px solid var(--err);padding:14px 18px;display:grid;gap:6px;font-size:15px}
+.errsum b{color:var(--err)}
+.errsum ul{margin:0;padding-left:18px;display:grid;gap:2px}
+.errsum a{color:var(--ink)}
+.sentbar{background:var(--okbg);border-left:3px solid var(--ok);padding:14px 18px;display:grid;gap:4px;font-size:15px}
+.sentbar b{color:var(--ok)}
+
+.group{display:grid;gap:0;border-top:1px solid var(--rule)}
+.group h3{margin:0;padding:18px 0 4px;font-size:15px;font-weight:600;color:var(--ink2)}
+.field{display:grid;gap:10px;padding:22px 0;border-bottom:1px solid var(--rule);scroll-margin-top:24px}
+.fh{display:grid;grid-template-columns:30px minmax(0,1fr);gap:0 10px;align-items:baseline}
+.fn{font-family:var(--mono);font-size:14px;font-weight:500;color:var(--key)}
+.fh label,.fh .q{font-size:17px;line-height:1.45;font-weight:600;color:var(--ink)}
+.req{color:var(--mag);font-weight:600}
+.opt{font-weight:400;color:var(--muted);font-size:14px}
+.body{display:grid;gap:10px;padding-left:40px;min-width:0}
+.help{margin:0;font-size:14px;color:var(--ink2);line-height:1.5}
+.example{font-size:14px;color:var(--ink2);background:var(--soft);padding:10px 12px}
+.hint{font-size:14px;color:var(--ink);background:var(--tint2);padding:10px 12px;display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center}
+.chip{display:inline-block;font-size:13px;font-weight:600;background:var(--card);border:1px solid var(--tint);padding:1px 8px}
+
+input[type=text],input[type=email],input[type=url],textarea{width:100%;background:var(--card);border:1px solid var(--rule);border-bottom:2px solid var(--ink2);padding:11px 12px;font-size:16px;border-radius:0;transition:border-color .15s}
+textarea{min-height:150px;resize:vertical;line-height:1.55}
+input:focus,textarea:focus{outline:none;border-color:var(--key);border-bottom-color:var(--key)}
+.field.bad input[type=text],.field.bad input[type=email],.field.bad input[type=url],.field.bad textarea{border-bottom-color:var(--err);background:var(--errbg)}
+input:disabled,textarea:disabled{opacity:.75}
+.field.confirmed input:disabled{background:var(--okbg);border-color:var(--ok);border-bottom-color:var(--ok);color:var(--ink);cursor:not-allowed;opacity:1;-webkit-text-fill-color:var(--ink)}
+.count{display:flex;justify-content:space-between;gap:12px;font-size:13px;color:var(--muted)}
+.count .n{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.count.near .n{color:var(--warn)}
+.count.full .n{color:var(--err);font-weight:600}
+.err{margin:0;font-size:14px;color:var(--err);font-weight:500}
+.prefill{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ok);font-weight:500}
+.prefill::before{content:"\2713";display:grid;place-items:center;width:17px;height:17px;border-radius:50%;background:var(--ok);color:var(--card);font-size:11px;font-weight:700}
+
+.opts{display:grid;gap:8px}
+.opts.cols{grid-template-columns:repeat(2,minmax(0,1fr))}
+.o{display:grid;grid-template-columns:20px minmax(0,1fr);gap:10px;align-items:start;padding:11px 12px;border:1px solid var(--rule);background:var(--card);cursor:pointer;font-size:15px;line-height:1.4}
+.o:hover{border-color:var(--tint)}
+.o input{appearance:none;width:18px;height:18px;margin:1px 0 0;border:2px solid var(--ink2);background:var(--card);display:grid;place-content:center;cursor:pointer}
+.o input[type=radio]{border-radius:50%}
+.o input:checked{border-color:var(--key);background:var(--key)}
+.o input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid var(--onkey);border-width:0 2px 2px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.o input[type=radio]:checked::after{content:"";width:6px;height:6px;border-radius:50%;background:var(--onkey)}
+.o:has(input:checked){border-color:var(--key);background:var(--tint2)}
+.o:has(input:disabled){cursor:default}
+.field.bad .opts .o{border-color:var(--err)}
+.other{padding-left:0}
+
+/* Especificação */
+.spec{display:none;font-size:13px;line-height:1.5;background:var(--card);border:1px dashed var(--key);padding:10px 12px;color:var(--ink2)}
+.spec b{color:var(--ink);font-weight:600}
+.spec ul{margin:4px 0 0;padding-left:16px}
+body.specmode .spec{display:block}
+
+.actions{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.btn{border:0;padding:13px 22px;font-weight:600;font-size:16px;cursor:pointer;background:var(--key);color:var(--onkey);border-radius:0}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--ink2)}
+.btn:disabled{opacity:.5;cursor:default}
+
+/* Painel lateral */
+.side{position:sticky;top:max(24px,env(safe-area-inset-top,0px));display:grid;gap:18px;min-width:0}
+.prog{display:grid;gap:6px}
+.prog .big{font-size:30px;font-weight:600;line-height:1;font-variant-numeric:tabular-nums}
+.prog .big small{font-size:15px;color:var(--ink2);font-weight:500;margin-left:4px}
+.bar{height:6px;background:var(--tint2)}
+.bar i{display:block;height:100%;background:var(--key);width:0;transition:width .2s}
+.plist{display:grid;gap:0;margin:0;padding:0;list-style:none;border-top:1px solid var(--rule)}
+.plist li a{display:grid;grid-template-columns:26px minmax(0,1fr) 12px;gap:8px;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--rule);color:var(--ink2);text-decoration:none;font-size:14px}
+.plist li a:hover{color:var(--ink)}
+.plist .pn{font-family:var(--mono);font-size:12px;color:var(--key)}
+.plist .pt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.plist .dot{width:10px;height:10px;border:2px solid var(--muted);align-self:center}
+.plist .done .dot{background:var(--ok);border-color:var(--ok)}
+.plist .bad .dot{border-color:var(--err);background:var(--errbg)}
+.plist .optf .dot{border-style:dotted}
+.side .note{font-size:13px;color:var(--muted);line-height:1.5}
+
+.mbar{display:none}
+footer{grid-column:1/-1;font-size:13px;color:var(--muted);border-top:1px solid var(--rule);padding-top:16px;display:flex;flex-wrap:wrap;gap:6px 20px}
+
+/* Modais */
+.scrim{position:fixed;inset:0;background:rgba(18,8,46,.6);display:grid;align-items:start;justify-items:center;padding:max(24px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(24px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));z-index:50;overflow-y:auto}
+.modal{background:var(--card);color:var(--ink);width:min(640px,100%);display:grid;gap:16px;padding:26px 26px 22px;border-top:4px solid var(--key);margin-top:5vh}
+.modal h2{margin:0;font-size:22px;line-height:1.25;font-weight:600}
+.modal p{margin:0;color:var(--ink2)}
+.modal .mb{display:grid;gap:12px;max-height:60vh;overflow-y:auto}
+.modal .ma{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-start;padding-top:4px}
+.modal .eyebrow{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.08em;color:var(--key)}
+.modal .auth{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(180px,.65fr);gap:16px;margin-top:4px}
+.modal .auth label{display:grid;gap:7px;font-size:14px;font-weight:600;color:var(--ink)}
+.modal .auth input,.modal .auth select{display:block;width:100%;height:48px;margin:0;background:var(--card);border:1px solid var(--tint);border-bottom:2px solid var(--ink2);border-radius:0;padding:10px 38px 10px 12px;font:inherit;color:var(--ink)}
+.modal .auth select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--ink2) 50%),linear-gradient(135deg,var(--ink2) 50%,transparent 50%);background-position:calc(100% - 17px) 20px,calc(100% - 11px) 20px;background-size:6px 6px,6px 6px;background-repeat:no-repeat;cursor:pointer}
+.modal .auth input:focus,.modal .auth select:focus{outline:none;border-color:var(--key);border-bottom-color:var(--key)}
+.modal .errshow{background:var(--errbg);border-left:3px solid var(--err);padding:10px 12px;color:var(--err);font-size:14px}
+.rev{display:grid;gap:0;border-top:1px solid var(--rule)}
+.rev div{display:grid;grid-template-columns:30px minmax(0,1fr);gap:2px 10px;padding:10px 0;border-bottom:1px solid var(--rule);font-size:14px}
+.rev .rn{font-family:var(--mono);color:var(--key);font-size:13px;grid-row:span 2}
+.rev .rq{color:var(--muted);font-size:13px}
+.rev .ra{color:var(--ink);white-space:pre-wrap;overflow-wrap:anywhere}
+.rev .empty{color:var(--muted);font-style:italic}
+.check{font-size:14px;color:var(--ok);font-weight:600}
+
+@media (max-width:900px){
+  .page{grid-template-columns:minmax(0,1fr);gap:28px}
+  .side{display:none}
+  .mbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--card);border-top:1px solid var(--rule);padding:12px max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));gap:14px;align-items:center;justify-content:space-between}
+  .mbar .mp{font-size:14px;color:var(--ink2)}
+  .mbar .mp b{color:var(--ink);font-variant-numeric:tabular-nums}
+  .mbar .btn{padding:11px 16px;font-size:15px}
+}
+@media (max-width:600px){
+  .band h1{font-size:26px}
+  .band svg.burst{width:110px;height:110px;right:-24px;top:-24px}
+  .asset-download{grid-template-columns:auto minmax(0,1fr)}
+  .asset-download .asset-action{grid-column:1/-1;width:100%}
+  .body{padding-left:0}
+  .fh{grid-template-columns:26px minmax(0,1fr)}
+  .opts.cols{grid-template-columns:minmax(0,1fr)}
+  .tab{padding-right:12px;margin-right:12px}
+  .modal{padding:20px 18px 18px}
+  .modal .auth{grid-template-columns:minmax(0,1fr);gap:12px}
+  .modal .ma .btn{width:100%}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<header class="band">
+  <svg class="burst" viewBox="0 0 200 200" aria-hidden="true"><g transform="translate(100 100)"></g></svg>
+  <div class="band-in">
+    <div class="brand"><b>Maratona de IA</b><span>Academia LED Globo</span><span>Workshop · 23 de outubro de 2026</span></div>
+    <h1>Maratona de IA</h1>
+    <p class="sub">Atividade do workshop.</p>
+    <div class="tools" hidden><label class="switch"><input type="checkbox" id="specToggle"> Mostrar regras de preenchimento</label></div>
+    <nav class="tabs" role="tablist" id="tabs"></nav>
+  </div>
+</header>
+
+<main class="page">
+  <div class="form" id="form"></div>
+  <aside class="side" id="side"></aside>
+  <footer><span>Maratona de IA · Academia LED Globo</span><button class="linkbtn" id="reset" type="button" hidden>Limpar dados locais</button></footer>
+</main>
+<div class="mbar" id="mbar"></div>
+<div id="modalRoot"></div>
+
+<script>
+window.WORKSHOP_SELECTED_ROSTER = [];
+</script>
+<script>
+const LIM_PRIV = "Descreva prompts, testes, ajustes, intervenções e o papel das ferramentas, mas tudo isso sem registrar dados sensíveis.";
+const CAMPAIGN_ASSETS_URL = "https://mastertechfiles.s3.sa-east-1.amazonaws.com/midia_kv-maratona-ia_2026-10-19_2203.zip";
+const ID_FIELDS = (help) => [
+  {id:"nome", n:"A", type:"text", q:"Nome completo", req:true, short:"Nome completo"},
+  {id:"email", n:"B", type:"email", q:"E-mail utilizado na inscrição", req:true, short:"E-mail da inscrição", help}
+];
+const FORMS = [
+  {key:"checkin", n:"1", tab:"Check-in", tabSub:"Atividade atual",
+   title:"Perguntas comportamentais",
+   intro:"Aplicação individual no início do workshop.",
+   groups:[
+    {title:"Identificação", fields:ID_FIELDS("Use o mesmo e-mail em todas as etapas para identificar suas entregas.")},
+    {title:"Perguntas", fields:[
+      {id:"q1", n:"1", type:"long", max:750, req:true, short:"Experiência intensa em equipe",
+       q:"Conte sobre uma experiência em que você se envolveu de forma intensa para alcançar um objetivo em equipe. O que te motivou a se dedicar além do esperado, como foi sua colaboração com o time e qual foi o principal resultado ou aprendizado?"},
+    ]}
+   ]},
+  {key:"fase1", n:"2", tab:"Fase 1", tabSub:"Atividade atual",
+   title:"Concepção do teaser",
+   intro:"Esta etapa é sobre criatividade e por isso não é necessário produzir o teaser do vídeo de entrega (protótipo). Basta registrar a sua ideia em formato de roteiro, storyboard (imagens em sequência, como uma HQ), slide(s) estático(s) ou qualquer outra solução capaz de comunicá-la.",
+   modal:{title:"Antes de começar a Fase 1", body:["Esta etapa é sobre criatividade e por isso não é necessário produzir o teaser do vídeo de entrega (protótipo).","Basta registrar a sua ideia em formato de roteiro, storyboard (imagens em sequência, como uma HQ), slide(s) estático(s) ou qualquer outra solução capaz de comunicá-la.","Use o mesmo e-mail da inscrição para que a banca identifique as suas entregas."]},
+   groups:[
+    {title:"Identificação", fields:ID_FIELDS("Utilize o mesmo e-mail em todas as etapas para identificar suas entregas.")},
+    {title:"A sua ideia", fields:[
+      {id:"q1", n:"1", type:"text", max:100, req:true, short:"Título provisório", q:"Título provisório do teaser da Maratona de IA 2027."},
+      {id:"q3", n:"2", type:"radio", req:true, short:"Mascote oficial", q:"Qual mascote oficial da Maratona de IA deste ano você utilizará?",
+       options:["Cacatuá roxa","Tartaruga com ventilador nas costas","Ambos os mascotes"]},
+      {id:"q2", n:"3", type:"long", max:750, req:true, short:"Personagem autoral",
+       q:"Qual personagem autoral você criou? Descreva características físicas e emocionais, função na narrativa e a sua relação com o(s) mascote(s) escolhido(s)."},
+      {id:"q4", n:"4", type:"long", max:750, req:true, short:"Roteiro do teaser",
+       q:"Descreva a sua ideia de teaser para a Maratona de IA 2027 em um roteiro audiovisual que contenha abertura, mensagem central e chamada."},
+      {id:"q5", n:"5", type:"long", max:750, req:true, short:"O que o público leva",
+       q:"O que você gostaria que o público levasse do teaser sobre a Maratona de IA 2027?"},
+      {id:"q6", n:"6", type:"long", max:750, req:true, short:"Três cenas-chave",
+       q:"Como você imagina a estrutura visual do teaser da campanha da Maratona de IA 2027? Descreva três cenas-chave."}
+    ]}
+   ]},
+  {key:"fase2", n:"3", tab:"Fase 2", tabSub:"Atividade atual",
+   title:"Construção do protótipo",
+   intro:"Além de enviar o protótipo do teaser audiovisual da campanha da Maratona de IA 2027, registre também as escolhas de produção e de aplicação da inteligência artificial que você fez ao criá-lo.",
+   attn:"O objetivo central desta etapa é avaliar criatividade, autoria, escolhas e uso perspicaz dos recursos disponíveis, e não habilidades técnicas. O protótipo do seu teaser não precisa estar finalizado, com cara de pronto para ir ao ar, e você pode enviá-lo sem se preocupar com eventuais alucinações da(s) ferramenta(s) generativa(s).",
+   modal:{title:"Antes de começar a Fase 2", body:["O objetivo central desta etapa é avaliar criatividade, autoria, escolhas e uso perspicaz dos recursos disponíveis, e não habilidades técnicas.","O protótipo do seu teaser não precisa estar finalizado, com cara de pronto para ir ao ar, e você pode enviá-lo sem se preocupar com eventuais alucinações da(s) ferramenta(s) generativa(s).","Além de enviar o protótipo, registre as escolhas de produção e de aplicação da inteligência artificial que você fez ao criá-lo. Antes de enviar o link, garanta que a banca avaliadora tenha permissão para acessar o seu conteúdo."]},
+   groups:[
+    {title:"Identificação", fields:ID_FIELDS("Utilize o mesmo e-mail em todas as etapas para identificar suas entregas.")},
+    {title:"O protótipo", fields:[
+      {id:"q1", n:"1", type:"radio", req:true, short:"Formato do protótipo", q:"O protótipo do seu teaser está em qual dos formatos abaixo?",
+       options:["Vídeo de até 30 segundos","Sequência de imagens / storyboard","Slide(s) estático(s) acompanhado de explicação por escrito"]},
+      {id:"link", n:"", type:"url", req:true, short:"Link do protótipo", q:"Link para o arquivo ou protótipo",
+       help:"Garanta que a banca avaliadora tenha permissão para acessar seu conteúdo."}
+    ]},
+    {title:"Uso de inteligência artificial", fields:[
+      {id:"q2", n:"2", type:"check", req:true, cols:true, short:"Ferramentas usadas", q:"Quais ferramentas de IA e/ou programas de edição você utilizou para criar o seu teaser?",
+       options:["ChatGPT","Gemini","Claude","Microsoft Copilot","Midjourney","Adobe Firefly","Runway","Google Veo / Flow","Sora","Kling AI","Pika","CapCut","Canva","ElevenLabs","Adobe Premiere Pro"], other:"Outra ferramenta", otherLabel:"Outra ferramenta (especifique)"},
+      {id:"q3", n:"3", type:"long", max:750, req:true, short:"Como usou cada ferramenta", q:"Conte como você utilizou a(s) ferramenta(s) assinalada(s) na criação do seu protótipo.",
+       help:"Para cada ferramenta selecionada na pergunta anterior, informe a modalidade de acesso (gratuita, paga, teste, estudantil ou institucional) e explique brevemente a sua finalidade.",
+       example:"Exemplo. ChatGPT gratuito para gerar prompts; Canva pago para montar o storyboard; CapCut gratuito para editar o vídeo.", toolsHint:true},
+      {id:"q4", n:"4", type:"long", max:750, req:true, short:"Supervisão humana", q:"Como foi a supervisão humana do seu processo de criação com uma ou mais ferramentas de IA?", help:LIM_PRIV},
+      {id:"q5", n:"5", type:"check", req:true, short:"Limitações", q:"Quais limitações você encontrou durante a criação do seu protótipo?",
+       options:["Limite de créditos ou tokens","Limitações da versão gratuita","Tempo insuficiente para concluir a proposta","Erros ou inconsistências geradas pela IA","Dificuldade para manter a consistência visual dos personagens","Dificuldade com prompts ou configurações","Problemas técnicos ou de conexão","Não encontrei limitações relevantes"], exclusive:"Não encontrei limitações relevantes", other:"Outro", otherLabel:"Outro (especifique com suas palavras)"}
+    ]},
+    {title:"Do conceito ao teaser", fields:[
+      {id:"q6", n:"6", type:"long", max:750, req:true, short:"Fase 1 x protótipo", q:"Compare seu protótipo com a ideia registrada na Fase 1. O que você manteve e o que mudou?", fase1Peek:true},
+      {id:"q7", n:"7", type:"long", max:750, req:true, short:"Assets dos mascotes", q:"Como você trabalhou com os assets do ou dos mascotes oficiais utilizados?", mascotHint:true},
+      {id:"q8", n:"8", type:"long", max:750, req:true, short:"Próximos passos", q:"Quais seriam os próximos passos para transformar seu protótipo no teaser oficial da Maratona de IA 2027?"}
+    ]}
+   ]}
+];
+const allFields = f => f.groups.flatMap(g => g.fields);
+const byKey = k => FORMS.find(f => f.key === k);
+const E = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+// Estado
+const STORE = "maratona-ia-forms-v1";
+const WORKSHOP_CONTROL = "maratona-ia-workshop-control-v1";
+const WORKSHOP_RESPONSES = "maratona-ia-workshop-responses-v1";
+const WORKSHOP_ROSTER = "maratona-ia-workshop-roster-v1";
+const WORKSHOP_API = "/api/workshop";
+const WORKSHOP_TOKEN = "maratona-ia-workshop-session-v1";
+const LOCAL_TEST_EMAIL = "teste.workshop@mastertech.com.br";
+const REMOTE_MODE = !["localhost", "127.0.0.1"].includes(location.hostname) && location.protocol !== "file:";
+const ACTIVITY_BY_PATH = {"/checkin":"checkin", "/fase1":"fase1", "/fase2":"fase2"};
+const normalizedPath = location.pathname.replace(/\/+$/, "") || "/";
+const requestedActivity = new URLSearchParams(location.search).get("atividade") || ACTIVITY_BY_PATH[normalizedPath] || null;
+let ACCESS = null;
+let REMOTE_ACTIVITY = null;
+let REMOTE_TOKEN = sessionStorage.getItem(WORKSHOP_TOKEN) || "";
+let S = {active:"checkin", seen:{}, forms:{}};
+FORMS.forEach(f => S.forms[f.key] = {values:{}, sent:false, sentAt:null, tried:false, activeMs:0, activeSince:null});
+try { const raw = localStorage.getItem(STORE); if (raw) { const p = JSON.parse(raw); if (p && p.forms) S = Object.assign(S, p); } } catch(e){}
+FORMS.forEach(f => {
+  S.forms[f.key] = Object.assign({values:{}, sent:false, sentAt:null, tried:false, activeMs:0, activeSince:null}, S.forms[f.key] || {});
+  S.forms[f.key].activeSince = null;
+});
+// Converte rascunhos criados antes de os valores de "Outro" serem alinhados com a API.
+const fase2Values = S.forms.fase2.values;
+if (Array.isArray(fase2Values.q2)) fase2Values.q2 = fase2Values.q2.map(value => value === "Outra ferramenta (especifique)" ? "Outra ferramenta" : value);
+if (Array.isArray(fase2Values.q5)) fase2Values.q5 = fase2Values.q5.map(value => value === "Outro (especifique com suas palavras)" ? "Outro" : value);
+const save = () => { try { localStorage.setItem(STORE, JSON.stringify(S)); } catch(e){} };
+const fs = () => S.forms[S.active];
+const val = (id) => fs().values[id];
+function startTiming(){ const st=fs(); if(!ACCESS || st.sent || document.hidden || st.activeSince) return; st.activeSince=Date.now(); save(); }
+function pauseTiming(){ const st=fs(); if(!st.activeSince) return; st.activeMs=(Number(st.activeMs)||0)+Math.max(0,Date.now()-st.activeSince); st.activeSince=null; save(); }
+function durationSeconds(){ const st=fs(); const ms=(Number(st.activeMs)||0)+(st.activeSince?Math.max(0,Date.now()-st.activeSince):0); return Math.max(1,Math.round(ms/1000)); }
+async function workshopApi(payload){
+  const response = await fetch(WORKSHOP_API, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(payload)});
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.error || "Não foi possível acessar a atividade.");
+  return data;
+}
+function currentActivity(){
+  if (REMOTE_MODE) return REMOTE_ACTIVITY;
+  try { const c = JSON.parse(localStorage.getItem(WORKSHOP_CONTROL) || "null"); const open = c && c.open || {}; return FORMS.find(f => open[f.key])?.key || null; } catch(e) { return null; }
+}
+function participantFor(email, year){
+  // No localhost, 1998 funciona como ano de teste para qualquer e-mail da lista dos 80.
+  if (String(year) !== "1998") return null;
+  const normalized = String(email || "").trim().toLowerCase();
+  try {
+    const roster = JSON.parse(localStorage.getItem(WORKSHOP_ROSTER) || "[]");
+    const person = (Array.isArray(roster) ? roster : []).find(row => String(row.email || "").toLowerCase() === normalized);
+    if (person) return {participantId:String(person.id), nome:String(person.nome || ""), email:String(person.email || "")};
+  } catch(e) {}
+  const person = (window.WORKSHOP_SELECTED_ROSTER || []).find(row => String(row.email || "").toLowerCase() === normalized);
+  if (person) return {participantId:String(person.id), nome:String(person.nome || ""), email:String(person.email || "")};
+  return normalized === LOCAL_TEST_EMAIL ? {participantId:"teste-local", nome:"Participante de teste", email:LOCAL_TEST_EMAIL} : null;
+}
+function accessModal(message="", years=null, email=""){
+  const options = Array.isArray(years) ? years : [];
+  const hasYears = options.length > 0;
+  const instruction = hasYears
+    ? "E-mail confirmado. Agora selecione seu ano de nascimento."
+    : "Informe primeiro o e-mail utilizado na inscrição.";
+  const yearField = hasYears
+    ? `<label>Ano de nascimento<select id="accessYear" autofocus><option value="">Selecione uma opção</option>${options.map(y=>`<option value="${y}">${y}</option>`).join("")}</select></label>`
+    : "";
+  openModal(`<span class="eyebrow">ACESSO INDIVIDUAL</span><h2 id="mt">Acesse a atividade</h2><p>${instruction}</p>${message ? `<p class="errshow">${E(message)}</p>` : ""}<div class="auth"><label>E-mail da inscrição<input id="accessEmail" type="email" inputmode="email" autocomplete="email" placeholder="nome@email.com" value="${E(email)}" ${hasYears ? "readonly" : "autofocus"}></label>${yearField}</div><div class="ma"><button class="btn" type="button" data-act="${hasYears ? "access" : "access-years"}">${hasYears ? "Entrar" : "Continuar"}</button>${hasYears ? `<button class="btn ghost" type="button" data-act="access-reset">Trocar e-mail</button>` : ""}</div>`);
+}
+function lockedScreen(){
+  document.getElementById("tabs").innerHTML = "";
+  document.getElementById("form").innerHTML = `<section class="intro"><h2>Nenhuma atividade disponível agora</h2><p>Aguarde a orientação da organização. Quando uma atividade for liberada, use o link recebido para acessá-la.</p></section>`;
+  document.getElementById("side").innerHTML = `<p class="note">Atividade aguardando liberação.</p>`;
+  document.getElementById("mbar").innerHTML = "";
+}
+async function applyRemoteSession(data, token=REMOTE_TOKEN){
+  REMOTE_TOKEN = token;
+  sessionStorage.setItem(WORKSHOP_TOKEN, token);
+  REMOTE_ACTIVITY = data.activity === "fechada" ? null : data.activity;
+  if (!REMOTE_ACTIVITY || (requestedActivity && requestedActivity !== REMOTE_ACTIVITY)) { closeModal(); lockedScreen(); return; }
+  S.active = REMOTE_ACTIVITY;
+  ACCESS = {participantId:"remote", nome:data.participant?.name || "", email:data.participant?.email || ""};
+  (Array.isArray(data.completed) ? data.completed : []).forEach(key => { if (S.forms[key]) S.forms[key].sent = true; });
+  ["nome","email"].forEach(key => S.forms[S.active].values[key] = ACCESS[key]);
+  closeModal(); renderTabs(); renderForm();
+}
+async function bootWorkshop(){
+  if (REMOTE_MODE) {
+    if (!FORMS.some(f => f.key === requestedActivity)) { lockedScreen(); return; }
+    if (REMOTE_TOKEN) {
+      try { await applyRemoteSession(await workshopApi({action:"session", token:REMOTE_TOKEN})); return; }
+      catch(e) { REMOTE_TOKEN = ""; sessionStorage.removeItem(WORKSHOP_TOKEN); }
+    }
+    S.active = requestedActivity;
+    accessModal();
+    return;
+  }
+  const active = currentActivity();
+  if (!active) { lockedScreen(); return; }
+  if (requestedActivity && requestedActivity !== active) { lockedScreen(); return; }
+  S.active = active;
+  accessModal();
+}
+
+// Grafismo discreto (raios do Desafio LED)
+(() => {
+  const g = document.querySelector(".burst g"); const cols = ["#BCFF4D","#8464F3","#D400A8","#B893FD","#0B5A4C"]; let h = "";
+  for (let i = 0; i < 36; i++) { const a = i/36*Math.PI*2, r1 = 22, r2 = 52 + (i*37%5)*9, w = .05;
+    const p = [[Math.cos(a)*r1,Math.sin(a)*r1],[Math.cos(a-w)*r2,Math.sin(a-w)*r2],[Math.cos(a+w)*r2,Math.sin(a+w)*r2]];
+    h += `<polygon fill="${cols[i%5]}" points="${p.map(x=>x.map(v=>v.toFixed(1)).join(",")).join(" ")}"/>`; }
+  g.innerHTML = h;
+})();
+
+// Validação
+function check(field, v) {
+  const t = field.type;
+  if (t === "text" || t === "email" || t === "url" || t === "long") {
+    const s = (v || "").trim();
+    if (!s) return field.req ? (field.id === "nome" ? "Preencha seu nome completo." : field.id === "email" ? "Preencha o e-mail que você usou na inscrição." : t === "url" ? "Cole o link do seu protótipo." : "Esta pergunta é obrigatória.") : null;
+    if (field.id === "nome" && s.split(/\s+/).length < 2) return "Escreva nome e sobrenome.";
+    if (t === "email" && !EMAIL_RE.test(s)) return "Este e-mail não parece completo. Confira se tem @ e domínio, como nome@email.com.";
+    if (t === "url" && !/^https?:\/\/\S+\.\S+/.test(s)) return "Cole o link completo, começando com https://";
+    if (field.max && s.length > field.max) return `A resposta passou de ${field.max} caracteres.`;
+    return null;
+  }
+  if (t === "radio") return (!v && field.req) ? "Escolha uma opção." : null;
+  if (t === "check") {
+    const arr = v || [];
+    if (!arr.length && field.req) return field.id === "q2" ? "Marque ao menos uma ferramenta." : "Marque ao menos uma opção.";
+    if (field.other && arr.includes(field.other) && !(fs().values[field.id + "_other"] || "").trim()) return "Escreva qual é a outra opção marcada.";
+    return null;
+  }
+  return null;
+}
+const isDone = (field) => { const v = val(field.id); const filled = Array.isArray(v) ? v.length : (v || "").trim(); return filled && !check(field, v); };
+
+// Regras para o modo especificação
+function specOf(f) {
+  const tipo = {text:"Resposta curta", email:"Resposta curta (e-mail)", url:"Resposta curta (URL)", long:"Resposta longa", radio:"Múltipla escolha, uma opção", check:"Caixas de seleção, múltiplas respostas"}[f.type];
+  const r = [];
+  r.push(f.req ? "Obrigatória." : "Opcional.");
+  if (f.max) r.push(`Limite de ${f.max} caracteres, com contador. O campo não aceita digitar além do limite e avisa a partir de ${Math.round(f.max*.9)}.`);
+  if (f.id === "nome") r.push("Exige ao menos duas palavras (nome e sobrenome).");
+  if (f.type === "email") r.push("Valida formato de e-mail. É a chave que liga Check-in, Fase 1 e Fase 2; quando já foi preenchido em outra aba, vem preenchido para conferência.");
+  if (f.type === "url") r.push("Valida link começando com http:// ou https://. Aparece logo abaixo da pergunta 1 como parte dela.");
+  if (f.other) r.push(`Ao marcar "${f.otherLabel || f.other}", abre um campo de texto que passa a ser obrigatório.`);
+  if (f.exclusive) r.push(`"${f.exclusive}" é exclusiva. Ao marcá-la, as demais opções são desmarcadas, e marcar outra opção a desmarca.`);
+  if (f.toolsHint) r.push("Mostra acima do campo as ferramentas marcadas na pergunta 2, para a pessoa comentar cada uma.");
+  if (f.fase1Peek) r.push("Botão abre um modal com as respostas enviadas na Fase 1 por este e-mail.");
+  if (f.mascotHint) r.push("Mostra o mascote escolhido na Fase 1, quando houver.");
+  return `<div class="spec"><b>${tipo}</b><ul>${r.map(x=>`<li>${E(x)}</li>`).join("")}</ul></div>`;
+}
+
+// Renderização
+function renderTabs() {
+  const visible = ACCESS ? FORMS.filter(f => f.key === S.active) : [];
+  document.getElementById("tabs").innerHTML = visible.map(f => {
+    const st = S.forms[f.key];
+    const sub = st.sent ? "Enviado" : f.tabSub;
+    return `<button class="tab ${S.active===f.key?"on":""}" role="tab" aria-selected="${S.active===f.key}" data-k="${f.key}"><span class="tn">${f.n}</span><span class="tt">${E(f.tab)}</span><span class="ts ${st.sent?"sent":""}">${E(sub)}</span></button>`;
+  }).join("");
+}
+
+function control(f, ro, confirmed=false) {
+  const v = val(f.id); const fid = `${S.active}-${f.id}`; const dis = (ro || confirmed) ? 'disabled aria-disabled="true"' : "";
+  if (f.type === "long" || f.type === "text" || f.type === "email" || f.type === "url") {
+    const tag = f.type === "long" ? "textarea" : "input";
+    const typ = f.type === "long" ? "" : `type="${f.type === "url" ? "url" : f.type === "email" ? "email" : "text"}"`;
+    const ph = f.type === "url" ? 'placeholder="https://"' : f.type === "email" ? 'placeholder="nome@email.com"' : "";
+    const ml = f.max ? `maxlength="${f.max}"` : "";
+    const ac = f.id === "nome" ? 'autocomplete="name"' : f.type === "email" ? 'autocomplete="email" inputmode="email"' : "";
+    const inner = tag === "textarea" ? `<textarea id="${fid}" ${ml} ${dis} data-f="${f.id}">${E(v)}</textarea>` : `<input id="${fid}" ${typ} ${ml} ${ph} ${ac} ${dis} data-f="${f.id}" value="${E(v)}">`;
+    const cnt = f.max ? `<div class="count" id="c-${fid}"><span>${f.max === 100 ? "Até 100 caracteres" : "Até 750 caracteres, cerca de 10 a 15 linhas"}</span><span class="n"></span></div>` : "";
+    return inner + cnt;
+  }
+  if (f.type === "radio" || f.type === "check") {
+    const arr = f.type === "check" ? (v || []) : [v];
+    const opts = [...f.options.map(value => ({value, label:value})), ...(f.other ? [{value:f.other, label:f.otherLabel || f.other}] : [])];
+    const html = opts.map((option, i) => `<label class="o"><input type="${f.type==="radio"?"radio":"checkbox"}" name="${fid}" id="${fid}-${i}" value="${E(option.value)}" ${arr.includes(option.value)?"checked":""} ${dis} data-f="${f.id}"><span>${E(option.label)}</span></label>`).join("");
+    let other = "";
+    if (f.other) {
+      const show = arr.includes(f.other);
+      other = `<div class="other" id="ow-${fid}" ${show?"":"hidden"}><input type="text" id="${fid}-other" maxlength="200" placeholder="${f.id==="q2"?"Quais ferramentas?":"Descreva com suas palavras"}" ${dis} data-f="${f.id}_other" value="${E(S.forms[S.active].values[f.id+"_other"])}"></div>`;
+    }
+    return `<div class="opts ${f.cols?"cols":""}" role="${f.type==="radio"?"radiogroup":"group"}" aria-labelledby="l-${fid}">${html}</div>${other}`;
+  }
+}
+
+function extra(f) {
+  let h = "";
+  if (f.toolsHint) h += `<div class="hint" id="toolsHint"></div>`;
+  if (f.mascotHint) h += `<div class="hint" id="mascotHint"></div>`;
+  if (f.fase1Peek) h += `<button type="button" class="linkbtn" data-act="peek">Ver minha ideia registrada na Fase 1</button>`;
+  return h;
+}
+
+function renderForm() {
+  const F = byKey(S.active); const st = fs(); const ro = st.sent;
+  // traz nome e e-mail de outra aba
+  let prefilled = false;
+  ["nome","email"].forEach(k => { if (!st.values[k] && !ro) { const src = FORMS.map(x=>S.forms[x.key].values[k]).find(Boolean); if (src) { st.values[k] = src; prefilled = true; } } });
+  let h = `<section class="intro"><h2>${E(F.title)}</h2><p>${E(F.intro)}</p></section>`;
+  if (F.key === "checkin") h += `<aside class="asset-download" aria-label="Assets da campanha">
+    <span class="asset-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 20h14"/></svg></span>
+    <span class="asset-copy"><strong>Assets da campanha</strong><span>Baixe o pacote oficial com os materiais visuais da campanha.</span></span>
+    <a class="asset-action" href="${CAMPAIGN_ASSETS_URL}" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 20h14"/></svg>Baixar pacote (.zip)</a>
+  </aside>`;
+  if (F.attn) h += `<div class="attn"><b>Atenção</b><span>${E(F.attn)}</span></div>`;
+  if (ro) h += `<div class="sentbar"><b>Respostas enviadas</b><span>Envio registrado em ${E(st.sentAt)}. Os campos abaixo estão disponíveis apenas para consulta.</span></div>`;
+  h += `<div class="errsum" id="errsum" hidden></div>`;
+  h += `<p class="legend"><span class="req">*</span> Indica pergunta obrigatória.</p>`;
+  F.groups.forEach(g => {
+    h += `<div class="group"><h3>${E(g.title)}</h3>`;
+    g.fields.forEach(f => {
+      const fid = `${S.active}-${f.id}`;
+      const confirmed = !!ACCESS && (f.id === "nome" || f.id === "email");
+      const lbl = (f.type === "radio" || f.type === "check") ? `<span class="q" id="l-${fid}">` : `<label for="${fid}" id="l-${fid}">`;
+      const lblEnd = (f.type === "radio" || f.type === "check") ? "</span>" : "</label>";
+      const mark = f.req ? ` <span class="req" aria-label="obrigatória">*</span>` : ` <span class="opt">(opcional)</span>`;
+      h += `<div class="field ${confirmed ? "confirmed" : ""}" id="fw-${fid}" data-f="${f.id}">
+        <div class="fh"><span class="fn">${E(f.n)}</span>${lbl}${E(f.q)}${mark}${lblEnd}</div>
+        <div class="body">
+          ${f.help ? `<p class="help">${E(f.help)}</p>` : ""}
+          ${f.example ? `<div class="example">${E(f.example)}</div>` : ""}
+          ${extra(f)}
+          ${control(f, ro, confirmed)}
+          ${confirmed ? `<span class="prefill">Confirmado com os dados da inscrição. Este campo não pode ser alterado aqui.</span>` : (prefilled && (f.id==="nome"||f.id==="email")) ? `<span class="prefill">Preenchido com o que você informou em outra etapa. Confira antes de enviar.</span>` : ""}
+          <p class="err" id="e-${fid}" hidden></p>
+          ${specOf(f)}
+        </div></div>`;
+    });
+    h += `</div>`;
+  });
+  if (!ro) h += `<div class="actions"><button class="btn" type="button" data-act="review">Revisar e enviar</button><span class="legend">Você confere todas as respostas antes do envio.</span></div>`;
+  else h += `<div class="actions"><button class="btn ghost" type="button" data-act="viewsent">Ver respostas enviadas</button></div>`;
+  document.getElementById("form").innerHTML = h;
+  allFields(F).forEach(f => { updateCount(f); });
+  updateHints(); refreshStatus(); save(); startTiming();
+}
+
+function updateCount(f) {
+  if (!f.max) return; const fid = `${S.active}-${f.id}`; const el = document.getElementById("c-"+fid); if (!el) return;
+  const n = (val(f.id) || "").length;
+  el.querySelector(".n").textContent = `${n} de ${f.max}`;
+  el.classList.toggle("near", n >= f.max*.9 && n < f.max); el.classList.toggle("full", n >= f.max);
+  if (n >= f.max) el.querySelector("span").textContent = "Limite atingido. Revise o texto para ajustá-lo."; else el.querySelector("span").textContent = f.max === 100 ? "Até 100 caracteres" : "Até 750 caracteres, cerca de 10 a 15 linhas";
+}
+
+function updateHints() {
+  const th = document.getElementById("toolsHint");
+  if (th) { const t = (val("q2") || []).map(x => x === byKey("fase2").groups[2].fields[0].other ? (fs().values.q2_other || "Outra ferramenta") : x);
+    th.innerHTML = t.length ? `<span>Ferramentas marcadas na pergunta 2</span>${t.map(x=>`<span class="chip">${E(x)}</span>`).join("")}` : `<span>Marque as ferramentas na pergunta 2 para vê-las listadas aqui.</span>`; }
+  const mh = document.getElementById("mascotHint");
+  if (mh) { const m = S.forms.fase1.values.q3; mh.innerHTML = m ? `<span>Mascote escolhido na Fase 1</span><span class="chip">${E(m)}</span>` : `<span>O mascote escolhido na Fase 1 aparece aqui quando a Fase 1 foi preenchida neste navegador.</span>`; mh.hidden = false; }
+}
+
+function refreshStatus(showErrors) {
+  const F = byKey(S.active); const st = fs(); const fields = allFields(F);
+  const req = fields.filter(f=>f.req); const done = req.filter(isDone).length;
+  const tried = st.tried || showErrors;
+  fields.forEach(f => {
+    const fid = `${S.active}-${f.id}`; const w = document.getElementById("fw-"+fid); const e = document.getElementById("e-"+fid);
+    const msg = check(f, val(f.id)); const show = tried && msg && !st.sent;
+    if (w) w.classList.toggle("bad", !!show); if (e) { e.hidden = !show; e.textContent = show ? msg : ""; }
+  });
+  const pct = Math.round(done / req.length * 100);
+  document.getElementById("side").innerHTML = `
+    <div class="prog"><span class="big">${done}<small>de ${req.length} obrigatórias</small></span><div class="bar"><i style="width:${pct}%"></i></div></div>
+    <ul class="plist">${fields.map(f => { const fid = `${S.active}-${f.id}`; const ok = isDone(f); const bad = tried && check(f, val(f.id));
+      return `<li class="${ok?"done":""} ${bad && !st.sent?"bad":""} ${f.req?"":"optf"}"><a href="#fw-${fid}" data-jump="fw-${fid}"><span class="pn">${E(f.n)}</span><span class="pt">${E(f.short)}${f.req?"":" (opcional)"}</span><span class="dot"></span></a></li>`; }).join("")}</ul>
+    ${st.sent ? '<p class="note">Etapa enviada em ' + E(st.sentAt) + '.</p>' : '<button class="btn" type="button" data-act="review">Revisar e enviar</button>'}`;
+  document.getElementById("mbar").innerHTML = `<span class="mp"><b>${done} de ${req.length}</b> obrigatórias</span>${st.sent ? `<span class="check">Enviado</span>` : `<button class="btn" type="button" data-act="review">Revisar e enviar</button>`}`;
+}
+
+// Modais
+let lastFocus = null;
+function openModal(html, onMount) {
+  lastFocus = document.activeElement;
+  const root = document.getElementById("modalRoot");
+  root.innerHTML = `<div class="scrim" data-close="1"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="mt">${html}</div></div>`;
+  const first = root.querySelector(".modal button, .modal input"); if (first) first.focus();
+  if (onMount) onMount(root);
+}
+function closeModal() { document.getElementById("modalRoot").innerHTML = ""; if (lastFocus && lastFocus.focus) lastFocus.focus(); }
+
+function answersHtml(key) {
+  const F = byKey(key); const vals = S.forms[key].values;
+  return `<div class="rev">${allFields(F).map(f => {
+    let a = vals[f.id];
+    if (Array.isArray(a)) a = a.map(x => x === f.other ? `${x} · ${vals[f.id+"_other"]||""}` : x).join(", ");
+    const has = a && String(a).trim();
+    return `<div><span class="rn">${E(f.n)}</span><span class="rq">${E(f.short)}</span><span class="ra ${has?"":"empty"}">${has ? E(a) : "Sem resposta"}</span></div>`;
+  }).join("")}</div>`;
+}
+
+function review() {
+  const F = byKey(S.active); const st = fs(); st.tried = true;
+  const errs = allFields(F).map(f => ({f, m: check(f, val(f.id))})).filter(x => x.m);
+  refreshStatus(true);
+  const box = document.getElementById("errsum");
+  if (errs.length) {
+    box.hidden = false;
+    box.innerHTML = `<b>Falta ajustar ${errs.length === 1 ? "1 pergunta" : errs.length + " perguntas"} antes do envio</b><ul>${errs.map(x => `<li><a href="#fw-${S.active}-${x.f.id}" data-jump="fw-${S.active}-${x.f.id}">${E(x.f.n ? x.f.n + ". " : "")}${E(x.f.short)}</a>. ${E(x.m)}</li>`).join("")}</ul>`;
+    box.scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"start"});
+    return;
+  }
+  box.hidden = true;
+  const optEmpty = allFields(F).filter(f => !f.req && !(Array.isArray(val(f.id)) ? val(f.id).length : (val(f.id)||"").trim()));
+  openModal(`<h2 id="mt">Revise as respostas de ${E(F.tab)}</h2>
+    <p>Depois do envio as respostas desta atividade não podem ser alteradas. Confira seus dados antes de confirmar.</p>
+    ${optEmpty.length ? `<p class="help">Você deixou em branco ${optEmpty.map(f=>E(f.short.toLowerCase())).join(" e ")}, que ${optEmpty.length>1?"são opcionais":"é opcional"}.</p>` : ""}
+    <div class="mb">${answersHtml(S.active)}</div>
+    <div class="ma"><button class="btn" type="button" data-act="send">Enviar respostas</button><button class="btn ghost" type="button" data-close="1">Voltar e editar</button></div>`);
+}
+
+async function send() {
+  const st = fs(); const d = new Date();
+  const F = byKey(S.active);
+  const elapsedSeconds = durationSeconds();
+  if (REMOTE_MODE) {
+    try {
+      await workshopApi({action:"submit", token:REMOTE_TOKEN, activity:S.active, answers:st.values, durationSeconds:elapsedSeconds});
+    } catch(e) {
+      openModal(`<h2 id="mt">Não foi possível enviar</h2><p class="errshow">${E(e.message)}</p><div class="ma"><button class="btn ghost" type="button" data-close="1">Voltar</button></div>`);
+      return;
+    }
+  }
+  pauseTiming();
+  st.sent = true; st.sentAt = d.toLocaleDateString("pt-BR") + " às " + d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+  try {
+    if (!REMOTE_MODE) {
+      const rows = JSON.parse(localStorage.getItem(WORKSHOP_RESPONSES) || "[]");
+      const record = {participantId:ACCESS.participantId, nome:ACCESS.nome, email:ACCESS.email, form:S.active, at:new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}), answers:Object.assign({},st.values,{_meta:{duration_seconds:elapsedSeconds}})};
+      const old = rows.findIndex(r => r.participantId === record.participantId && r.form === record.form);
+      if (old >= 0) rows[old] = record; else rows.push(record);
+      localStorage.setItem(WORKSHOP_RESPONSES, JSON.stringify(rows));
+    }
+  } catch(e) {}
+  save(); renderTabs(); renderForm(); window.scrollTo({top:0});
+  openModal(`<h2 id="mt">${E(F.tab)} concluído com sucesso</h2>
+    <p>Recebemos suas respostas e o envio foi registrado.</p>
+    <p>Você já pode fechar esta página. Aguarde as próximas orientações da organização.</p>
+    <div class="ma"><button class="btn ghost" type="button" data-close="1">Fechar</button></div>`);
+}
+
+function switchTab(k) {
+  if (k !== currentActivity() || !ACCESS) return;
+  closeModal(); S.active = k; save(); renderTabs(); renderForm(); window.scrollTo({top:0});
+  const F = byKey(k);
+  if (F.modal && !S.seen[k] && !fs().sent) {
+    S.seen[k] = true; save();
+    openModal(`<h2 id="mt">${E(F.modal.title)}</h2><div class="mb">${F.modal.body.map(p=>`<p>${E(p)}</p>`).join("")}</div><div class="ma"><button class="btn" type="button" data-close="1">Começar</button></div>`);
+  }
+}
+
+// Eventos
+document.addEventListener("click", async e => {
+  const t = e.target.closest("[data-k],[data-act],[data-go],[data-close],[data-jump]");
+  if (!t) return;
+  if (t.dataset.close && e.target !== t && t.classList.contains("scrim")) return;
+  if (t.dataset.k) switchTab(t.dataset.k);
+  else if (t.dataset.go) switchTab(t.dataset.go);
+  else if (t.dataset.close) closeModal();
+  else if (t.dataset.jump) { e.preventDefault(); closeModal(); const el = document.getElementById(t.dataset.jump); if (el) { el.scrollIntoView({block:"start"}); const inp = el.querySelector("input,textarea"); if (inp && !inp.disabled) inp.focus({preventScroll:true}); } }
+  else if (t.dataset.act === "access-years") {
+    const email = document.getElementById("accessEmail").value;
+    try {
+      if (!EMAIL_RE.test(String(email || "").trim())) throw new Error("Informe um e-mail válido.");
+      const years = REMOTE_MODE
+        ? (await workshopApi({action:"birth-options", email})).years
+        : [1995, 1996, 1997, 1998, 1999].sort(() => Math.random() - .5);
+      accessModal("", years, email);
+    }
+    catch(e) { accessModal(e.message, null, email); }
+  }
+  else if (t.dataset.act === "access-reset") accessModal();
+  else if (t.dataset.act === "access") {
+    const email = document.getElementById("accessEmail").value, year = document.getElementById("accessYear").value;
+    if (REMOTE_MODE) {
+      try { const data = await workshopApi({action:"login", email, birthYear:year, activity:requestedActivity}); await applyRemoteSession(data, data.token); }
+      catch(e) {
+        const years = [...document.getElementById("accessYear").options].map(option => Number(option.value)).filter(Number.isInteger);
+        accessModal(e.message, years, email);
+      }
+      return;
+    }
+    const person = participantFor(email, year);
+    if (!person) { accessModal("Não foi possível confirmar estes dados. Confira e tente novamente."); return; }
+    ACCESS = person; closeModal();
+    ["nome","email"].forEach(k => S.forms[S.active].values[k] = person[k]);
+    renderTabs(); renderForm();
+  }
+  else if (t.dataset.act === "review") review();
+  else if (t.dataset.act === "send") { closeModal(); await send(); }
+  else if (t.dataset.act === "viewsent") openModal(`<h2 id="mt">Respostas enviadas em ${E(byKey(S.active).tab)}</h2><div class="mb">${answersHtml(S.active)}</div><div class="ma"><button class="btn ghost" type="button" data-close="1">Fechar</button></div>`);
+  else if (t.dataset.act === "peek") {
+    const f1 = S.forms.fase1;
+    openModal(`<h2 id="mt">Sua ideia na Fase 1</h2>${f1.sent ? `<p>Enviada em ${E(f1.sentAt)}.</p><div class="mb">${answersHtml("fase1")}</div>` : `<p>A Fase 1 ainda não foi enviada neste navegador. Quando a Fase 1 for enviada com o mesmo e-mail, as respostas aparecem aqui para comparação.</p>`}<div class="ma"><button class="btn ghost" type="button" data-close="1">Fechar</button></div>`);
+  }
+});
+document.addEventListener("keydown", e => { if (e.key === "Escape" && document.querySelector(".scrim")) closeModal(); });
+document.addEventListener("visibilitychange", () => document.hidden ? pauseTiming() : startTiming());
+window.addEventListener("pagehide", pauseTiming);
+
+document.getElementById("form").addEventListener("input", e => {
+  const el = e.target; const id = el.dataset.f; if (!id) return; const F = byKey(S.active); const st = fs();
+  const field = allFields(F).find(f => f.id === id);
+  if (el.type === "checkbox") {
+    let arr = st.values[id] || [];
+    if (el.checked) {
+      if (field.exclusive && el.value === field.exclusive) arr = [];
+      else if (field.exclusive) arr = arr.filter(x => x !== field.exclusive);
+      arr = [...arr, el.value];
+    } else arr = arr.filter(x => x !== el.value);
+    st.values[id] = arr;
+    if (field.exclusive) document.querySelectorAll(`input[name="${S.active}-${id}"]`).forEach(c => c.checked = arr.includes(c.value));
+    if (field.other) { const ow = document.getElementById(`ow-${S.active}-${id}`); const show = arr.includes(field.other); ow.hidden = !show; if (show && el.value === field.other) ow.querySelector("input").focus(); }
+  } else if (el.type === "radio") st.values[id] = el.value;
+  else st.values[id] = el.value;
+  if (field) updateCount(field);
+  updateHints(); refreshStatus(); save();
+});
+
+document.getElementById("specToggle").addEventListener("change", e => { document.body.classList.toggle("specmode", e.target.checked); });
+document.getElementById("reset").addEventListener("click", () => {
+  openModal(`<h2 id="mt">Limpar o protótipo</h2><p>Os rascunhos e os envios das três etapas guardados neste navegador serão apagados.</p><div class="ma"><button class="btn" type="button" id="doReset">Limpar tudo</button><button class="btn ghost" type="button" data-close="1">Cancelar</button></div>`,
+    root => root.querySelector("#doReset").addEventListener("click", () => { try { localStorage.removeItem(STORE); } catch(e){} S = {active:"checkin", seen:{}, forms:{}}; FORMS.forEach(f => S.forms[f.key] = {values:{}, sent:false, sentAt:null, tried:false, activeMs:0, activeSince:null}); closeModal(); renderTabs(); renderForm(); }));
+});
+
+bootWorkshop();
+</script>
+
+</body></html>
