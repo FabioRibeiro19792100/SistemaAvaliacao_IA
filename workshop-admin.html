@@ -447,7 +447,7 @@ function vEstat(){
     return `<div class="qb"><span class="qn">Pergunta ${E(q.n)}</span><h3>${E(q.s)}</h3><p class="cap">${q.t === "check" ? `Cada pessoa pode marcar mais de uma opção, então as porcentagens, calculadas sobre os ${tl.base} envios, não somam 100%.${q.id === "q5" ? ` A pergunta é opcional e ${tl.answered} pessoas (${pct(tl.answered, tl.base)}%) marcaram ao menos uma opção.` : ""}` : `Uma opção por pessoa, sobre os ${tl.base} envios.`}</p>${hbars(tl.rows, tl.base)}</div>`; }).join("")}</div></section>`;
   html += `<section><h3>Tamanho das respostas abertas</h3><p class="cap">Para cada pergunta aberta, quantas pessoas responderam e o tamanho das respostas. Respostas de até 200 caracteres costumam ser curtas demais para a banca avaliar, e as de 675 caracteres ou mais chegaram perto do limite de 750.</p>${sizeTable(F)}</section>`;
   if (F.key === "fase2") {
-    const masc = byKey("fase1").qs[2].o, fmts = byKey("fase2").qs[0].o, shortF = ["Vídeo até 30 s","Storyboard","Slides com explicação"];
+    const masc = byKey("fase1").qs.find(q => q.id === "q3").o, fmts = byKey("fase2").qs[0].o, shortF = ["Vídeo até 30 s","Storyboard","Slides com explicação"];
     const both = P.filter(p => p.r.fase1 && p.r.fase2);
     const cross = masc.map(m => fmts.map(f => both.filter(p => p.r.fase1.q3 === m && p.r.fase2.q1 === f).length)); const cmax = Math.max(...cross.flat(), 1);
     html += `<section><h3>Mascote escolhido na Fase 1 e formato do protótipo</h3><p class="cap">Cruzamento para as ${both.length} pessoas que enviaram a Fase 1 e a Fase 2.</p>

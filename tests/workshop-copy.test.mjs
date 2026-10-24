@@ -17,6 +17,16 @@ assert.match(participant, /if \(F\.key === "checkin"\)/, 'O download dos assets 
 assert.match(participant, /ACTIVITY_BY_PATH = \{"\/checkin":"checkin", "\/fase1":"fase1", "\/fase2":"fase2"\}/);
 assert.match(admin, /const PUBLIC_FORM_ORIGIN = "https:\/\/www\.miaglobo2026\.space";/);
 assert.match(admin, /PUBLIC_FORM_PATHS = \{checkin:"\/checkin", fase1:"\/fase1", fase2:"\/fase2"\}/);
+assert.match(
+  admin,
+  /byKey\("fase1"\)\.qs\.find\(q => q\.id === "q3"\)\.o/,
+  'As estatísticas da Fase 2 devem localizar a pergunta de mascote pelo identificador estável.'
+);
+assert.doesNotMatch(
+  admin,
+  /byKey\("fase1"\)\.qs\[2\]\.o/,
+  'As estatísticas da Fase 2 não devem depender da posição da pergunta de mascote.'
+);
 assert.match(admin, /Fechar todos os formulários/);
 assert.match(admin, /pendingOpenChange = \{all:true, next:false\}/);
 assert.match(admin, /if \(change\.all\) FORMS\.forEach\(f => ST\.open\[f\.key\] = false\)/);
