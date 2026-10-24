@@ -17,6 +17,10 @@ assert.match(participant, /if \(F\.key === "checkin"\)/, 'O download dos assets 
 assert.match(participant, /ACTIVITY_BY_PATH = \{"\/checkin":"checkin", "\/fase1":"fase1", "\/fase2":"fase2"\}/);
 assert.match(admin, /const PUBLIC_FORM_ORIGIN = "https:\/\/www\.miaglobo2026\.space";/);
 assert.match(admin, /PUBLIC_FORM_PATHS = \{checkin:"\/checkin", fase1:"\/fase1", fase2:"\/fase2"\}/);
+assert.match(admin, /Fechar todos os formulários/);
+assert.match(admin, /pendingOpenChange = \{all:true, next:false\}/);
+assert.match(admin, /if \(change\.all\) FORMS\.forEach\(f => ST\.open\[f\.key\] = false\)/);
+assert.match(admin, /activity:change\.next && !change\.all \? change\.k : "fechada"/);
 
 const participantMascot = participant.indexOf('{id:"q3", n:"2", type:"radio"');
 const participantCharacter = participant.indexOf('{id:"q2", n:"3", type:"long"');

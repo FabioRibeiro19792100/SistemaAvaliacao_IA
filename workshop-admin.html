@@ -75,6 +75,12 @@ td .em{display:block;color:var(--muted);font-size:13px}
 .sw input::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;background:var(--ink2);transition:left .15s}
 .sw input:checked{background:var(--ok);border-color:var(--ok)}
 .sw input:checked::after{left:23px;background:var(--card)}
+.sw input:disabled{cursor:default;opacity:.75}
+.master-close{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:16px 18px;margin:18px 0;background:var(--soft);border-left:4px solid var(--key)}
+.master-close .copy{display:grid;gap:3px}
+.master-close .copy b{font-size:16px}
+.master-close .copy span{font-size:13px;color:var(--ink2)}
+.master-close .sw{flex:0 0 auto}
 .env{display:grid;gap:6px}
 .env .v{font-size:15px;font-weight:600;font-variant-numeric:tabular-nums}
 .env .v small{font-weight:400;color:var(--muted)}
@@ -177,7 +183,7 @@ td .em{display:block;color:var(--muted);font-size:13px}
   .hl{grid-template-columns:repeat(2,minmax(0,1fr))}
   .ppl{min-width:640px}
 }
-@media (max-width:600px){.band h1{font-size:26px}.band svg.burst{width:110px;height:110px}.hb div{grid-template-columns:minmax(0,1fr) 90px}.hb .t{grid-column:1/-1;grid-row:2}.tab{margin-right:18px}.modal{padding:18px}}
+@media (max-width:600px){.band h1{font-size:26px}.band svg.burst{width:110px;height:110px}.hb div{grid-template-columns:minmax(0,1fr) 90px}.hb .t{grid-column:1/-1;grid-row:2}.tab{margin-right:18px}.master-close{align-items:flex-start;flex-direction:column}.modal{padding:18px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 
@@ -319,6 +325,7 @@ async function copy(text, okMsg, inputEl){
 
 // Controle
 function vControle(){
+  const allClosed = FORMS.every(f => !ST.open[f.key]);
   const rows = FORMS.map(f => { const n = count(f.key), on = ST.open[f.key], t = times(f.key);
     return `<tr>
       <td data-l="Etapa" class="et"><div><b>${E(f.tab)}</b><span>${E(f.sub)}</span></div></td>
@@ -329,6 +336,7 @@ function vControle(){
       <td data-l="Ações"><div class="acts"><a class="alink" href="${E(linkOf(on ? f.key : f.key + "-fechado"))}" target="_blank" rel="noopener">Ver como participante</a><button class="alink" type="button" data-filter-go="falta-${f.key}">Ver quem falta (${TOTAL - n})</button></div></td>
     </tr>`; }).join("");
   return `<section><h2>Liberação das etapas</h2><p class="cap">Cada etapa só recebe respostas quando a chave está ligada. Com a chave desligada, o link mostra um aviso de etapa fechada. Os envios são contados sobre os 80 participantes selecionados para o workshop.</p>
+  <div class="master-close"><div class="copy"><b>Fechar todos os formulários</b><span>Fecha Check-in, Fase 1 e Fase 2 sem apagar nenhuma resposta.</span></div><label class="sw"><input type="checkbox" data-close-all="1" ${allClosed?"checked disabled":""} aria-label="Fechar todos os formulários"><span class="pill ${allClosed?"off":"on"}">${allClosed?"Todos fechados":"Fechar todos"}</span></label></div>
   <div class="tbl"><table class="ctl"><colgroup><col class="c-et"><col class="c-ch"><col class="c-en"><col class="c-ul"><col class="c-lk"><col class="c-ac"></colgroup>
   <thead><tr><th>Etapa</th><th>Situação</th><th>Envios</th><th>Último envio</th><th>Link para a turma</th><th>Ações</th></tr></thead><tbody>${rows}</tbody></table></div></section>`;
 }
@@ -500,6 +508,16 @@ function requestOpenChange(k, next){
   const input = document.getElementById("stagePassword");
   input.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); confirmOpenChange(); } });
 }
+function requestCloseAll(){
+  pendingOpenChange = {all:true, next:false};
+  openModal(`<div class="mh"><div><span class="note">CONFIRMAÇÃO ADMINISTRATIVA</span><h2 id="mt">Fechar todos os formulários?</h2></div></div>
+    <div class="confirm-impact">Check-in, Fase 1 e Fase 2 deixarão de ficar disponíveis imediatamente. As respostas já recebidas serão preservadas.</div>
+    <label class="confirm-field" for="stagePassword">Digite a senha para confirmar<input id="stagePassword" type="password" autocomplete="off" aria-describedby="stagePasswordError"></label>
+    <p class="confirm-error" id="stagePasswordError" hidden>Senha incorreta. Os formulários não foram alterados.</p>
+    <div class="row"><button class="btn" type="button" data-act="confirm-stage-change">Fechar todos</button><button class="btn ghost" type="button" data-close="1">Cancelar</button></div>`, true);
+  const input = document.getElementById("stagePassword");
+  input.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); confirmOpenChange(); } });
+}
 async function confirmOpenChange(){
   if (!pendingOpenChange) return;
   const input = document.getElementById("stagePassword");
@@ -517,7 +535,7 @@ async function confirmOpenChange(){
       const auth = await workshopApi({action:"admin-login", adminKey:input.value});
       ADMIN_TOKEN = auth.adminToken || "";
       sessionStorage.setItem(WORKSHOP_ADMIN_SESSION, ADMIN_TOKEN);
-      await workshopApi({action:"set-activity", adminToken:ADMIN_TOKEN, activity:change.next ? change.k : "fechada"});
+      await workshopApi({action:"set-activity", adminToken:ADMIN_TOKEN, activity:change.next && !change.all ? change.k : "fechada"});
     }
   } catch (e) {
     if (error) { error.hidden = false; error.textContent = e.message; }
@@ -525,13 +543,14 @@ async function confirmOpenChange(){
     if (confirmButton) { confirmButton.disabled = false; confirmButton.textContent = "Confirmar mudança"; }
     return;
   }
-  if (change.next) FORMS.forEach(f => ST.open[f.key] = f.key === change.k);
+  if (change.all) FORMS.forEach(f => ST.open[f.key] = false);
+  else if (change.next) FORMS.forEach(f => ST.open[f.key] = f.key === change.k);
   else ST.open[change.k] = false;
-  const label = byKey(change.k).tab;
+  const label = change.all ? "Todos os formulários" : byKey(change.k).tab;
   pendingOpenChange = null;
   closeModal();
   render();
-  toast(change.next ? `${label} liberada para a turma` : `${label} fechada`);
+  toast(change.all ? "Todos os formulários foram fechados" : change.next ? `${label} liberada para a turma` : `${label} fechada`);
 }
 
 function render(){
@@ -615,6 +634,7 @@ document.addEventListener("keydown", e => {
   if (e.key === "Enter" && e.target.dataset && e.target.dataset.person) person(e.target.dataset.person);
 });
 document.addEventListener("change", e => {
+  if (e.target.dataset.closeAll) { e.target.checked = false; requestCloseAll(); return; }
   if (e.target.dataset.open) { const k = e.target.dataset.open; const next = e.target.checked; e.target.checked = !!ST.open[k]; requestOpenChange(k, next); }
 });
 document.addEventListener("input", e => {
