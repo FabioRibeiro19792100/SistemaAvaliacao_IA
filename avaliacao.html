@@ -9896,17 +9896,23 @@ function bancaEmployerBrandScore(inscId) {
 function bancaTeamMetrics(inscId) {
   const definition = bancaModelDefinition();
   const weights = bancaCriterionWeights(definition);
-  const scoredIndexes = bancaCriterionIndexes(definition);
+  const reviewerIndexes = bancaReviewerCriterionIndexes(definition);
+  const spreadsheetIndexes = bancaCriterionIndexes(definition).filter(index => bancaCriterionComesFromSpreadsheet(index, definition));
   const completed = bancaPareceristas.map(p => bancaAvaliacoes[p.id]?.[String(inscId)]).filter(av => av?.done);
   const criteria = definition.criterios.map((_, index) => {
     if (bancaCriterionComesFromSpreadsheet(index, definition)) return bancaEmployerBrandScore(inscId);
     const values = completed.map(av => NV[av.notas?.[index]]).filter(Number.isFinite);
     return values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null;
   });
-  const total = scoredIndexes.every(index => Number.isFinite(criteria[index]))
-    ? scoredIndexes.reduce((sum, index) => sum + criteria[index] * ((weights[index] || 0) / 100), 0)
+  const reviewerScoresReady = reviewerIndexes.length > 0 && reviewerIndexes.every(index => Number.isFinite(criteria[index]));
+  const availableIndexes = reviewerScoresReady
+    ? reviewerIndexes.concat(spreadsheetIndexes.filter(index => Number.isFinite(criteria[index])))
+    : [];
+  const availableWeight = availableIndexes.reduce((sum, index) => sum + (weights[index] || 0), 0);
+  const total = reviewerScoresReady
+    ? availableIndexes.reduce((sum, index) => sum + criteria[index] * ((weights[index] || 0) / 100), 0)
     : null;
-  return { completed:completed.length, expected:bancaPareceristas.length, criteria, total };
+  return { completed:completed.length, expected:bancaPareceristas.length, criteria, total, availableWeight, partial:total !== null && availableWeight < 100 };
 }
 
 function bancaReviewerProgressHTML(inscId, rowIdx) {
@@ -10038,7 +10044,7 @@ function renderBanca() {
       <td class="res-gender-col">${escapeHtmlAttr([...generosTimeInscricao(e)].join(' · ') || 'Não informado')}</td>
       <td class="res-race-col">${escapeHtmlAttr([...racasTimeInscricao(e)].join(' · ') || 'Não informada')}</td>
       <td class="res-university-col"><div class="res-muted">${escapeHtmlAttr(compactInstitutionLabel(e.inst) || 'Instituição não informada')}</div><div class="res-university-location">${escapeHtmlAttr(e.uf ? `Estado informado: ${ufDisplayLabel(e.uf)}` : 'Estado não informado')}</div></td>
-      <td class="s7" style="text-align:center;vertical-align:top"><div class="nota-cell"><div class="nota-main">${metrics.total !== null ? fmtResultadoFinal(metrics.total) : '<span style="color:#D5D9E0;font-size:15px">—</span>'}</div><div class="nota-actions">${bancaReviewerProgressHTML(e.id, rowIdx)}</div></div></td>
+      <td class="s7" style="text-align:center;vertical-align:top"><div class="nota-cell"><div class="nota-main">${metrics.total !== null ? fmtResultadoFinal(metrics.total) : '<span style="color:#D5D9E0;font-size:15px">—</span>'}</div>${metrics.partial ? `<div class="res-faint" style="font-size:9px">Parcial · ${formatCriterionWeight(metrics.availableWeight)}% da nota</div>` : ''}<div class="nota-actions">${bancaReviewerProgressHTML(e.id, rowIdx)}</div></div></td>
       ${metrics.criteria.map((value, ci) => `<td class="crit-td">${value !== null ? `<div class="criterion-score-main">${value.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}</div><div class="res-faint" style="font-size:8.5px">peso ${formatCriterionWeight(weights[ci])}%</div>` : bancaCriterionComesFromSpreadsheet(ci, definition) ? '<span class="res-faint">Pendente da planilha</span>' : '<span style="color:#D5D9E0">—</span>'}</td>`).join('')}
     </tr>${subRows}`;
   }).join('') : `<tr><td colspan="${8 + bancaModelDefinition().criterios.length}" style="padding:38px 14px;text-align:center;color:#9AA0A6">Os 80 participantes serão carregados assim que o ranking final estiver disponível.</td></tr>`;

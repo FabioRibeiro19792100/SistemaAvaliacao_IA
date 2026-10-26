@@ -59,6 +59,16 @@ assert.match(
   /function bancaEmployerBrandScore\([\s\S]*?BANCA_EMPLOYER_BRAND_COLUMNS/,
   'A nota final deve estar preparada para ler Marca Empregadora da planilha.',
 );
+assert.match(
+  app,
+  /const reviewerScoresReady = reviewerIndexes\.length > 0 && reviewerIndexes\.every\([\s\S]*?const total = reviewerScoresReady[\s\S]*?availableIndexes\.reduce/,
+  'A nota geral deve calcular a contribuição parcial de Criatividade e Uso de IA antes da planilha.',
+);
+assert.match(
+  app,
+  /Parcial · \$\{formatCriterionWeight\(metrics\.availableWeight\)\}% da nota/,
+  'A tela deve identificar quando a nota geral ainda representa somente os 80% avaliados pela banca.',
+);
 
 
 const queueStart = app.indexOf('function renderReviewerEvaluationQueue(');
