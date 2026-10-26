@@ -9898,6 +9898,11 @@ const BANCA_EMPLOYER_BRAND_COLUMNS = Object.freeze([
   'Marca Empregadora (1 a 4)',
   'marca_empregadora',
 ]);
+const BANCA_EMPLOYER_BRAND_ENDPOINT = '/api/marca-empregadora';
+const BANCA_EMPLOYER_BRAND_REFRESH_MS = 60 * 1000;
+let bancaEmployerBrandScores = new Map();
+let bancaEmployerBrandLoadedAt = 0;
+let bancaEmployerBrandLoadPromise = null;
 
 function parseBancaCriterionScore(value) {
   const text = String(value ?? '').trim();
@@ -9909,10 +9914,44 @@ function parseBancaCriterionScore(value) {
 }
 
 function bancaEmployerBrandScore(inscId) {
+  const linkedScore = bancaEmployerBrandScores.get(shortInscId(inscId));
+  if (Number.isFinite(linkedScore?.score)) return linkedScore.score;
   const participant = INSCRICOES.find(item => String(item.id) === String(inscId));
   if (!participant) return null;
   const rawValue = participant.marcaEmpregadora ?? firstRawValue(participant._raw || {}, BANCA_EMPLOYER_BRAND_COLUMNS);
   return parseBancaCriterionScore(rawValue);
+}
+
+async function loadBancaEmployerBrandScores(options = {}) {
+  const force = !!options.force;
+  if (!force && bancaEmployerBrandLoadedAt && (Date.now() - bancaEmployerBrandLoadedAt) < BANCA_EMPLOYER_BRAND_REFRESH_MS) {
+    return true;
+  }
+  if (bancaEmployerBrandLoadPromise) return bancaEmployerBrandLoadPromise;
+  bancaEmployerBrandLoadPromise = (async () => {
+    try {
+      const response = await fetch(BANCA_EMPLOYER_BRAND_ENDPOINT, { cache:'no-store' });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload.error || `HTTP ${response.status}`);
+      const nextScores = new Map();
+      (payload.scores || []).forEach(row => {
+        const id = shortInscId(row?.id);
+        const score = parseBancaCriterionScore(row?.score);
+        if (id && Number.isFinite(score)) {
+          nextScores.set(id, { score, observation:String(row?.observation || '').trim() });
+        }
+      });
+      bancaEmployerBrandScores = nextScores;
+      bancaEmployerBrandLoadedAt = Date.now();
+      return true;
+    } catch (error) {
+      console.warn('Não foi possível atualizar Marca Empregadora pelo Drive:', error);
+      return false;
+    } finally {
+      bancaEmployerBrandLoadPromise = null;
+    }
+  })();
+  return bancaEmployerBrandLoadPromise;
 }
 
 function bancaTeamMetrics(inscId) {
@@ -13758,7 +13797,7 @@ async function refreshStateFromSupabaseInBackground() {
   if (reviewerBootMode || adminImportInFlight || !isSupabaseConfigured() || !environmentRemoteReady[activeEnvironment]) return false;
   if (remoteRefreshInFlight || remoteSyncInFlight || remoteSyncQueued) return false;
   const activeView = currentActiveViewName();
-  if (!['dashboard','resultados','pareceristas','auditoria'].includes(activeView)) return false;
+  if (!['dashboard','resultados','banca','pareceristas','auditoria'].includes(activeView)) return false;
   if (lastRemoteRefreshAt && (Date.now() - lastRemoteRefreshAt) < REMOTE_REFRESH_MIN_INTERVAL_MS) return false;
   if (lastLocalAdminMutationAt && (Date.now() - lastLocalAdminMutationAt) < 3000) return false;
   remoteRefreshInFlight = true;
@@ -13773,6 +13812,7 @@ async function refreshStateFromSupabaseInBackground() {
     if (auditViewActive) await ensureAuditDataLoaded(true);
     renderPareceristas();
     renderResultados();
+    renderBanca();
     renderDashboard();
     renderAuditoria();
     if (document.getElementById('view-portal')?.classList.contains('active')) renderPortal();
@@ -14410,7 +14450,10 @@ async function loadStateFromSupabase(options = {}) {
       }
     }
 
-    await loadBancaRoundStateFromSupabase();
+    await Promise.all([
+      loadBancaRoundStateFromSupabase(),
+      loadBancaEmployerBrandScores(),
+    ]);
     baseConfirmada = true;
     remoteStateLoaded = true;
     environmentRemoteReady[activeEnvironment] = true;
