@@ -9717,7 +9717,7 @@ function renderResultados() {
   window.currentResultsTopRows = officialTopRows;
   const statsBtn = document.getElementById('resultsStatsBtn');
   if (statsBtn) statsBtn.style.display = topLimit ? 'inline-flex' : 'none';
-  if (!topLimit && resultsDrawerMode === 'stats') closeResultsStatsDrawer();
+  if (!topLimit && resultsDrawerMode === 'stats' && resultsDrawerSource === 'resultados') closeResultsStatsDrawer();
   if (resultsDrawerMode === 'cutoffs') openScoreCutoffsDrawer();
 
   document.getElementById('tblResultados').innerHTML = rows.length ? rows.map(({ e, idx }, i) => {
@@ -10410,6 +10410,7 @@ function openResultsStatsDrawer(source = 'resultados') {
   if (title) title.textContent = source === 'banca'
     ? (bancaViewMode === 'finalistas' ? 'Andamento dos 15 selecionados' : 'Andamento da banca')
     : 'Estatísticas rápidas';
+  resultsDrawerSource = source;
   renderResultsStatsDrawer(source);
   resultsDrawerMode = 'stats';
   document.getElementById('resultsStatsDrawer')?.classList.add('open');
@@ -10443,6 +10444,7 @@ function openEvaluationProgressDrawer() {
     </div>
     <div class="evaluation-progress-list">${rows || '<div class="res-faint">Nenhum parecerista oficial ativo.</div>'}</div>`;
   }
+  resultsDrawerSource = 'resultados';
   resultsDrawerMode = 'progress';
   document.getElementById('resultsStatsDrawer')?.classList.add('open');
   document.getElementById('resultsDrawerBackdrop')?.classList.add('open');
@@ -10488,6 +10490,7 @@ function openScoreCutoffsDrawer() {
         <div class="results-score-cutoff-list">${list}</div>`
       : `<div class="res-faint">Nenhuma candidatura com nota calculada corresponde aos filtros atuais.</div>`;
   }
+  resultsDrawerSource = 'resultados';
   resultsDrawerMode = 'cutoffs';
   document.getElementById('resultsStatsDrawer')?.classList.add('open');
   document.getElementById('resultsDrawerBackdrop')?.classList.add('open');
@@ -10496,6 +10499,7 @@ function openScoreCutoffsDrawer() {
 
 function closeResultsStatsDrawer() {
   resultsDrawerMode = null;
+  resultsDrawerSource = null;
   document.getElementById('resultsStatsDrawer')?.classList.remove('open');
   document.getElementById('resultsDrawerBackdrop')?.classList.remove('open');
   document.getElementById('resultsStatsDrawer')?.setAttribute('aria-hidden', 'true');
@@ -12497,6 +12501,7 @@ let rawIESAutoloadSource = '';
 let baseConfirmada = false;
 let dashCharts = {};
 let resultsDrawerMode = null;
+let resultsDrawerSource = null;
 const ARQUIVO_PADRAO = '';
 const ARQUIVO_PADRAO_HOMOLOG = '';
 const STARTUP_BASE_OVERRIDES = {

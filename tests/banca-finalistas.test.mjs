@@ -88,5 +88,15 @@ assert.match(
   /const participantAge = bancaParticipantAge\(e\)[\s\S]*?res-leader-name[^\n]*participantAge[^\n]*anos/,
   'A linha de cada participante deve exibir a idade logo abaixo do nome.',
 );
+assert.match(
+  app,
+  /resultsDrawerSource = source;[\s\S]*?resultsDrawerMode = 'stats'/,
+  'O drawer deve registrar a tela que o abriu para permanecer estável durante atualizações automáticas.',
+);
+assert.match(
+  app,
+  /!topLimit && resultsDrawerMode === 'stats' && resultsDrawerSource === 'resultados'/,
+  'A atualização de Resultados não pode fechar o drawer aberto pela Banca.',
+);
 
 console.log('Seleção dos 15 integrada à grade real da banca.');
