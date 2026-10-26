@@ -10246,19 +10246,22 @@ function toggleBancaRes(rowIdx) {
   document.querySelectorAll(`.sub-banca-${rowIdx}`).forEach(row => row.classList.toggle('open'));
 }
 
-function bancaTableHeaderHTML() {
+function bancaTableHeaderHTML({ finalistView = bancaViewMode === 'finalistas' } = {}) {
   const definition = bancaModelDefinition();
-  return `<tr><th class="sticky s0 rank-col-head"><span class="results-header-label">Ranking</span></th><th class="res-id-number-col"><span class="results-header-label">ID</span></th><th class="sticky s5"><div class="results-team-head"><div class="results-team-title"><span class="results-header-label">Candidato(a)</span><button class="results-id-toggle" id="bancaResultsIdToggle" type="button" onclick="toggleResultsIdColumn()" title="Mostrar coluna de ID" aria-label="Mostrar coluna de ID" aria-expanded="false"><span class="results-id-toggle-sign">+</span><span class="results-id-toggle-label">Mostrar ID</span></button></div></div></th><th class="res-project-summary-col res-project-summary-head"><span class="results-header-label">Entregas do workshop</span></th><th class="res-gender-col"><span class="results-header-label">Gênero</span></th><th class="res-race-col"><span class="results-header-label">Raça</span></th><th class="res-university-col"><span class="results-header-label">Universidade</span></th><th class="s7" style="text-align:center"><span class="results-header-label">Nota geral</span></th>${definition.criterios.map((criterion, index) => `<th class="crit"><span class="results-header-label">${escapeHtmlAttr(bancaCriterionDisplayName(criterion, index, definition))}</span><span class="peso">${escapeHtmlAttr(bancaCriterionWeightLabel(index, definition))}</span></th>`).join('')}</tr>`;
+  const rankingHeader = finalistView ? '' : '<th class="sticky s0 rank-col-head"><span class="results-header-label">Ranking</span></th>';
+  return `<tr>${rankingHeader}<th class="res-id-number-col"><span class="results-header-label">ID</span></th><th class="sticky s5"><div class="results-team-head"><div class="results-team-title"><span class="results-header-label">Candidato(a)</span><button class="results-id-toggle" id="bancaResultsIdToggle" type="button" onclick="toggleResultsIdColumn()" title="Mostrar coluna de ID" aria-label="Mostrar coluna de ID" aria-expanded="false"><span class="results-id-toggle-sign">+</span><span class="results-id-toggle-label">Mostrar ID</span></button></div></div></th><th class="res-project-summary-col res-project-summary-head"><span class="results-header-label">Entregas do workshop</span></th><th class="res-gender-col"><span class="results-header-label">Gênero</span></th><th class="res-race-col"><span class="results-header-label">Raça</span></th><th class="res-university-col"><span class="results-header-label">Universidade</span></th><th class="s7" style="text-align:center"><span class="results-header-label">Nota geral</span></th>${definition.criterios.map((criterion, index) => `<th class="crit"><span class="results-header-label">${escapeHtmlAttr(bancaCriterionDisplayName(criterion, index, definition))}</span><span class="peso">${escapeHtmlAttr(bancaCriterionWeightLabel(index, definition))}</span></th>`).join('')}</tr>`;
 }
 
 function syncBancaTableStructure() {
   const table = document.querySelector('#view-banca .results-table');
   if (!table) return;
+  const finalistView = bancaViewMode === 'finalistas';
   const definition = bancaModelDefinition();
   const colgroup = table.querySelector('colgroup');
   const thead = table.querySelector('thead');
-  if (colgroup) colgroup.innerHTML = '<col style="width:5.5%"><col class="res-id-number-col" style="width:4.5%"><col style="width:24.5%"><col class="res-project-summary-col" style="width:320px"><col style="width:7.5%"><col style="width:7.5%"><col style="width:15%"><col style="width:10%">' + definition.criterios.map(() => '<col style="width:10%">').join('');
-  if (thead) thead.innerHTML = bancaTableHeaderHTML();
+  const rankingColumn = finalistView ? '' : '<col style="width:5.5%">';
+  if (colgroup) colgroup.innerHTML = rankingColumn + '<col class="res-id-number-col" style="width:4.5%"><col style="width:24.5%"><col class="res-project-summary-col" style="width:320px"><col style="width:7.5%"><col style="width:7.5%"><col style="width:15%"><col style="width:10%">' + definition.criterios.map(() => '<col style="width:10%">').join('');
+  if (thead) thead.innerHTML = bancaTableHeaderHTML({ finalistView });
   syncResultsIdColumn();
 }
 
@@ -10311,23 +10314,16 @@ async function exportBancaFinalistsXlsx() {
   const finalistIds = new Set(getFinalSelectionIds().map(String));
   const rows = INSCRICOES
     .filter(e => finalistIds.has(String(e.id)) && !isBancaAbsent(e.id))
-    .map(e => ({ e, metrics:bancaTeamMetrics(e.id) }))
-    .sort((a, b) => {
-      const aScored = a.metrics.total !== null;
-      const bScored = b.metrics.total !== null;
-      if (a.metrics.total !== null && b.metrics.total !== null && Math.abs(b.metrics.total - a.metrics.total) > 1e-9) return b.metrics.total - a.metrics.total;
-      if (aScored !== bScored) return aScored ? -1 : 1;
-      return displayPersonName(a.e.lider).localeCompare(displayPersonName(b.e.lider), 'pt-BR', { sensitivity:'base', numeric:true });
-    });
+    .sort((a, b) => displayPersonName(a.lider).localeCompare(displayPersonName(b.lider), 'pt-BR', { sensitivity:'base', numeric:true })
+      || String(a.id).localeCompare(String(b.id), 'pt-BR', { numeric:true }));
   if (!rows.length) {
     notify('Nenhuma pessoa está selecionada para a próxima fase.');
     return;
   }
-  const data = rows.map(({ e }, index) => {
+  const data = rows.map(e => {
     const profile = resultadoParticipantRows(e)[0] || e._raw || {};
     const city = firstRawValue(profile, ['Cidade', 'Cidade onde você mora', 'Cidade em que você reside', 'Município', 'Municipio']);
     return [
-      index + 1,
       String(shortInscId(e.id) || ''),
       displayPersonName(e.lider).toLocaleUpperCase('pt-BR'),
       String(e.le || firstRawValue(profile, ['E-mail', 'Email', 'E-mail da inscrição'])).toLocaleUpperCase('pt-BR'),
@@ -10372,9 +10368,8 @@ async function exportBancaFinalistsXlsx() {
       if (nextXml === worksheetXml) throw new Error(`Célula ${address} ausente na planilha-modelo.`);
       worksheetXml = nextXml;
     };
-    setCellValue('A3', `${data.length} pessoas selecionadas para a próxima fase.`);
     for (let rowIndex = 0; rowIndex < 15; rowIndex += 1) {
-      for (let columnIndex = 0; columnIndex < 11; columnIndex += 1) {
+      for (let columnIndex = 0; columnIndex < 10; columnIndex += 1) {
         let columnNumber = columnIndex + 1;
         let columnName = '';
         while (columnNumber > 0) {
@@ -10413,11 +10408,11 @@ async function exportBancaFinalistsXlsx() {
 }
 
 function renderBanca() {
+  const finalistView = bancaViewMode === 'finalistas';
   syncBancaTableStructure();
   syncBancaFilters();
   const body = document.getElementById('tblBanca');
   if (!body) return;
-  const finalistView = bancaViewMode === 'finalistas';
   const selectedIds = new Set(ensureBancaTop80Selection());
   const finalists = new Set(saveFinalSelection(getFinalSelectionIds(), { persist:false }));
   const presentRows = INSCRICOES.map((e, idx) => ({ e, idx }))
@@ -10451,7 +10446,10 @@ function renderBanca() {
   }
   window.currentBancaAllRows = allMetricRows;
   const viewRows = finalistView
-    ? allMetricRows.filter(({ e }) => finalists.has(String(e.id)))
+    ? allMetricRows
+      .filter(({ e }) => finalists.has(String(e.id)))
+      .sort((a, b) => displayPersonName(a.e.lider).localeCompare(displayPersonName(b.e.lider), 'pt-BR', { sensitivity:'base', numeric:true })
+        || String(a.e.id).localeCompare(String(b.e.id), 'pt-BR', { numeric:true }))
     : allMetricRows;
   const metricRows = filtrarBancaRows(viewRows);
   window.currentBancaRows = metricRows;
@@ -10493,7 +10491,7 @@ function renderBanca() {
         ? reviewerIndexes.reduce((sum, index) => sum + criteria[index] * (weights[index] || 0), 0) / reviewerWeight
         : null;
       return `<tr class="sub-row sub-banca-${rowIdx}">
-        <td class="sticky s0"></td>
+        ${finalistView ? '' : '<td class="sticky s0"></td>'}
         <td class="res-id-number-col"></td>
         <td class="sticky s5" style="padding-left:22px"><div style="font-size:11px;font-weight:500;color:#5F6368">${escapeHtmlAttr(reviewer.nome)}${reviewer.isTest ? ' <span class="badge b-pend">Teste</span>' : ''}</div><div class="res-faint" style="font-size:10px">${reviewer.isTest ? 'Parecer de teste · fora do resultado oficial' : 'Parecerista da banca'}</div></td>
         <td class="res-project-summary-col"></td>
@@ -10505,7 +10503,7 @@ function renderBanca() {
       </tr>`;
     }).join('');
     return `<tr>
-      <td class="sticky s0"><div class="res-rank-line"><span class="res-primary-rank">${rank || '—'}</span></div><div class="banca-finalist-toggle-wrap"><button type="button" class="res-bank-toggle${isFinalist ? ' is-selected' : ''}" onclick="toggleFinalSelection('${escapeHtmlAttr(String(e.id))}',event)" aria-pressed="${isFinalist}" aria-label="${isFinalist ? 'Retirar dos 15 selecionados' : 'Selecionar para os 15'}" title="${isFinalist ? 'Retirar dos 15 selecionados' : 'Selecionar para os 15'}"></button></div></td>
+      ${finalistView ? '' : `<td class="sticky s0"><div class="res-rank-line"><span class="res-primary-rank">${rank || '—'}</span></div><div class="banca-finalist-toggle-wrap"><button type="button" class="res-bank-toggle${isFinalist ? ' is-selected' : ''}" onclick="toggleFinalSelection('${escapeHtmlAttr(String(e.id))}',event)" aria-pressed="${isFinalist}" aria-label="${isFinalist ? 'Retirar dos 15 selecionados' : 'Selecionar para os 15'}" title="${isFinalist ? 'Retirar dos 15 selecionados' : 'Selecionar para os 15'}"></button></div></td>`}
       <td class="res-id-number-col">${escapeHtmlAttr(shortInscId(e.id))}</td>
       <td class="sticky s5"><div class="leader-cell"><div class="res-leader-head"><div class="res-leader-identity"><div class="res-leader-copy"><div class="res-leader-name">${formatResultadoLeaderName(e.lider)}</div><div class="res-faint" style="font-size:10px;margin-top:3px">${participantAge !== null ? `${participantAge} anos` : 'Idade não informada'}</div></div></div><div class="res-name-actions"><button class="icon-btn" onclick="openModal(${idx},true)" title="Ver os três formulários do workshop" aria-label="Ver os três formulários do workshop"><i class="ti ti-eye"></i></button><button class="icon-btn" onclick="openModalPar(${idx})" title="Ver notas dos pareceristas" aria-label="Ver notas dos pareceristas"><i class="ti ti-notes"></i></button></div></div></div></td>
       <td class="res-project-summary-col"><div class="res-project-summary-text">Check-in · Fase 1 · Fase 2</div><div class="res-muted" style="font-size:10px;margin-top:4px">Abra pelo olhinho para consultar</div></td>
@@ -10515,7 +10513,7 @@ function renderBanca() {
       <td class="s7" style="text-align:center;vertical-align:top"><div class="nota-cell"><div class="nota-main">${metrics.total !== null ? fmtResultadoFinal(metrics.total) : '<span style="color:#D5D9E0;font-size:15px">—</span>'}</div>${metrics.total !== null ? `<div class="res-faint" style="font-size:9px">${metrics.combined ? `${fmtResultadoFinal(metrics.initialScore)} fase inicial + ${fmtResultadoFinal(metrics.bancaTotal)} banca ÷ 2` : metrics.partial ? `Soma parcial · ${formatCriterionWeight(metrics.availableWeight)}% da nota` : 'Soma das contribuições ponderadas'}</div>` : ''}<div class="nota-actions">${bancaReviewerProgressHTML(e.id, rowIdx)}</div></div></td>
       ${metrics.criteria.map((value, ci) => `<td class="crit-td">${bancaCriterionResultHTML(value, weights[ci], ci, definition)}</td>`).join('')}
     </tr>${subRows}`;
-  }).join('') : `<tr><td colspan="${8 + bancaModelDefinition().criterios.length}" style="padding:38px 14px;text-align:center;color:#9AA0A6">${finalistView ? 'Nenhuma pessoa foi selecionada para a próxima fase.' : 'Os participantes presentes serão carregados assim que o ranking final estiver disponível.'}</td></tr>`;
+  }).join('') : `<tr><td colspan="${(finalistView ? 7 : 8) + bancaModelDefinition().criterios.length}" style="padding:38px 14px;text-align:center;color:#9AA0A6">${finalistView ? 'Nenhuma pessoa foi selecionada para a próxima fase.' : 'Os participantes presentes serão carregados assim que o ranking final estiver disponível.'}</td></tr>`;
 }
 
 function resultadoParticipantRows(e) {
