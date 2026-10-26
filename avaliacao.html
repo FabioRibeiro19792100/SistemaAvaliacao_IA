@@ -1343,6 +1343,13 @@ tr:hover td.sticky{background:#FAFAFA}
 .banca-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;padding:16px 0 14px}
 .banca-head-actions{display:flex;align-items:center;gap:12px}
 .banca-count{font-size:12px;color:#7A828E}
+.banca-ranking-switch{display:inline-flex;align-items:center;gap:9px;padding:7px 10px;border:1px solid #E2E7EE;border-radius:8px;background:#fff;color:#3C4043;font-size:11px;font-weight:600;white-space:nowrap;cursor:pointer}
+.banca-ranking-switch input{position:absolute;opacity:0;pointer-events:none}
+.banca-ranking-switch-track{position:relative;width:32px;height:18px;border-radius:999px;background:#C7CDD6;transition:.18s ease}
+.banca-ranking-switch-track::after{content:'';position:absolute;top:3px;left:3px;width:12px;height:12px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:.18s ease}
+.banca-ranking-switch input:checked + .banca-ranking-switch-track{background:var(--accent,#6C43FF)}
+.banca-ranking-switch input:checked + .banca-ranking-switch-track::after{transform:translateX(14px)}
+.banca-ranking-switch:focus-within{outline:2px solid rgba(108,67,255,.22);outline-offset:2px}
 .banca-evaluation-progress{display:inline-flex;align-items:center;gap:8px;padding:5px 9px;border:1px solid #E2E7EE;border-radius:8px;background:#F8FAFC;color:#7A828E;white-space:nowrap}
 .banca-evaluation-progress strong{font-size:12px;font-weight:700;color:#3C4043}
 .banca-evaluation-progress-percent{min-width:38px;padding-left:8px;border-left:1px solid #E2E7EE;color:#5F6368;text-align:right}
@@ -5668,10 +5675,14 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
   <div class="banca-head">
     <div>
       <div class="page-title" id="bancaPageTitle">Banca dos 80</div>
-      <div class="page-sub" id="bancaPageSub">Segunda sessão de avaliação, em ordem alfabética e sem notas da fase anterior. Composição da nota final: Criatividade 45%, Uso de IA 35% e Marca Empregadora 20% (importada por planilha).</div>
+      <div class="page-sub" id="bancaPageSub"></div>
     </div>
     <div class="banca-head-actions">
-      <div class="banca-count" id="bancaSummary">0 participantes carregados</div>
+      <label class="banca-ranking-switch" title="Quando ligada, o ranking usa a média entre a nota da fase inicial e a nota da Banca dos 80.">
+        <input id="bancaIncludeInitialScore" type="checkbox" onchange="toggleBancaInitialScore(this.checked)">
+        <span class="banca-ranking-switch-track" aria-hidden="true"></span>
+        <span>Nota da fase inicial no ranking</span>
+      </label>
       <div class="banca-evaluation-progress" id="bancaEvaluationProgress" title="Progresso das avaliações da banca">
         <span>0 de 0 avaliações</span><strong class="banca-evaluation-progress-percent">0%</strong>
       </div>
@@ -6509,6 +6520,7 @@ const ACCESS_ROLE_KEY = 'maratonaia_access_role_v1';
 const AVALIACAO_SCALE_KEY = 'maratonaia_avaliacao_scale_v1';
 const BANCA_SELECTION_KEY = 'maratonaia_banca_selection_v1';
 const FINAL_SELECTION_KEY = 'maratonaia_final_selection_15_v1';
+const BANCA_INITIAL_SCORE_KEY = 'maratonaia_banca_include_initial_score_v1';
 const WORKSHOP_ROSTER_KEY = 'maratona-ia-workshop-roster-v1';
 const FINAL_SELECTION_LIMIT = 15;
 const ADMIN_VIEWS = ['pareceristas', 'auditoria', 'config', 'workshop'];
@@ -6523,6 +6535,7 @@ let bancaReviewerBootMode = false;
 let requestedBancaParId = null;
 let bancaRoundSchemaAvailable = null;
 let bancaViewMode = 'banca';
+let bancaIncludeInitialScore = false;
 
 // atribuicoes[inscId] = [parId, parId, parId]
 let atribuicoes = {};
@@ -8156,6 +8169,30 @@ function bancaToggleHTML(inscId) {
 
 function finalSelectionStorageKey() {
   return `${FINAL_SELECTION_KEY}_${activeEnvironment || 'default'}`;
+}
+
+function bancaInitialScoreStorageKey() {
+  return `${BANCA_INITIAL_SCORE_KEY}_${activeEnvironment || 'default'}`;
+}
+
+function hydrateBancaInitialScorePreference() {
+  try {
+    bancaIncludeInitialScore = localStorage.getItem(bancaInitialScoreStorageKey()) === 'true';
+  } catch(e) {
+    bancaIncludeInitialScore = false;
+  }
+}
+
+function applyBancaInitialScorePreference(value) {
+  bancaIncludeInitialScore = !!value;
+  try {
+    localStorage.setItem(bancaInitialScoreStorageKey(), String(bancaIncludeInitialScore));
+  } catch(e) {}
+}
+
+function toggleBancaInitialScore(enabled) {
+  applyBancaInitialScorePreference(enabled);
+  renderBanca();
 }
 
 function getFinalSelectionIds() {
@@ -10004,10 +10041,24 @@ function bancaTeamMetrics(inscId) {
     ? reviewerIndexes.concat(spreadsheetIndexes.filter(index => Number.isFinite(criteria[index])))
     : [];
   const availableWeight = availableIndexes.reduce((sum, index) => sum + (weights[index] || 0), 0);
-  const total = reviewerScoresReady
+  const bancaTotal = reviewerScoresReady
     ? availableIndexes.reduce((sum, index) => sum + criteria[index] * ((weights[index] || 0) / 100), 0)
     : null;
-  return { completed:completed.length, expected:officialReviewers.length, criteria, total, availableWeight, partial:total !== null && availableWeight < 100 };
+  const initialScore = mediaNotasRanking(inscId, 'Ranking normal');
+  const total = bancaIncludeInitialScore && Number.isFinite(bancaTotal) && Number.isFinite(initialScore)
+    ? (bancaTotal + initialScore) / 2
+    : bancaTotal;
+  return {
+    completed:completed.length,
+    expected:officialReviewers.length,
+    criteria,
+    total,
+    bancaTotal,
+    initialScore:Number.isFinite(initialScore) ? initialScore : null,
+    combined:bancaIncludeInitialScore && Number.isFinite(bancaTotal) && Number.isFinite(initialScore),
+    availableWeight,
+    partial:bancaTotal !== null && availableWeight < 100,
+  };
 }
 
 function bancaReviewerProgressHTML(inscId, rowIdx) {
@@ -10086,9 +10137,6 @@ function renderBanca() {
   const finalistView = bancaViewMode === 'finalistas';
   const selectedIds = new Set(ensureBancaTop80Selection());
   const finalists = new Set(saveFinalSelection(getFinalSelectionIds(), { persist:false }));
-  const absentCount = bancaCheckinAttendanceLoaded
-    ? [...selectedIds].filter(id => isBancaAbsent(id)).length
-    : 0;
   const presentRows = INSCRICOES.map((e, idx) => ({ e, idx }))
     .filter(({ e }) => selectedIds.has(String(e.id)) && !isBancaAbsent(e.id))
     .sort((a, b) => displayPersonName(a.e.lider).localeCompare(displayPersonName(b.e.lider), 'pt-BR', { sensitivity:'base', numeric:true }) || String(a.e.id).localeCompare(String(b.e.id), 'pt-BR', { numeric:true }));
@@ -10096,10 +10144,16 @@ function renderBanca() {
   const pageTitle = document.getElementById('bancaPageTitle');
   const pageSub = document.getElementById('bancaPageSub');
   const statsButton = document.getElementById('bancaStatsButton');
+  const initialScoreSwitch = document.getElementById('bancaIncludeInitialScore');
   if (pageTitle) pageTitle.textContent = finalistView ? 'Selecionados para a próxima fase' : 'Banca dos 80';
   if (pageSub) pageSub.textContent = finalistView
     ? 'Mesma grade da Banca dos 80, exibindo somente as 15 pessoas selecionadas para a próxima fase.'
-    : 'Segunda sessão de avaliação, em ordem alfabética e sem notas da fase anterior. Composição da nota final: Criatividade 45%, Uso de IA 35% e Marca Empregadora 20% (importada por planilha).';
+    : '';
+  if (initialScoreSwitch) {
+    initialScoreSwitch.checked = bancaIncludeInitialScore;
+    const switchLabel = initialScoreSwitch.closest('.banca-ranking-switch');
+    if (switchLabel) switchLabel.style.display = finalistView ? 'none' : '';
+  }
   if (statsButton) statsButton.innerHTML = `<i class="ti ti-chart-dots"></i>${finalistView ? 'Estatísticas dos 15' : 'Estatísticas da Banca'}`;
 
   const allMetricRows = presentRows.map(row => ({ ...row, metrics:bancaTeamMetrics(row.e.id) }));
@@ -10120,12 +10174,6 @@ function renderBanca() {
     : allMetricRows;
   window.currentBancaRows = metricRows;
 
-  const summary = document.getElementById('bancaSummary');
-  if (summary) summary.textContent = finalistView
-    ? `${metricRows.length} de ${FINAL_SELECTION_LIMIT} selecionados · ${bancaModelDefinition().label}`
-    : bancaCheckinAttendanceLoaded
-      ? `${presentRows.length} ${presentRows.length === 1 ? 'participante presente' : 'participantes presentes'} · ${absentCount} ${absentCount === 1 ? 'ausente bloqueado' : 'ausentes bloqueados'} · ${bancaModelDefinition().label}`
-      : `${presentRows.length} ${presentRows.length === 1 ? 'participante carregado' : 'participantes carregados'} · ${bancaModelDefinition().label}`;
   const officialReviewers = officialBancaPareceristas();
   const expectedEvaluations = metricRows.length * officialReviewers.length;
   const completedEvaluations = officialReviewers.reduce((sum, reviewer) => {
@@ -10152,6 +10200,7 @@ function renderBanca() {
     const definition = bancaModelDefinition();
     const weights = bancaCriterionWeights(definition);
     const reviewerIndexes = bancaReviewerCriterionIndexes(definition);
+    const participantAge = bancaParticipantAge(e);
     const subRows = bancaPareceristas.map(reviewer => {
       const evaluation = bancaAvaliacoes[reviewer.id]?.[String(e.id)];
       const completed = !!evaluation?.done;
@@ -10175,12 +10224,12 @@ function renderBanca() {
     return `<tr>
       <td class="sticky s0"><div class="res-rank-line"><span class="res-primary-rank">${rank || '—'}</span></div><div class="banca-finalist-toggle-wrap"><button type="button" class="res-bank-toggle${isFinalist ? ' is-selected' : ''}" onclick="toggleFinalSelection('${escapeHtmlAttr(String(e.id))}',event)" aria-pressed="${isFinalist}" aria-label="${isFinalist ? 'Retirar dos 15 selecionados' : 'Selecionar para os 15'}" title="${isFinalist ? 'Retirar dos 15 selecionados' : 'Selecionar para os 15'}"></button></div></td>
       <td class="res-id-number-col">${escapeHtmlAttr(shortInscId(e.id))}</td>
-      <td class="sticky s5"><div class="leader-cell"><div class="res-leader-head"><div class="res-leader-identity"><div class="res-leader-copy"><div class="res-leader-name">${formatResultadoLeaderName(e.lider)}</div></div></div><div class="res-name-actions"><button class="icon-btn" onclick="openModal(${idx},true)" title="Ver os três formulários do workshop" aria-label="Ver os três formulários do workshop"><i class="ti ti-eye"></i></button><button class="icon-btn" onclick="openModalPar(${idx})" title="Ver notas dos pareceristas" aria-label="Ver notas dos pareceristas"><i class="ti ti-notes"></i></button></div></div></div></td>
+      <td class="sticky s5"><div class="leader-cell"><div class="res-leader-head"><div class="res-leader-identity"><div class="res-leader-copy"><div class="res-leader-name">${formatResultadoLeaderName(e.lider)}</div><div class="res-faint" style="font-size:10px;margin-top:3px">${participantAge !== null ? `${participantAge} anos` : 'Idade não informada'}</div></div></div><div class="res-name-actions"><button class="icon-btn" onclick="openModal(${idx},true)" title="Ver os três formulários do workshop" aria-label="Ver os três formulários do workshop"><i class="ti ti-eye"></i></button><button class="icon-btn" onclick="openModalPar(${idx})" title="Ver notas dos pareceristas" aria-label="Ver notas dos pareceristas"><i class="ti ti-notes"></i></button></div></div></div></td>
       <td class="res-project-summary-col"><div class="res-project-summary-text">Check-in · Fase 1 · Fase 2</div><div class="res-muted" style="font-size:10px;margin-top:4px">Abra pelo olhinho para consultar</div></td>
       <td class="res-gender-col">${escapeHtmlAttr([...generosTimeInscricao(e)].join(' · ') || 'Não informado')}</td>
       <td class="res-race-col">${escapeHtmlAttr([...racasTimeInscricao(e)].join(' · ') || 'Não informada')}</td>
       <td class="res-university-col"><div class="res-muted">${escapeHtmlAttr(compactInstitutionLabel(e.inst) || 'Instituição não informada')}</div><div class="res-university-location">${escapeHtmlAttr(e.uf ? `Estado informado: ${ufDisplayLabel(e.uf)}` : 'Estado não informado')}</div></td>
-      <td class="s7" style="text-align:center;vertical-align:top"><div class="nota-cell"><div class="nota-main">${metrics.total !== null ? fmtResultadoFinal(metrics.total) : '<span style="color:#D5D9E0;font-size:15px">—</span>'}</div>${metrics.total !== null ? `<div class="res-faint" style="font-size:9px">${metrics.partial ? `Soma parcial · ${formatCriterionWeight(metrics.availableWeight)}% da nota` : 'Soma das contribuições ponderadas'}</div>` : ''}<div class="nota-actions">${bancaReviewerProgressHTML(e.id, rowIdx)}</div></div></td>
+      <td class="s7" style="text-align:center;vertical-align:top"><div class="nota-cell"><div class="nota-main">${metrics.total !== null ? fmtResultadoFinal(metrics.total) : '<span style="color:#D5D9E0;font-size:15px">—</span>'}</div>${metrics.total !== null ? `<div class="res-faint" style="font-size:9px">${metrics.combined ? `${fmtResultadoFinal(metrics.initialScore)} fase inicial + ${fmtResultadoFinal(metrics.bancaTotal)} banca ÷ 2` : metrics.partial ? `Soma parcial · ${formatCriterionWeight(metrics.availableWeight)}% da nota` : 'Soma das contribuições ponderadas'}</div>` : ''}<div class="nota-actions">${bancaReviewerProgressHTML(e.id, rowIdx)}</div></div></td>
       ${metrics.criteria.map((value, ci) => `<td class="crit-td">${bancaCriterionResultHTML(value, weights[ci], ci, definition)}</td>`).join('')}
     </tr>${subRows}`;
   }).join('') : `<tr><td colspan="${8 + bancaModelDefinition().criterios.length}" style="padding:38px 14px;text-align:center;color:#9AA0A6">${finalistView ? 'Nenhuma pessoa foi selecionada para a próxima fase.' : 'Os participantes presentes serão carregados assim que o ranking final estiver disponível.'}</td></tr>`;
@@ -10213,11 +10262,34 @@ function countResultsStats(values) {
   values.filter(Boolean).forEach(value => { counts[value] = (counts[value] || 0) + 1; });
   return Object.entries(counts).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'pt-BR'));
 }
-function resultsStatSection(title, entries) {
+function resultsStatSection(title, entries, options = { limit:10 }) {
   if (!entries.length) return `<div class="results-stat-section"><div class="results-stat-title">${title}</div><div class="res-faint" style="font-size:12px">Sem dados disponíveis.</div></div>`;
   const total = entries.reduce((sum, [, value]) => sum + value, 0);
   const max = Math.max(...entries.map(([, value]) => value), 1);
-  return `<div class="results-stat-section"><div class="results-stat-title">${title}</div><div class="results-stat-columns"><span>Categoria</span><span>Qtd.</span><span>%</span></div>${entries.slice(0, 10).map(([label, value]) => `<div class="results-stat-row"><span class="results-stat-label" title="${escapeHtmlAttr(label)}">${escapeHtmlAttr(label)}</span><strong class="results-stat-value">${value}</strong><span class="results-stat-percent">${Math.round((value / total) * 100)}%</span><div class="results-stat-bar"><span style="width:${(value / max) * 100}%"></span></div></div>`).join('')}</div>`;
+  const visibleEntries = Number.isFinite(options.limit) ? entries.slice(0, Math.max(0, options.limit)) : entries;
+  return `<div class="results-stat-section"><div class="results-stat-title">${title}</div><div class="results-stat-columns"><span>Categoria</span><span>Qtd.</span><span>%</span></div>${visibleEntries.map(([label, value]) => `<div class="results-stat-row"><span class="results-stat-label" title="${escapeHtmlAttr(label)}">${escapeHtmlAttr(label)}</span><strong class="results-stat-value">${value}</strong><span class="results-stat-percent">${Math.round((value / total) * 100)}%</span><div class="results-stat-bar"><span style="width:${(value / max) * 100}%"></span></div></div>`).join('')}</div>`;
+}
+
+function institutionSector(profile) {
+  const { row, team } = profile || {};
+  const declared = firstRawValue(row, [
+    'A instituição de ensino é pública ou privada?',
+    'Instituição pública ou privada',
+    'Tipo de instituição',
+    'Rede de ensino',
+    'Natureza da instituição',
+  ]).toLocaleLowerCase('pt-BR');
+  if (declared.includes('públic') || declared.includes('public')) return 'Pública';
+  if (declared.includes('privad')) return 'Privada';
+  const institution = compactInstitutionLabel(firstRawValue(row, [
+    'Nome da associação educacional/instituição de ensino em que você possui vínculo estudantil ativo',
+    'Nome da instituição de ensino em que você possui vínculo estudantil ativo',
+    'Instituição',
+    'Universidade',
+  ]) || team?.inst || '').toLocaleUpperCase('pt-BR');
+  if (!institution || institution === 'N/D') return 'N/D';
+  const publicPattern = /\b(UF[A-Z]{1,4}|IF[A-Z]{1,4}|CEFET|USP|UNICAMP|UNESP|UERJ|UE[A-Z]{1,4}|UNIFESP|UNIRIO|UNB|UTFPR|FATEC)\b|FEDERAL|ESTADUAL|MUNICIPAL/;
+  return publicPattern.test(institution) ? 'Pública' : 'Privada';
 }
 function normalizeResultsGender(value) {
   const text = String(value || '').trim();
@@ -10262,6 +10334,7 @@ function bancaSelectedProfileHTML() {
   const regions = countResultsStats(profiles.map(profile => regionFromUf(profileUf(profile)) || 'N/D'));
   const states = countResultsStats(profiles.map(profile => compactUfLabel(profileUf(profile)) || 'N/D'));
   const institutions = countResultsStats(profiles.map(profile => compactInstitutionLabel(profileInstitution(profile)) || 'N/D'));
+  const institutionSectors = countResultsStats(profiles.map(profile => institutionSector(profile)));
   const count = selectedRows.length;
   return `<section class="banca-selected-profile">
     <div class="banca-selected-profile-heading">Perfil dos selecionados</div>
@@ -10271,7 +10344,8 @@ function bancaSelectedProfileHTML() {
     ${resultsStatSection('Faixa etária', ages)}
     ${resultsStatSection('Distribuição por região', regions)}
     ${resultsStatSection('Distribuição por estado', states)}
-    ${resultsStatSection('Instituição de ensino', institutions)}
+    ${resultsStatSection('Rede de ensino', institutionSectors)}
+    ${resultsStatSection('Instituição de ensino', institutions, { limit:null })}
   </section>`;
 }
 function renderResultsStatsDrawer(source = 'resultados') {
@@ -10578,13 +10652,8 @@ function workshopAnswerHTML(field) {
   }
   return normalized.map(escapeHtmlAttr).join(Array.isArray(field.value) ? '<br>' : '');
 }
-function bancaWorkshopIdentityHTML(e) {
+function bancaParticipantAge(e) {
   const profile = resultadoParticipantRows(e)[0] || e?._raw || {};
-  const city = firstRawValue(profile, ['Cidade', 'Cidade onde você mora', 'Cidade em que você reside', 'Município', 'Municipio']);
-  const state = ufDisplayLabel(e?.uf) || firstRawValue(profile, ['UF', 'Estado']);
-  const location = [city, state].filter(Boolean).join(' / ') || 'Não informada';
-  const rawGender = firstRawValue(profile, ['Como você se identifica?', 'Gênero', 'Genero', 'genero']);
-  const gender = generoCategoria(rawGender) || rawGender || 'Não informado';
   const birthValue = firstRawValue(profile, ['Data Nascimento', 'Data de nascimento', 'Nascimento', 'Ano de nascimento']);
   let age = null;
   const birthYearMatch = String(birthValue || '').match(/^\s*(\d{4})\s*$/);
@@ -10601,6 +10670,16 @@ function bancaWorkshopIdentityHTML(e) {
       if (age <= 0 || age >= 120) age = null;
     }
   }
+  return age;
+}
+function bancaWorkshopIdentityHTML(e) {
+  const profile = resultadoParticipantRows(e)[0] || e?._raw || {};
+  const city = firstRawValue(profile, ['Cidade', 'Cidade onde você mora', 'Cidade em que você reside', 'Município', 'Municipio']);
+  const state = ufDisplayLabel(e?.uf) || firstRawValue(profile, ['UF', 'Estado']);
+  const location = [city, state].filter(Boolean).join(' / ') || 'Não informada';
+  const rawGender = firstRawValue(profile, ['Como você se identifica?', 'Gênero', 'Genero', 'genero']);
+  const gender = generoCategoria(rawGender) || rawGender || 'Não informado';
+  const age = bancaParticipantAge(e);
   return `<div class="workshop-review-person">
     <div class="workshop-review-person-name">${escapeHtmlAttr(displayPersonName(e?.lider) || 'Participante')}</div>
     <dl class="workshop-review-meta">
@@ -16472,6 +16551,7 @@ function showStartupRoute() {
 }
 
 hydrateSupabaseSettings();
+hydrateBancaInitialScorePreference();
 applyStartupBaseOverride();
 if (persistenceMode === 'supabase') {
   carregandoEstadoRemoto = true;

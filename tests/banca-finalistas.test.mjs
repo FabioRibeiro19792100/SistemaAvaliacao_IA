@@ -70,8 +70,23 @@ assert.match(
 );
 assert.match(
   app,
-  /resultsStatSection\('Gênero', genders\)[\s\S]*?resultsStatSection\('Cor \/ raça', races\)[\s\S]*?resultsStatSection\('Faixa etária', ages\)[\s\S]*?resultsStatSection\('Distribuição por região', regions\)[\s\S]*?resultsStatSection\('Distribuição por estado', states\)[\s\S]*?resultsStatSection\('Instituição de ensino', institutions\)/,
+  /resultsStatSection\('Gênero', genders\)[\s\S]*?resultsStatSection\('Cor \/ raça', races\)[\s\S]*?resultsStatSection\('Faixa etária', ages\)[\s\S]*?resultsStatSection\('Distribuição por região', regions\)[\s\S]*?resultsStatSection\('Distribuição por estado', states\)[\s\S]*?resultsStatSection\('Rede de ensino', institutionSectors\)[\s\S]*?resultsStatSection\('Instituição de ensino', institutions, \{ limit:null \}\)/,
   'O perfil dos selecionados deve apresentar os principais recortes demográficos.',
+);
+assert.match(
+  app,
+  /id="bancaIncludeInitialScore"[\s\S]*?toggleBancaInitialScore/,
+  'A Banca dos 80 deve oferecer uma chave para considerar a nota da fase inicial.',
+);
+assert.match(
+  app,
+  /const total = bancaIncludeInitialScore[\s\S]*?\(bancaTotal \+ initialScore\) \/ 2/,
+  'Quando ligada, a chave deve combinar igualmente a fase inicial e a Banca dos 80.',
+);
+assert.match(
+  app,
+  /const participantAge = bancaParticipantAge\(e\)[\s\S]*?res-leader-name[^\n]*participantAge[^\n]*anos/,
+  'A linha de cada participante deve exibir a idade logo abaixo do nome.',
 );
 
 console.log('Seleção dos 15 integrada à grade real da banca.');

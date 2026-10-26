@@ -49,10 +49,10 @@ assert.match(
   /\$\{bancaReviewerBootMode \? '' : `<span class="criterio-peso">Peso /,
   'A ficha da Banca deve ocultar os pesos dos critérios para o parecerista.',
 );
-assert.match(
+assert.doesNotMatch(
   app,
-  /Composição da nota final: Criatividade 45%, Uso de IA 35% e Marca Empregadora 20% \(importada por planilha\)/,
-  'A composição completa da nota deve permanecer apenas na tela administrativa da Banca dos 80.',
+  /Segunda sessão de avaliação, em ordem alfabética e sem notas da fase anterior/,
+  'A Banca dos 80 não deve exibir uma descrição operacional redundante.',
 );
 assert.match(
   app,
@@ -61,7 +61,7 @@ assert.match(
 );
 assert.match(
   app,
-  /const reviewerScoresReady = reviewerIndexes\.length > 0 && reviewerIndexes\.every\([\s\S]*?const total = reviewerScoresReady[\s\S]*?availableIndexes\.reduce/,
+  /const reviewerScoresReady = reviewerIndexes\.length > 0 && reviewerIndexes\.every\([\s\S]*?const bancaTotal = reviewerScoresReady[\s\S]*?availableIndexes\.reduce/,
   'A nota geral deve calcular a contribuição parcial de Criatividade e Uso de IA antes da planilha.',
 );
 assert.match(
@@ -179,10 +179,10 @@ assert.match(
   /async function executarSalvarAvaliacao[\s\S]*?loadBancaEmployerBrandScores\(\{ force:true \}\)[\s\S]*?if \(isBancaAbsent\(inscId\)\)[\s\S]*?Avaliação bloqueada/,
   'O salvamento deve revalidar a presença e bloquear ausentes.',
 );
-assert.match(
+assert.doesNotMatch(
   app,
-  /ausentes bloqueados/,
-  'O painel administrativo deve informar quantos ausentes foram retirados da fila.',
+  /participantes presentes[^`]*ausentes bloqueados[^`]*Grade completa/,
+  'O cabeçalho da banca não deve repetir o resumo operacional da fila.',
 );
 
 console.log('Fila da banca sem numeração e em ordem alfabética.');
