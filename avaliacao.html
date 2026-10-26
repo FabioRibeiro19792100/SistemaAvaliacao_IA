@@ -5078,6 +5078,103 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
   #view-selecionados .selection-actions{justify-content:flex-start}
 }
 
+/* Estrutura única para todas as grades administrativas. */
+:is(#view-resultados,#view-banca){
+  padding:12px 32px 56px!important;
+  background:#fff;
+}
+:is(#view-resultados,#view-banca) > div{
+  width:100%;
+  max-width:1600px!important;
+  margin:0 auto!important;
+  padding:0!important;
+}
+:is(#view-resultados,#view-banca) .admin-grid-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  min-height:64px;
+  padding:8px 16px 10px!important;
+  margin:0!important;
+  box-sizing:border-box;
+}
+:is(#view-resultados,#view-banca) .admin-grid-head .page-title{
+  margin:0;
+  white-space:nowrap;
+}
+:is(#view-resultados,#view-banca) .admin-grid-head-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:10px;
+  min-width:0;
+}
+:is(#view-resultados,#view-banca) .results-top-sticky{
+  padding:0 16px 10px!important;
+  margin:0!important;
+  background:#fff!important;
+}
+:is(#view-resultados,#view-banca) .results-top-shell{
+  padding:0!important;
+  background:transparent!important;
+}
+:is(#view-resultados,#view-banca) .results-filter-row{
+  flex-wrap:nowrap!important;
+  gap:10px!important;
+  min-width:0;
+}
+:is(#view-resultados,#view-banca) .results-filter-group{
+  display:flex;
+  flex:1 1 auto;
+  flex-wrap:nowrap!important;
+  gap:10px!important;
+  min-width:0;
+  overflow-x:auto;
+  overflow-y:hidden;
+  padding-bottom:1px;
+  scrollbar-width:thin;
+}
+:is(#view-resultados,#view-banca) .results-filter-group .finput{
+  width:144px!important;
+  min-width:144px!important;
+  max-width:144px!important;
+  height:40px!important;
+  flex:0 0 144px!important;
+  padding:7px 38px 7px 12px!important;
+  border:1px solid #D9DFEB!important;
+  border-radius:5px!important;
+  background-color:#fff!important;
+  color:#303746!important;
+  font-size:12px!important;
+  font-weight:500!important;
+  box-sizing:border-box;
+}
+:is(#view-resultados,#view-banca) :is(#resFiltroStatus,#bancaFiltroStatus){width:156px!important;min-width:156px!important;max-width:156px!important;flex-basis:156px!important}
+:is(#view-resultados,#view-banca) :is(#resFiltroInstituicao,#bancaFiltroInstituicao){width:170px!important;min-width:170px!important;max-width:170px!important;flex-basis:170px!important}
+:is(#view-resultados,#view-banca) .results-filter-row > .results-reset-btn{
+  flex:0 0 auto;
+  height:40px;
+  padding:0 6px;
+}
+:is(#view-resultados,#view-banca) > div > .tbl-card{
+  margin-top:0!important;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+}
+:is(#view-resultados,#view-banca) > div > .tbl-card::before{display:none!important}
+:is(#view-resultados,#view-banca) .results-criteria-floating-label{height:30px!important;background:#fff}
+:is(#view-resultados,#view-banca) .results-table thead tr:first-child th{height:64px!important}
+:is(#view-resultados,#view-banca) .results-table tbody > tr:not(.sub-row) > td{height:96px!important}
+@media (max-width:900px){
+  :is(#view-resultados,#view-banca){padding:8px 16px 40px!important}
+  :is(#view-resultados,#view-banca) .admin-grid-head{align-items:flex-start;flex-direction:column;padding:8px 0 12px!important}
+  :is(#view-resultados,#view-banca) .admin-grid-head-actions{width:100%;justify-content:flex-start;overflow-x:auto}
+  :is(#view-resultados,#view-banca) .results-top-sticky{padding:0 0 10px!important}
+}
+
 </style>
 </head>
 <body>
@@ -5461,6 +5558,13 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
 ════════════════════════════════════════════════ -->
 <div class="view" id="view-resultados">
 <div style="max-width:none;margin:0;padding-left:8px;padding-right:0">
+  <div class="admin-grid-head">
+    <div class="page-title">Resultados</div>
+    <div class="admin-grid-head-actions">
+      <button class="btn btn-secondary btn-sm results-evaluation-progress-btn" id="resultsEvaluationProgress" type="button" onclick="openEvaluationProgressDrawer()" title="Ver evolução por parecerista"><i class="ti ti-chart-bar"></i><span>Progresso das avaliações</span></button>
+      <button class="btn btn-secondary btn-sm results-top-stats-btn" id="resultsStatsBtn" type="button" onclick="openResultsStatsDrawer()" style="display:none"><i class="ti ti-chart-dots"></i>Estatísticas do Top</button>
+    </div>
+  </div>
 
   <div class="results-top-sticky" id="resultsTopSticky">
     <div class="results-top-shell">
@@ -5500,21 +5604,9 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
           <option value="Ranking ajustado por parecerista">RR · Ranking relativo</option>
         </select>
         </div>
-        <button class="btn btn-secondary btn-sm results-evaluation-progress-btn" id="resultsEvaluationProgress" type="button" onclick="openEvaluationProgressDrawer()" title="Ver evolução por parecerista"><i class="ti ti-chart-bar"></i><span>Progresso das avaliações</span></button>
-        <button class="btn btn-secondary btn-sm results-top-stats-btn" id="resultsStatsBtn" type="button" onclick="openResultsStatsDrawer()" style="display:none"><i class="ti ti-chart-dots"></i>Estatísticas do Top</button>
+        <button class="results-reset-btn" type="button" onclick="zerarFiltrosResultados()" title="Limpar todos os filtros"><i class="ti ti-x"></i>Limpar</button>
       </div>
-      <div class="results-special-filter-row">
-        <div class="results-cut-controls">
-          <select class="finput" id="resFiltroVariacao" onchange="renderResultados()" hidden style="display:none;width:155px;min-width:155px">
-            <option value="0">Sem faixa do corte</option>
-            <option value="1">Até 1% do corte</option>
-            <option value="2">Até 2% do corte</option>
-            <option value="3">Até 3% do corte</option>
-            <option value="4">Até 4% do corte</option>
-            <option value="5">Até 5% do corte</option>
-          </select>
-        </div>
-      </div>
+      <select class="finput" id="resFiltroVariacao" onchange="renderResultados()" hidden style="display:none"><option value="0">Sem faixa do corte</option></select>
     </div>
   </div>
 
@@ -5523,7 +5615,6 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
       <div class="results-criteria-floating-label">
         <div class="results-table-utility">
           <div id="resSummaryBar" style="display:none;font-size:12px;color:#7A828E"></div>
-          <button class="results-reset-btn" type="button" onclick="zerarFiltrosResultados()" title="Limpar todos os filtros"><i class="ti ti-x"></i>Limpar</button>
           <button class="btn btn-secondary btn-sm results-export-btn" title="Exportar a tabela em Excel"><i class="ti ti-download"></i>Exportar</button>
         </div>
         <span>Critérios da Maratona IA</span>
@@ -5686,12 +5777,9 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
 ════════════════════════════════════════════════ -->
 <div class="view" id="view-banca">
 <div style="max-width:none;margin:0;padding-left:8px;padding-right:0">
-  <div class="banca-head">
-    <div>
-      <div class="page-title" id="bancaPageTitle">Banca dos 80</div>
-      <div class="page-sub" id="bancaPageSub"></div>
-    </div>
-    <div class="banca-head-actions">
+  <div class="admin-grid-head banca-head">
+    <div class="page-title" id="bancaPageTitle">Banca dos 80</div>
+    <div class="admin-grid-head-actions banca-head-actions">
       <label class="banca-ranking-switch" title="Quando ligada, o ranking usa a média entre a nota da fase inicial e a nota da Banca dos 80.">
         <input id="bancaIncludeInitialScore" type="checkbox" onchange="toggleBancaInitialScore(this.checked)">
         <span class="banca-ranking-switch-track" aria-hidden="true"></span>
@@ -10271,14 +10359,10 @@ function renderBanca() {
     .sort((a, b) => displayPersonName(a.e.lider).localeCompare(displayPersonName(b.e.lider), 'pt-BR', { sensitivity:'base', numeric:true }) || String(a.e.id).localeCompare(String(b.e.id), 'pt-BR', { numeric:true }));
   renderBancaReviewers();
   const pageTitle = document.getElementById('bancaPageTitle');
-  const pageSub = document.getElementById('bancaPageSub');
   const statsButton = document.getElementById('bancaStatsButton');
   const finalistsDownload = document.getElementById('bancaFinalistsDownload');
   const initialScoreSwitch = document.getElementById('bancaIncludeInitialScore');
   if (pageTitle) pageTitle.textContent = finalistView ? 'Selecionados para a próxima fase' : 'Banca dos 80';
-  if (pageSub) pageSub.textContent = finalistView
-    ? 'Mesma grade da Banca dos 80, exibindo somente as 15 pessoas selecionadas para a próxima fase.'
-    : '';
   if (initialScoreSwitch) {
     initialScoreSwitch.checked = bancaIncludeInitialScore;
     const switchLabel = initialScoreSwitch.closest('.banca-ranking-switch');

@@ -19,5 +19,7 @@ assert.doesNotMatch(finalistsExport, /['"]NOTA|Nota geral|definition\.criterios/
 assert.match(finalistsExport, /toLocaleUpperCase\('pt-BR'\)/, 'Os textos do Excel dos 15 devem ser normalizados em maiúsculas.');
 assert.match(app, /function exportDashboardCSV\(\)[\s\S]*?toLocaleUpperCase\('pt-BR'\)/, 'O CSV do Dashboard também deve normalizar os textos em maiúsculas.');
 assert.match(app, /if \(bancaViewMode === 'finalistas'\) \{[\s\S]*?body\.innerHTML = bancaSelectedProfileHTML\(\);[\s\S]*?return;/, 'O drawer da próxima fase deve mostrar somente o perfil dos selecionados.');
+assert.doesNotMatch(app, /Mesma grade da Banca dos 80/, 'A próxima fase não deve exibir explicação redundante sobre a grade.');
+assert.match(app, /:is\(#view-resultados,#view-banca\) \.admin-grid-head[\s\S]*?:is\(#view-resultados,#view-banca\) \.results-top-sticky[\s\S]*?:is\(#view-resultados,#view-banca\) > div > \.tbl-card/, 'Resultados, Banca e Próxima fase devem compartilhar a mesma geometria de cabeçalho, filtros e grade.');
 
 console.log('Filtros compartilhados e exportação da próxima fase validados.');
