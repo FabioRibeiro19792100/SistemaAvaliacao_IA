@@ -51,7 +51,7 @@ function normalizedHeader(value) {
   return String(value || '').trim().toLocaleLowerCase('pt-BR');
 }
 
-function extractScores(csvText) {
+function extractSheetData(csvText) {
   const rows = parseCsv(csvText);
   const headerIndex = rows.findIndex(row => {
     const headers = row.map(normalizedHeader);
@@ -64,21 +64,31 @@ function extractScores(csvText) {
   const scoreIndex = headers.indexOf('marca empregadora');
   const observationIndex = headers.indexOf('observação');
   const scores = [];
-  const seen = new Set();
+  const checkinParticipantIds = [];
+  const seenParticipants = new Set();
+  const seenScores = new Set();
 
   for (const row of rows.slice(headerIndex + 1)) {
     const id = String(row[idIndex] || '').trim();
+    if (id && !seenParticipants.has(id)) {
+      seenParticipants.add(id);
+      checkinParticipantIds.push(id);
+    }
     const rawScore = String(row[scoreIndex] || '').trim().replace(',', '.');
     const score = Number(rawScore);
-    if (!id || !Number.isFinite(score) || score < 1 || score > 4 || seen.has(id)) continue;
-    seen.add(id);
+    if (!id || !Number.isFinite(score) || score < 1 || score > 4 || seenScores.has(id)) continue;
+    seenScores.add(id);
     scores.push({
       id,
       score,
       observation: observationIndex >= 0 ? String(row[observationIndex] || '').trim() : '',
     });
   }
-  return scores;
+  return { scores, checkinParticipantIds };
+}
+
+function extractScores(csvText) {
+  return extractSheetData(csvText).scores;
 }
 
 module.exports = async function employerBrandScores(req, res) {
@@ -94,12 +104,14 @@ module.exports = async function employerBrandScores(req, res) {
       clearTimeout(timeout);
     }
     if (!response.ok) throw new Error(`A planilha respondeu com HTTP ${response.status}.`);
-    const scores = extractScores(await response.text());
+    const { scores, checkinParticipantIds } = extractSheetData(await response.text());
     return json(res, 200, {
       source:'google-sheets',
       spreadsheetId:SPREADSHEET_ID,
       sheetGid:SHEET_GID,
       count:scores.length,
+      participantCount:checkinParticipantIds.length,
+      checkinParticipantIds,
       scores,
     });
   } catch (error) {
@@ -109,3 +121,4 @@ module.exports = async function employerBrandScores(req, res) {
 
 module.exports.parseCsv = parseCsv;
 module.exports.extractScores = extractScores;
+module.exports.extractSheetData = extractSheetData;

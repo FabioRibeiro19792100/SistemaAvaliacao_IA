@@ -164,4 +164,25 @@ assert.match(
   'A fila deve ser ordenada alfabeticamente pelo nome do participante.',
 );
 
+assert.match(
+  app,
+  /function isBancaAbsent\(inscId\)[\s\S]*?bancaCheckinAttendanceLoaded[\s\S]*?bancaCheckinParticipantIds\.has/,
+  'A ausência deve ser determinada pela lista válida de participantes do Check-in.',
+);
+assert.match(
+  app,
+  /selectedInscriptions = \(allInscriptions \|\| \[\]\)\.filter\([\s\S]*?!isBancaAbsent\(id\)/,
+  'O portal da banca deve carregar somente participantes presentes.',
+);
+assert.match(
+  app,
+  /async function executarSalvarAvaliacao[\s\S]*?loadBancaEmployerBrandScores\(\{ force:true \}\)[\s\S]*?if \(isBancaAbsent\(inscId\)\)[\s\S]*?Avaliação bloqueada/,
+  'O salvamento deve revalidar a presença e bloquear ausentes.',
+);
+assert.match(
+  app,
+  /ausentes bloqueados/,
+  'O painel administrativo deve informar quantos ausentes foram retirados da fila.',
+);
+
 console.log('Fila da banca sem numeração e em ordem alfabética.');

@@ -7171,9 +7171,10 @@ function getAtrib(parId) {
 }
 
 function getPortalUniverseByParecerista(parId) {
-  if (!isTestParecerista(parId)) return getAtrib(parId);
+  if (!isTestParecerista(parId)) return getAtrib(parId).filter(id => !bancaReviewerBootMode || !isBancaAbsent(id));
   return [...INSCRICOES]
     .map(i => i.id)
+    .filter(id => !bancaReviewerBootMode || !isBancaAbsent(id))
     .sort((a, b) => String(a).localeCompare(String(b), 'pt-BR', { numeric:true, sensitivity:'base' }));
 }
 
@@ -9871,7 +9872,7 @@ function renderBancaReviewers() {
   const list = document.getElementById('bancaReviewerList');
   const status = document.getElementById('bancaReviewerRoundStatus');
   if (!list) return;
-  const selectedIds = new Set(getBancaSelectionIds());
+  const selectedIds = new Set(getBancaSelectionIds().filter(id => !isBancaAbsent(id)));
   const officialCount = officialBancaPareceristas().length;
   const testCount = bancaPareceristas.length - officialCount;
   if (status) status.textContent = bancaRoundSchemaAvailable === false
@@ -9903,6 +9904,12 @@ const BANCA_EMPLOYER_BRAND_REFRESH_MS = 60 * 1000;
 let bancaEmployerBrandScores = new Map();
 let bancaEmployerBrandLoadedAt = 0;
 let bancaEmployerBrandLoadPromise = null;
+let bancaCheckinParticipantIds = new Set();
+let bancaCheckinAttendanceLoaded = false;
+
+function isBancaAbsent(inscId) {
+  return bancaCheckinAttendanceLoaded && !bancaCheckinParticipantIds.has(shortInscId(inscId));
+}
 
 function parseBancaCriterionScore(value) {
   const text = String(value ?? '').trim();
@@ -9941,7 +9948,13 @@ async function loadBancaEmployerBrandScores(options = {}) {
           nextScores.set(id, { score, observation:String(row?.observation || '').trim() });
         }
       });
+      const participantIds = [...new Set((payload.checkinParticipantIds || []).map(shortInscId).filter(Boolean))];
+      if (!participantIds.length || Number(payload.participantCount) !== participantIds.length) {
+        throw new Error('A lista de presença do Check-in veio vazia ou inconsistente.');
+      }
       bancaEmployerBrandScores = nextScores;
+      bancaCheckinParticipantIds = new Set(participantIds);
+      bancaCheckinAttendanceLoaded = true;
       bancaEmployerBrandLoadedAt = Date.now();
       return true;
     } catch (error) {
@@ -10036,12 +10049,17 @@ function renderBanca() {
   const body = document.getElementById('tblBanca');
   if (!body) return;
   const selectedIds = new Set(ensureBancaTop80Selection());
+  const absentCount = bancaCheckinAttendanceLoaded
+    ? [...selectedIds].filter(id => isBancaAbsent(id)).length
+    : 0;
   const rows = INSCRICOES.map((e, idx) => ({ e, idx }))
-    .filter(({ e }) => selectedIds.has(String(e.id)))
+    .filter(({ e }) => selectedIds.has(String(e.id)) && !isBancaAbsent(e.id))
     .sort((a, b) => displayPersonName(a.e.lider).localeCompare(displayPersonName(b.e.lider), 'pt-BR', { sensitivity:'base', numeric:true }) || String(a.e.id).localeCompare(String(b.e.id), 'pt-BR', { numeric:true }));
   renderBancaReviewers();
   const summary = document.getElementById('bancaSummary');
-  if (summary) summary.textContent = `${rows.length} ${rows.length === 1 ? 'participante carregado' : 'participantes carregados'} · ${bancaModelDefinition().label}`;
+  if (summary) summary.textContent = bancaCheckinAttendanceLoaded
+    ? `${rows.length} ${rows.length === 1 ? 'participante presente' : 'participantes presentes'} · ${absentCount} ${absentCount === 1 ? 'ausente bloqueado' : 'ausentes bloqueados'} · ${bancaModelDefinition().label}`
+    : `${rows.length} ${rows.length === 1 ? 'participante carregado' : 'participantes carregados'} · ${bancaModelDefinition().label}`;
   const officialReviewers = officialBancaPareceristas();
   const expectedEvaluations = rows.length * officialReviewers.length;
   const completedEvaluations = officialReviewers.reduce((sum, reviewer) => {
@@ -11952,6 +11970,13 @@ function updateAvaliacaoStatus(done) {
 }
 
 function abrirFicha(parId, inscId, abrirEmEdicao = false) {
+  if (bancaReviewerBootMode && isBancaAbsent(inscId)) {
+    currentInscId = null;
+    notify('Avaliação bloqueada: participante ausente no workshop.');
+    renderPortal();
+    showView('portal');
+    return;
+  }
   if (currentAttachmentViewer?.inline) closeAttachmentViewer();
   scrollAppTop();
   document.getElementById('view-avaliacao')?.classList.toggle('banca-evaluation-mode', bancaReviewerBootMode);
@@ -12092,6 +12117,16 @@ async function executarSalvarAvaliacao(forcarAntesDoTempo = false) {
   if (!currentParId || !currentInscId) return;
   const parId = currentParId;
   const inscId = currentInscId;
+  if (bancaReviewerBootMode) {
+    await loadBancaEmployerBrandScores({ force:true });
+    if (isBancaAbsent(inscId)) {
+      currentInscId = null;
+      notify('Avaliação bloqueada: participante ausente no workshop.');
+      renderPortal();
+      showView('portal');
+      return;
+    }
+  }
   const avAnterior = avaliacoes[parId]?.[inscId] || null;
   const editingConcluded = isEditingPreviouslyCompletedEvaluation(parId, inscId);
   const motivoCurtaDuracao = editingConcluded
@@ -14609,6 +14644,7 @@ async function loadBancaReviewerPortalStateFromSupabase(parId) {
     bancaModelosConfig = normalizeBancaModelsConfig(cfgRes.data?.banca_modelos_config);
     bancaReviewerBootMode = true;
     applyBancaModelFromConfig(bancaModeloAtivo);
+    await loadBancaEmployerBrandScores({ force:true });
     const activeEvaluationRows = (evaluationRows || []).filter(row => normalizeBancaModelId(row.modelo_id) === bancaModeloAtivo);
     const activeCriteriaRows = (criteriaRows || []).filter(row => normalizeBancaModelId(row.modelo_id) === bancaModeloAtivo);
 
@@ -14627,7 +14663,10 @@ async function loadBancaReviewerPortalStateFromSupabase(parId) {
     }
 
     const selectedIds = new Set((cfgRes.data?.banca_selecionados || []).map(shortInscId));
-    const selectedInscriptions = (allInscriptions || []).filter(row => selectedIds.has(shortInscId(row.id_externo)));
+    const selectedInscriptions = (allInscriptions || []).filter(row => {
+      const id = shortInscId(row.id_externo);
+      return selectedIds.has(id) && !isBancaAbsent(id);
+    });
     const selectedFullIds = selectedInscriptions.map(row => row.id_externo);
     const participantRows = selectedFullIds.length ? await fetchAllSupabaseRowsByIds('participantes', selectedFullIds, {
       idColumn: 'inscricao_id_externo',
@@ -14660,7 +14699,7 @@ async function loadBancaReviewerPortalStateFromSupabase(parId) {
     environmentRemoteReady[activeEnvironment] = true;
     lastRemoteRefreshAt = Date.now();
     persistSupabaseSettings();
-    updateSupabaseStatus(`Banca de ${parRes.data.nome} carregada com ${selectedInscriptions.length} equipes.`, 'ok');
+    updateSupabaseStatus(`Banca de ${parRes.data.nome} carregada com ${selectedInscriptions.length} participantes presentes.`, 'ok');
     return true;
   } catch (error) {
     console.error('Falha ao carregar portal da banca:', error);

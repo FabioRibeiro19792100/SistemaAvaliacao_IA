@@ -11,12 +11,14 @@ const csv = [
   '1,285,Ana,ana@example.com,Rio,Feminino,UFRJ,"Resposta com, vírgula\ne quebra de linha",2,"Boa, objetiva"',
   '2,170,Bia,bia@example.com,São Paulo,Feminino,USP,Resposta,4,',
   '3,999,Caio,caio@example.com,Recife,Masculino,UFPE,Resposta,8,Inválida',
+  '4,888,Dani,dani@example.com,Salvador,Feminino,UFBA,Resposta,,Sem nota ainda',
 ].join('\n');
 
 assert.deepEqual(handler.extractScores(csv), [
   { id:'285', score:2, observation:'Boa, objetiva' },
   { id:'170', score:4, observation:'' },
 ]);
+assert.deepEqual(handler.extractSheetData(csv).checkinParticipantIds, ['285', '170', '999', '888']);
 
 const originalFetch = globalThis.fetch;
 globalThis.fetch = async () => ({ ok:true, status:200, text:async () => csv });
@@ -36,5 +38,7 @@ await handler(
 globalThis.fetch = originalFetch;
 assert.equal(statusCode, 200);
 assert.equal(responseBody.count, 2);
+assert.equal(responseBody.participantCount, 4);
+assert.deepEqual(responseBody.checkinParticipantIds, ['285', '170', '999', '888']);
 assert.equal(responseBody.spreadsheetId, '12NzUJ2SotZnZnZMu8nymi_RQpxxLN97KW_Op5cnSaFo');
 assert.match(headers['Cache-Control'], /s-maxage=60/);
