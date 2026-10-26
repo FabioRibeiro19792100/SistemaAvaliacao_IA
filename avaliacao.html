@@ -1583,6 +1583,9 @@ tr:hover td.sticky{background:#FAFAFA}
 .results-stat-percent{min-width:34px;color:#7A828E;font-weight:600}
 .results-stat-bar{grid-column:1/-1;height:5px;border-radius:999px;background:#EDF0F2;overflow:hidden;margin-top:-5px}
 .results-stat-bar span{display:block;height:100%;border-radius:inherit;background:#AEB7C1}
+.banca-selected-profile{margin-top:24px;padding-top:18px;border-top:2px solid #E5EAF0}
+.banca-selected-profile-heading{margin-bottom:5px;color:#202124;font-size:15px;font-weight:700}
+.banca-selected-profile-copy{margin:0 0 4px;color:#687386;font-size:11.5px;line-height:1.5}
 .calibration-layout{max-width:760px}
 .calibration-card{margin:0}
 .calibration-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:16px}
@@ -10229,6 +10232,48 @@ function normalizeResultsIA(value) {
   if (text.startsWith('não') || text.startsWith('nao')) return 'Não';
   return text.includes('não') || text.includes('nao') ? 'Não' : 'Sim';
 }
+function resultsAgeBucket(row) {
+  const birthValue = firstRawValue(row, ['Data Nascimento', 'Data de nascimento', 'Nascimento', 'Ano de nascimento']);
+  if (!birthValue) return 'N/D';
+  const yearOnly = String(birthValue).match(/^\s*(\d{4})\s*$/);
+  const birthDate = yearOnly ? null : parseBrDateTime(birthValue);
+  const birthYear = yearOnly ? Number(yearOnly[1]) : birthDate?.getFullYear();
+  if (!Number.isFinite(birthYear)) return 'N/D';
+  const today = new Date();
+  let age = today.getFullYear() - birthYear;
+  if (birthDate && (today.getMonth() < birthDate.getMonth() || (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate()))) age -= 1;
+  if (!Number.isFinite(age) || age <= 0 || age >= 120) return 'N/D';
+  if (age <= 17) return 'Até 17';
+  if (age <= 20) return '18–20';
+  if (age <= 24) return '21–24';
+  return '25+';
+}
+function bancaSelectedProfileHTML() {
+  const selectedIds = new Set(getFinalSelectionIds().map(String));
+  const sourceRows = Array.isArray(window.currentBancaAllRows) ? window.currentBancaAllRows : [];
+  const selectedRows = sourceRows.filter(({ e }) => selectedIds.has(String(e.id)) && !isBancaAbsent(e.id));
+  if (!selectedRows.length) return `<section class="banca-selected-profile"><div class="banca-selected-profile-heading">Perfil dos selecionados</div><p class="banca-selected-profile-copy">Marque os participantes no toggle do ranking para visualizar a composição da próxima fase.</p></section>`;
+  const profiles = selectedRows.map(({ e }) => ({ row:resultadoParticipantRows(e)[0] || e._raw || {}, team:e }));
+  const profileUf = ({ row, team }) => firstRawValue(row, ['UF', 'Estado', 'uf']) || team.uf;
+  const profileInstitution = ({ row, team }) => firstRawValue(row, ['Nome da associação educacional/instituição de ensino em que você possui vínculo estudantil ativo', 'Nome da instituição de ensino em que você possui vínculo estudantil ativo', 'Instituição', 'Universidade']) || team.inst;
+  const genders = countResultsStats(profiles.map(({ row }) => normalizeResultsGender(firstRawValue(row, ['Como você se identifica?', 'Gênero', 'genero'])) || 'N/D'));
+  const races = countResultsStats(profiles.map(({ row }) => normalizeResultsRace(firstRawValue(row, ['Raça/etnia', 'Cor/raça', 'Cor/Raça', 'raca'])) || 'N/D'));
+  const ages = countResultsStats(profiles.map(({ row }) => resultsAgeBucket(row)));
+  const regions = countResultsStats(profiles.map(profile => regionFromUf(profileUf(profile)) || 'N/D'));
+  const states = countResultsStats(profiles.map(profile => compactUfLabel(profileUf(profile)) || 'N/D'));
+  const institutions = countResultsStats(profiles.map(profile => compactInstitutionLabel(profileInstitution(profile)) || 'N/D'));
+  const count = selectedRows.length;
+  return `<section class="banca-selected-profile">
+    <div class="banca-selected-profile-heading">Perfil dos selecionados</div>
+    <p class="banca-selected-profile-copy"><strong>${count.toLocaleString('pt-BR')} de ${FINAL_SELECTION_LIMIT}</strong> participantes marcados para a próxima fase.</p>
+    ${resultsStatSection('Gênero', genders)}
+    ${resultsStatSection('Cor / raça', races)}
+    ${resultsStatSection('Faixa etária', ages)}
+    ${resultsStatSection('Distribuição por região', regions)}
+    ${resultsStatSection('Distribuição por estado', states)}
+    ${resultsStatSection('Instituição de ensino', institutions)}
+  </section>`;
+}
 function renderResultsStatsDrawer(source = 'resultados') {
   const rows = source === 'banca'
     ? (Array.isArray(window.currentBancaRows) ? window.currentBancaRows : [])
@@ -10257,7 +10302,8 @@ function renderResultsStatsDrawer(source = 'resultados') {
       <div class="evaluation-progress-total"><strong>${done.toLocaleString('pt-BR')} / ${expected.toLocaleString('pt-BR')}</strong><span>${percent}% concluídas</span></div>
       <div class="evaluation-progress-track" aria-hidden="true"><span style="width:${percent}%"></span></div>
     </div>
-    <div class="evaluation-progress-list">${reviewerRows || '<div class="res-faint">Nenhum parecerista ativo na banca.</div>'}</div>`;
+    <div class="evaluation-progress-list">${reviewerRows || '<div class="res-faint">Nenhum parecerista ativo na banca.</div>'}</div>
+    ${bancaSelectedProfileHTML()}`;
     return;
   }
   const teams = rows.map(({ e }) => e);

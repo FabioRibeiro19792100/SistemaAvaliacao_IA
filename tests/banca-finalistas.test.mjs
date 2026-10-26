@@ -63,5 +63,15 @@ assert.match(
   /Soma das contribuições ponderadas/,
   'A nota geral completa deve explicar que soma as contribuições ponderadas.',
 );
+assert.match(
+  app,
+  /function bancaSelectedProfileHTML\(\)[\s\S]*?getFinalSelectionIds\(\)[\s\S]*?Perfil dos selecionados/,
+  'As estatísticas da banca devem perfilar somente os participantes marcados no toggle.',
+);
+assert.match(
+  app,
+  /resultsStatSection\('Gênero', genders\)[\s\S]*?resultsStatSection\('Cor \/ raça', races\)[\s\S]*?resultsStatSection\('Faixa etária', ages\)[\s\S]*?resultsStatSection\('Distribuição por região', regions\)[\s\S]*?resultsStatSection\('Distribuição por estado', states\)[\s\S]*?resultsStatSection\('Instituição de ensino', institutions\)/,
+  'O perfil dos selecionados deve apresentar os principais recortes demográficos.',
+);
 
 console.log('Seleção dos 15 integrada à grade real da banca.');
