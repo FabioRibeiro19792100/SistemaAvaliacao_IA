@@ -999,10 +999,10 @@ tr:hover td.sticky{background:#FAFAFA}
 :is(#view-resultados,#view-portal,#view-banca) .results-top-shell{
   background:var(--bg);
 }
-#view-resultados .results-filter-row{display:flex;align-items:center;gap:12px}
-#view-resultados .results-filter-group{display:flex;align-items:center;gap:8px;flex:1 1 auto;min-width:0;max-width:100%;flex-wrap:wrap}
-#view-resultados .results-filter-group .finput{width:auto!important;min-width:max-content!important;max-width:100%;height:34px;padding:6px 30px 6px 10px;font-size:12px;flex:0 0 auto}
-#view-resultados .results-filter-group .finput[style*="display:none"]{display:none!important}
+:is(#view-resultados,#view-banca) .results-filter-row{display:flex;align-items:center;gap:12px}
+:is(#view-resultados,#view-banca) .results-filter-group{display:flex;align-items:center;gap:8px;flex:1 1 auto;min-width:0;max-width:100%;flex-wrap:wrap}
+:is(#view-resultados,#view-banca) .results-filter-group .finput{width:auto!important;min-width:max-content!important;max-width:100%;height:34px;padding:6px 30px 6px 10px;font-size:12px;flex:0 0 auto}
+:is(#view-resultados,#view-banca) .results-filter-group .finput[style*="display:none"]{display:none!important}
 :is(#view-resultados,#view-banca) .results-top-stats-btn{flex:0 0 auto;margin-left:auto;border-color:#AECBFA;background:#E8F0FE;color:#1558B0;font-weight:600;box-shadow:0 1px 2px rgba(26,115,232,.08)}
 :is(#view-resultados,#view-banca) .results-top-stats-btn:hover{background:#DCE9FD;border-color:#8AB4F8}
 #view-resultados .results-special-filter-row{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:8px;padding:4px 0;background:transparent}
@@ -1038,11 +1038,11 @@ tr:hover td.sticky{background:#FAFAFA}
 #view-resultados #resSummaryBar .res-subtle{color:var(--accent) !important;font-weight:500}
 #view-resultados #resSummaryBar .res-summary-coral{color:#C45F4A}
 @media (max-width:1100px){
-  #view-resultados .results-filter-row{align-items:flex-start;flex-wrap:wrap}
-  #view-resultados .results-filter-group{flex-wrap:wrap}
+  :is(#view-resultados,#view-banca) .results-filter-row{align-items:flex-start;flex-wrap:wrap}
+  :is(#view-resultados,#view-banca) .results-filter-group{flex-wrap:wrap}
   #view-resultados .results-top-stats-btn{margin-left:0}
 }
-:is(#view-resultados,#view-portal) .results-reset-btn{
+:is(#view-resultados,#view-portal,#view-banca) .results-reset-btn{
   display:inline-flex;
   align-items:center;
   gap:6px;
@@ -1056,7 +1056,7 @@ tr:hover td.sticky{background:#FAFAFA}
   cursor:pointer;
   transition:color .12s ease, opacity .12s ease;
 }
-:is(#view-resultados,#view-portal) .results-reset-btn:hover{
+:is(#view-resultados,#view-portal,#view-banca) .results-reset-btn:hover{
   color:#1A73E8;
 }
 :is(#view-resultados,#view-portal) .results-reset-btn i{
@@ -1342,6 +1342,13 @@ tr:hover td.sticky{background:#FAFAFA}
 .banca-finalist-toggle-wrap .res-bank-toggle{width:28px;min-width:28px}
 .banca-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;padding:16px 0 14px}
 .banca-head-actions{display:flex;align-items:center;gap:12px}
+#view-banca .banca-filter-sticky{padding:0 0 10px;margin:0;background:#fff}
+#view-banca .banca-filter-sticky .results-top-shell{padding:0;background:transparent}
+#view-banca .banca-filter-sticky .results-filter-row{flex-wrap:nowrap;min-width:0;gap:10px}
+#view-banca .banca-filter-sticky .results-filter-group{flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;padding-bottom:1px;scrollbar-width:thin;gap:10px}
+#view-banca .banca-filter-sticky .finput{width:144px!important;min-width:144px!important;max-width:144px!important;height:38px;padding:7px 38px 7px 12px;border:1px solid #D9DFEB;border-radius:5px;background:#fff;color:#303746;font-size:12px;font-weight:500;flex:0 0 144px!important}
+#view-banca .banca-filter-sticky #bancaFiltroInstituicao{width:170px!important;min-width:170px!important;max-width:170px!important;flex-basis:170px!important}
+#view-banca .banca-filter-sticky .results-reset-btn{flex:0 0 auto;height:38px;padding:0 6px}
 .banca-count{font-size:12px;color:#7A828E}
 .banca-ranking-switch{display:inline-flex;align-items:center;gap:9px;padding:7px 10px;border:1px solid #E2E7EE;border-radius:8px;background:#fff;color:#3C4043;font-size:11px;font-weight:600;white-space:nowrap;cursor:pointer}
 .banca-ranking-switch input{position:absolute;opacity:0;pointer-events:none}
@@ -4461,9 +4468,11 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
 #view-resultados .results-filter-group{flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;padding-bottom:1px;scrollbar-width:thin}
 #view-resultados .results-filter-group .finput{width:144px!important;min-width:144px!important;max-width:144px!important;flex:0 0 144px!important}
 #view-resultados #resFiltroStatus{width:156px!important;min-width:156px!important;max-width:156px!important;flex-basis:156px!important}
+#view-resultados #resFiltroRegiao{width:142px!important;min-width:142px!important;max-width:142px!important;flex-basis:142px!important}
 #view-resultados #resFiltroUf{width:142px!important;min-width:142px!important;max-width:142px!important;flex-basis:142px!important}
 #view-resultados #resFiltroGenero{width:150px!important;min-width:150px!important;max-width:150px!important;flex-basis:150px!important}
 #view-resultados #resFiltroRaca{width:142px!important;min-width:142px!important;max-width:142px!important;flex-basis:142px!important}
+#view-resultados #resFiltroInstituicao{width:170px!important;min-width:170px!important;max-width:170px!important;flex-basis:170px!important}
 #view-resultados #resFiltroDuracao{width:156px!important;min-width:156px!important;max-width:156px!important;flex-basis:156px!important}
 #view-resultados #resFiltroAlertas{width:148px!important;min-width:148px!important;max-width:148px!important;flex-basis:148px!important}
 #view-resultados #resFiltroRanking{width:168px!important;min-width:168px!important;max-width:168px!important;flex-basis:168px!important}
@@ -5216,6 +5225,9 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
     <div class="dash-page" id="dash-page-lista">
       <div class="dash-flow-section-heading">Lista de inscrições</div>
       <div class="dash-list-controls">
+        <select class="finput" id="dashFiltroRegiao" onchange="renderDashboardList()">
+          <option value="">Regiões</option>
+        </select>
         <select class="finput" id="dashFiltroUf" onchange="renderDashboardList()">
           <option value="">Estados</option>
         </select>
@@ -5466,9 +5478,11 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
           <option>Em dupla</option>
           <option>Em trio</option>
         </select>
+        <select class="finput" id="resFiltroRegiao" onchange="renderResultados()"><option value="">Regiões</option></select>
         <select class="finput" id="resFiltroUf" onchange="renderResultados()" style="width:150px;min-width:150px"><option value="">Estados</option></select>
         <select class="finput" id="resFiltroGenero" onchange="renderResultados()" style="width:175px;min-width:175px"><option value="Todos os gêneros">Gêneros</option><option>Feminino</option><option>Masculino</option><option>Prefiro não indicar</option></select>
         <select class="finput" id="resFiltroRaca" onchange="renderResultados()" style="width:135px;min-width:135px"><option value="">Raças</option></select>
+        <select class="finput" id="resFiltroInstituicao" onchange="renderResultados()"><option value="">Universidades</option></select>
         <select class="finput" id="resFiltroDuracao" onchange="renderResultados()" style="width:185px;min-width:185px">
           <option value="0">Vídeos</option>
           <option value="10">Menos de 10 segundos</option>
@@ -5686,7 +5700,28 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
       <div class="banca-evaluation-progress" id="bancaEvaluationProgress" title="Progresso das avaliações da banca">
         <span>0 de 0 avaliações</span><strong class="banca-evaluation-progress-percent">0%</strong>
       </div>
+      <button class="btn btn-secondary btn-sm" id="bancaFinalistsDownload" type="button" onclick="exportBancaFinalistsXlsx()" style="display:none"><i class="ti ti-download"></i>Baixar lista dos 15</button>
       <button class="btn btn-secondary btn-sm results-top-stats-btn" id="bancaStatsButton" type="button" onclick="openResultsStatsDrawer('banca')"><i class="ti ti-chart-dots"></i>Estatísticas da Banca</button>
+    </div>
+  </div>
+  <div class="results-top-sticky banca-filter-sticky">
+    <div class="results-top-shell">
+      <div class="results-filter-row">
+        <div class="results-filter-group">
+          <select class="finput" id="bancaFiltroStatus" onchange="renderBanca()">
+            <option value="">Avaliações</option>
+            <option value="concluidas">Concluídas</option>
+            <option value="andamento">Em andamento</option>
+            <option value="nao_iniciadas">Não iniciadas</option>
+          </select>
+          <select class="finput" id="bancaFiltroRegiao" onchange="renderBanca()"><option value="">Regiões</option></select>
+          <select class="finput" id="bancaFiltroUf" onchange="renderBanca()"><option value="">Estados</option></select>
+          <select class="finput" id="bancaFiltroGenero" onchange="renderBanca()"><option value="">Gêneros</option></select>
+          <select class="finput" id="bancaFiltroRaca" onchange="renderBanca()"><option value="">Raças</option></select>
+          <select class="finput" id="bancaFiltroInstituicao" onchange="renderBanca()"><option value="">Universidades</option></select>
+        </div>
+        <button class="results-reset-btn" type="button" onclick="zerarFiltrosBanca()" title="Limpar todos os filtros"><i class="ti ti-x"></i>Limpar</button>
+      </div>
     </div>
   </div>
   <div class="tbl-card">
@@ -9497,9 +9532,11 @@ function idadeMediaEstimativa(valor) {
 function filtrarResultados() {
   const status = document.getElementById('resFiltroStatus')?.value || 'Todas as avaliações';
   const time = document.getElementById('resFiltroTime')?.value || 'Todos os times';
+  const regiao = document.getElementById('resFiltroRegiao')?.value || '';
   const uf = document.getElementById('resFiltroUf')?.value || '';
   const genero = document.getElementById('resFiltroGenero')?.value || 'Todos os gêneros';
   const raca = document.getElementById('resFiltroRaca')?.value || '';
+  const instituicao = document.getElementById('resFiltroInstituicao')?.value || '';
   const duracaoMaxima = Number(document.getElementById('resFiltroDuracao')?.value || 0);
   const alertas = document.getElementById('resFiltroAlertas')?.value || '';
   return INSCRICOES.map((e, idx) => ({ e, idx })).filter(({ e }) => {
@@ -9507,9 +9544,11 @@ function filtrarResultados() {
     const statusAtual = c.done === 0 ? 'Não iniciadas' : c.done === c.total ? 'Finalizadas' : 'Parciais';
     if (status !== 'Todas as avaliações' && statusAtual !== status) return false;
     if (time !== 'Todos os times' && e.mod !== time) return false;
+    if (regiao && regionFromUf(e.uf) !== regiao) return false;
     if (uf && ufDisplayLabel(e.uf) !== uf) return false;
     if (genero !== 'Todos os gêneros' && !generosTimeInscricao(e).has(genero)) return false;
     if (raca && !racasTimeInscricao(e).has(raca)) return false;
+    if (instituicao && compactInstitutionLabel(e.inst) !== instituicao) return false;
     if (duracaoMaxima > 0) {
       const videoUrl = materialLinks(e).video || '';
       const duration = videoDurationCache.get(videoUrl);
@@ -9529,9 +9568,11 @@ function zerarFiltrosResultados() {
   const defaults = {
     resFiltroStatus: 'Todas as avaliações',
     resFiltroTime: 'Todos os times',
+    resFiltroRegiao: '',
     resFiltroUf: '',
     resFiltroGenero: 'Todos os gêneros',
     resFiltroRaca: '',
+    resFiltroInstituicao: '',
     resFiltroDuracao: '0',
     resFiltroAlertas: '',
     resFiltroRanking: 'Ranking normal',
@@ -9700,9 +9741,11 @@ function renderResultados() {
   const hasActiveFilters =
     (document.getElementById('resFiltroStatus')?.value || 'Todas as avaliações') !== 'Todas as avaliações' ||
     (document.getElementById('resFiltroTime')?.value || 'Todos os times') !== 'Todos os times' ||
+    !!(document.getElementById('resFiltroRegiao')?.value || '') ||
     !!(document.getElementById('resFiltroUf')?.value || '') ||
     (document.getElementById('resFiltroGenero')?.value || 'Todos os gêneros') !== 'Todos os gêneros' ||
     !!(document.getElementById('resFiltroRaca')?.value || '') ||
+    !!(document.getElementById('resFiltroInstituicao')?.value || '') ||
     Number(document.getElementById('resFiltroDuracao')?.value || 0) > 0 ||
     !!(document.getElementById('resFiltroAlertas')?.value || '') ||
     topLimit > 0 || variacaoPct > 0 || anyTopActive || rankingMode !== 'Ranking normal';
@@ -10130,8 +10173,100 @@ function syncBancaTableStructure() {
   syncResultsIdColumn();
 }
 
+function syncBancaFilters() {
+  const selectedIds = new Set(ensureBancaTop80Selection());
+  const rows = INSCRICOES.filter(e => selectedIds.has(String(e.id)) && !isBancaAbsent(e.id));
+  fillDashboardSelect('bancaFiltroRegiao', rows.map(e => regionFromUf(e.uf)).filter(value => value && value !== 'N/D'), 'Regiões');
+  fillDashboardSelect('bancaFiltroUf', rows.map(e => ufDisplayLabel(e.uf)), 'Estados');
+  fillDashboardSelect('bancaFiltroGenero', rows.flatMap(e => [...generosTimeInscricao(e)]), 'Gêneros');
+  fillDashboardSelect('bancaFiltroRaca', rows.flatMap(e => [...racasTimeInscricao(e)]), 'Raças');
+  fillDashboardSelect('bancaFiltroInstituicao', rows.map(e => compactInstitutionLabel(e.inst)), 'Universidades');
+}
+
+function filtrarBancaRows(rows) {
+  const status = document.getElementById('bancaFiltroStatus')?.value || '';
+  const regiao = document.getElementById('bancaFiltroRegiao')?.value || '';
+  const uf = document.getElementById('bancaFiltroUf')?.value || '';
+  const genero = document.getElementById('bancaFiltroGenero')?.value || '';
+  const raca = document.getElementById('bancaFiltroRaca')?.value || '';
+  const instituicao = document.getElementById('bancaFiltroInstituicao')?.value || '';
+  const reviewers = officialBancaPareceristas();
+  return rows.filter(({ e }) => {
+    if (regiao && regionFromUf(e.uf) !== regiao) return false;
+    if (uf && ufDisplayLabel(e.uf) !== uf) return false;
+    if (genero && !generosTimeInscricao(e).has(genero)) return false;
+    if (raca && !racasTimeInscricao(e).has(raca)) return false;
+    if (instituicao && compactInstitutionLabel(e.inst) !== instituicao) return false;
+    if (status) {
+      const done = reviewers.filter(reviewer => bancaAvaliacoes[reviewer.id]?.[String(e.id)]?.done).length;
+      const current = done === 0 ? 'nao_iniciadas' : (reviewers.length > 0 && done === reviewers.length ? 'concluidas' : 'andamento');
+      if (current !== status) return false;
+    }
+    return true;
+  });
+}
+
+function zerarFiltrosBanca() {
+  ['bancaFiltroStatus','bancaFiltroRegiao','bancaFiltroUf','bancaFiltroGenero','bancaFiltroRaca','bancaFiltroInstituicao'].forEach(id => {
+    const field = document.getElementById(id);
+    if (field) field.value = '';
+  });
+  renderBanca();
+}
+
+function exportBancaFinalistsXlsx() {
+  if (typeof XLSX === 'undefined') {
+    notify('Não foi possível carregar o recurso de Excel.');
+    return;
+  }
+  const finalistIds = new Set(getFinalSelectionIds().map(String));
+  const definition = bancaModelDefinition();
+  const rows = INSCRICOES
+    .filter(e => finalistIds.has(String(e.id)) && !isBancaAbsent(e.id))
+    .map(e => ({ e, metrics:bancaTeamMetrics(e.id) }))
+    .sort((a, b) => {
+      const aScored = a.metrics.total !== null;
+      const bScored = b.metrics.total !== null;
+      if (a.metrics.total !== null && b.metrics.total !== null && Math.abs(b.metrics.total - a.metrics.total) > 1e-9) return b.metrics.total - a.metrics.total;
+      if (aScored !== bScored) return aScored ? -1 : 1;
+      return displayPersonName(a.e.lider).localeCompare(displayPersonName(b.e.lider), 'pt-BR', { sensitivity:'base', numeric:true });
+    });
+  if (!rows.length) {
+    notify('Nenhuma pessoa está selecionada para a próxima fase.');
+    return;
+  }
+  const data = rows.map(({ e, metrics }, index) => {
+    const profile = resultadoParticipantRows(e)[0] || e._raw || {};
+    const city = firstRawValue(profile, ['Cidade', 'Cidade onde você mora', 'Cidade em que você reside', 'Município', 'Municipio']);
+    const output = {
+      'Posição': index + 1,
+      'ID': shortInscId(e.id),
+      'Nome': displayPersonName(e.lider),
+      'E-mail': e.le || firstRawValue(profile, ['E-mail', 'Email', 'E-mail da inscrição']),
+      'Idade': bancaParticipantAge(e),
+      'Cidade': city,
+      'Estado': ufDisplayLabel(e.uf),
+      'Região': regionFromUf(e.uf),
+      'Gênero': [...generosTimeInscricao(e)].join(' · '),
+      'Raça': [...racasTimeInscricao(e)].join(' · '),
+      'Universidade': compactInstitutionLabel(e.inst),
+      'Nota geral': metrics.total,
+    };
+    definition.criterios.forEach((criterion, criterionIndex) => {
+      output[bancaCriterionDisplayName(criterion, criterionIndex, definition)] = metrics.criteria[criterionIndex];
+    });
+    return output;
+  });
+  const worksheet = XLSX.utils.json_to_sheet(data);
+  worksheet['!cols'] = Object.keys(data[0]).map(key => ({ wch:Math.min(42, Math.max(12, key.length + 2, ...data.map(row => String(row[key] ?? '').length + 2))) }));
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Próxima fase');
+  XLSX.writeFile(workbook, 'maratona-ia-15-selecionados.xlsx');
+}
+
 function renderBanca() {
   syncBancaTableStructure();
+  syncBancaFilters();
   const body = document.getElementById('tblBanca');
   if (!body) return;
   const finalistView = bancaViewMode === 'finalistas';
@@ -10144,6 +10279,7 @@ function renderBanca() {
   const pageTitle = document.getElementById('bancaPageTitle');
   const pageSub = document.getElementById('bancaPageSub');
   const statsButton = document.getElementById('bancaStatsButton');
+  const finalistsDownload = document.getElementById('bancaFinalistsDownload');
   const initialScoreSwitch = document.getElementById('bancaIncludeInitialScore');
   if (pageTitle) pageTitle.textContent = finalistView ? 'Selecionados para a próxima fase' : 'Banca dos 80';
   if (pageSub) pageSub.textContent = finalistView
@@ -10154,7 +10290,8 @@ function renderBanca() {
     const switchLabel = initialScoreSwitch.closest('.banca-ranking-switch');
     if (switchLabel) switchLabel.style.display = finalistView ? 'none' : '';
   }
-  if (statsButton) statsButton.innerHTML = `<i class="ti ti-chart-dots"></i>${finalistView ? 'Estatísticas dos 15' : 'Estatísticas da Banca'}`;
+  if (statsButton) statsButton.innerHTML = `<i class="ti ti-chart-dots"></i>${finalistView ? 'Perfil dos 15' : 'Estatísticas da Banca'}`;
+  if (finalistsDownload) finalistsDownload.style.display = finalistView ? 'inline-flex' : 'none';
 
   const allMetricRows = presentRows.map(row => ({ ...row, metrics:bancaTeamMetrics(row.e.id) }));
   const hasRankedResults = allMetricRows.some(row => row.metrics.total !== null);
@@ -10169,9 +10306,10 @@ function renderBanca() {
     });
   }
   window.currentBancaAllRows = allMetricRows;
-  const metricRows = finalistView
+  const viewRows = finalistView
     ? allMetricRows.filter(({ e }) => finalists.has(String(e.id)))
     : allMetricRows;
+  const metricRows = filtrarBancaRows(viewRows);
   window.currentBancaRows = metricRows;
 
   const officialReviewers = officialBancaPareceristas();
@@ -10184,6 +10322,7 @@ function renderBanca() {
     : 0;
   const progress = document.getElementById('bancaEvaluationProgress');
   if (progress) {
+    progress.style.display = finalistView ? 'none' : 'inline-flex';
     progress.innerHTML = `<span><strong>${completedEvaluations.toLocaleString('pt-BR')}</strong> de ${expectedEvaluations.toLocaleString('pt-BR')} avaliações</span><strong class="banca-evaluation-progress-percent">${completedPercent}%</strong>`;
     progress.title = `${completedEvaluations} avaliações concluídas de ${expectedEvaluations} esperadas`;
   }
@@ -10354,6 +10493,10 @@ function renderResultsStatsDrawer(source = 'resultados') {
     : (Array.isArray(window.currentResultsTopRows) ? window.currentResultsTopRows : []);
   const body = document.getElementById('resultsStatsDrawerBody');
   if (source === 'banca') {
+    if (bancaViewMode === 'finalistas') {
+      if (body) body.innerHTML = bancaSelectedProfileHTML();
+      return;
+    }
     const selectedIds = new Set(rows.map(({ e }) => String(e.id)));
     const reviewers = bancaPareceristas.map(reviewer => ({
       reviewer,
@@ -10408,7 +10551,7 @@ function openResultsStatsDrawer(source = 'resultados') {
   if (!rows?.length) return;
   const title = document.getElementById('resultsStatsDrawerTitle');
   if (title) title.textContent = source === 'banca'
-    ? (bancaViewMode === 'finalistas' ? 'Andamento dos 15 selecionados' : 'Andamento da banca')
+    ? (bancaViewMode === 'finalistas' ? 'Perfil dos 15 selecionados' : 'Andamento da banca')
     : 'Estatísticas rápidas';
   resultsDrawerSource = source;
   renderResultsStatsDrawer(source);
@@ -15666,10 +15809,12 @@ function legendLabelConfig(max = 28) {
 }
 
 function dashboardListRows() {
+  const regiao = (document.getElementById('dashFiltroRegiao')?.value || '').trim();
   const uf = (document.getElementById('dashFiltroUf')?.value || '').trim();
   const modalidade = (document.getElementById('dashFiltroModalidade')?.value || '').trim();
   const instituicao = (document.getElementById('dashFiltroInstituicao')?.value || '').trim();
   return INSCRICOES.filter(e => {
+    if (regiao && regionFromUf(e.uf) !== regiao) return false;
     if (uf && compactUfLabel(e.uf) !== uf) return false;
     if (modalidade && String(e.mod || '').trim() !== modalidade) return false;
     if (instituicao && compactInstitutionLabel(e.inst) !== instituicao) return false;
@@ -15817,14 +15962,17 @@ function syncPareceristaInstitutionOptions() {
 }
 
 function syncDashboardListFilters() {
+  fillDashboardSelect('dashFiltroRegiao', INSCRICOES.map(e => regionFromUf(e.uf)).filter(value => value && value !== 'N/D'), 'Regiões');
   fillDashboardSelect('dashFiltroUf', INSCRICOES.map(e => compactUfLabel(e.uf)), 'Todos os estados');
   fillDashboardSelect('dashFiltroModalidade', INSCRICOES.map(e => e.mod), 'Todas as modalidades');
   fillDashboardSelect('dashFiltroInstituicao', INSCRICOES.map(e => compactInstitutionLabel(e.inst)), 'Todas as instituições');
 }
 
 function syncResultadosFilters() {
+  fillDashboardSelect('resFiltroRegiao', INSCRICOES.map(e => regionFromUf(e.uf)).filter(value => value && value !== 'N/D'), 'Regiões');
   fillDashboardSelect('resFiltroUf', INSCRICOES.map(e => ufDisplayLabel(e.uf)), 'Estados');
   fillDashboardSelect('resFiltroRaca', INSCRICOES.flatMap(e => [...racasTimeInscricao(e)]), 'Raças');
+  fillDashboardSelect('resFiltroInstituicao', INSCRICOES.map(e => compactInstitutionLabel(e.inst)), 'Universidades');
 }
 
 function renderDashboardList() {
