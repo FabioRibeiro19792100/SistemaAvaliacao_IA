@@ -1338,6 +1338,9 @@ tr:hover td.sticky{background:#FAFAFA}
 .res-bank-toggle::after{content:'';width:12px;height:12px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;box-shadow:0 1px 2px rgba(0,0,0,.15);transition:transform .15s ease}
 .res-bank-toggle.is-selected{background:#1A73E8}
 .res-bank-toggle.is-selected::after{transform:translateX(12px)}
+.banca-finalist-toggle-wrap{display:flex;align-items:center;gap:5px;margin-top:7px;color:#7A828E;font-size:8.5px;font-weight:650;line-height:1.1;white-space:nowrap}
+.banca-finalist-toggle-wrap .res-bank-toggle{width:28px;min-width:28px}
+.banca-finalist-toggle-wrap.is-selected{color:#1558B0}
 .banca-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;padding:16px 0 14px}
 .banca-head-actions{display:flex;align-items:center;gap:12px}
 .banca-count{font-size:12px;color:#7A828E}
@@ -5082,6 +5085,7 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
 <div class="subnav" id="mainSubnav" style="display:none">
   <div class="snav" data-view="resultados"><span class="icon icon-sm"><i class="ti ti-chart-histogram"></i></span>Resultados</div>
   <div class="snav" data-view="banca"><span class="icon icon-sm"><i class="ti ti-users-group"></i></span>Banca dos 80</div>
+  <div class="snav" data-view="finalistas"><span class="icon icon-sm"><i class="ti ti-rosette-discount-check"></i></span>Próxima fase</div>
   <div class="snav" data-view="dashboard"><span class="icon icon-sm"><i class="ti ti-chart-bar"></i></span>Dashboard</div>
   <div class="snav" data-view="pareceristas" style="display:none"><span class="icon icon-sm"><i class="ti ti-arrows-left-right"></i></span>Pareceristas e atribuições</div>
   <div class="snav" data-view="auditoria" style="display:none"><span class="icon icon-sm"><i class="ti ti-shield-check"></i></span>Auditoria</div>
@@ -5659,15 +5663,15 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
 <div style="max-width:none;margin:0;padding-left:8px;padding-right:0">
   <div class="banca-head">
     <div>
-      <div class="page-title">Banca dos 80</div>
-      <div class="page-sub">Segunda sessão de avaliação, em ordem alfabética e sem notas da fase anterior. Composição da nota final: Criatividade 45%, Uso de IA 35% e Marca Empregadora 20% (importada por planilha).</div>
+      <div class="page-title" id="bancaPageTitle">Banca dos 80</div>
+      <div class="page-sub" id="bancaPageSub">Segunda sessão de avaliação, em ordem alfabética e sem notas da fase anterior. Composição da nota final: Criatividade 45%, Uso de IA 35% e Marca Empregadora 20% (importada por planilha).</div>
     </div>
     <div class="banca-head-actions">
       <div class="banca-count" id="bancaSummary">0 participantes carregados</div>
       <div class="banca-evaluation-progress" id="bancaEvaluationProgress" title="Progresso das avaliações da banca">
         <span>0 de 0 avaliações</span><strong class="banca-evaluation-progress-percent">0%</strong>
       </div>
-      <button class="btn btn-secondary btn-sm results-top-stats-btn" type="button" onclick="openResultsStatsDrawer('banca')"><i class="ti ti-chart-dots"></i>Estatísticas da Banca</button>
+      <button class="btn btn-secondary btn-sm results-top-stats-btn" id="bancaStatsButton" type="button" onclick="openResultsStatsDrawer('banca')"><i class="ti ti-chart-dots"></i>Estatísticas da Banca</button>
     </div>
   </div>
   <div class="tbl-card">
@@ -6504,7 +6508,7 @@ const FINAL_SELECTION_KEY = 'maratonaia_final_selection_15_v1';
 const WORKSHOP_ROSTER_KEY = 'maratona-ia-workshop-roster-v1';
 const FINAL_SELECTION_LIMIT = 15;
 const ADMIN_VIEWS = ['pareceristas', 'auditoria', 'config', 'workshop'];
-const VIEWER_VIEWS = ['dashboard', 'resultados', 'selecionados', 'banca', 'portal', 'avaliacao'];
+const VIEWER_VIEWS = ['dashboard', 'resultados', 'selecionados', 'banca', 'finalistas', 'portal', 'avaliacao'];
 const RESULTS_VIEW_TEMPORARILY_HIDDEN = false;
 
 // ═══ ESTADO ═══════════════════════════════════════════════
@@ -6514,6 +6518,7 @@ let bancaAvaliacoes = {};
 let bancaReviewerBootMode = false;
 let requestedBancaParId = null;
 let bancaRoundSchemaAvailable = null;
+let bancaViewMode = 'banca';
 
 // atribuicoes[inscId] = [parId, parId, parId]
 let atribuicoes = {};
@@ -6700,7 +6705,7 @@ function applyAccessUi() {
 function activateView(v) {
   document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.snav[data-view]').forEach(el => el.classList.remove('active'));
-  const target = document.getElementById('view-'+v);
+  const target = document.getElementById(v === 'finalistas' ? 'view-banca' : 'view-'+v);
   if (target) target.classList.add('active');
   const tab = document.querySelector(`.snav[data-view="${v}"]`);
   if (tab) tab.classList.add('active');
@@ -6867,6 +6872,7 @@ function showView(v, opts = {}) {
     }
   }
 
+  if (v === 'banca' || v === 'finalistas') bancaViewMode = v;
   activateView(v);
 
   if (v === 'avaliacao') {
@@ -6894,7 +6900,7 @@ function showView(v, opts = {}) {
   if (v === 'dashboard') renderDashboard();
   if (v === 'resultados') renderResultados();
   if (v === 'selecionados') renderSelecionados();
-  if (v === 'banca') renderBanca();
+  if (v === 'banca' || v === 'finalistas') renderBanca();
   if (v === 'pareceristas') {
     renderPareceristas();
     renderBancaReviewers();
@@ -6914,7 +6920,7 @@ function showView(v, opts = {}) {
     renderBancaModelSettings();
   }
 
-  if (!reviewerBootMode && !adminImportInFlight && ['dashboard','resultados','selecionados','banca','pareceristas'].includes(v)) {
+  if (!reviewerBootMode && !adminImportInFlight && ['dashboard','resultados','selecionados','banca','finalistas','pareceristas'].includes(v)) {
     refreshStateFromSupabaseInBackground();
   }
 }
@@ -8164,6 +8170,13 @@ function applyRemoteFinalSelection(ids) {
   } catch(e) {}
 }
 
+function bancaEligibleParticipantIds() {
+  const selectedIds = new Set(ensureBancaTop80Selection());
+  return INSCRICOES
+    .map(item => String(item.id))
+    .filter(id => selectedIds.has(id) && !isBancaAbsent(id));
+}
+
 function rankedTop80Rows() {
   const rankingMode = 'Ranking normal';
   const ranking = buildAbsoluteRankingById(rankingMode);
@@ -8199,7 +8212,7 @@ function ensureBancaTop80Selection() {
 }
 
 function saveFinalSelection(ids, opts = {}) {
-  const eligible = new Set(rankedTop80Rows().map(row => String(row.e.id)));
+  const eligible = new Set(bancaEligibleParticipantIds());
   const normalized = [...new Set((ids || []).map(String))]
     .filter(id => eligible.has(id))
     .slice(0, FINAL_SELECTION_LIMIT);
@@ -8210,7 +8223,8 @@ function saveFinalSelection(ids, opts = {}) {
   return normalized;
 }
 
-function toggleFinalSelection(inscId) {
+function toggleFinalSelection(inscId, event) {
+  event?.stopPropagation?.();
   const id = String(inscId);
   const selected = new Set(getFinalSelectionIds());
   if (selected.has(id)) {
@@ -8222,7 +8236,7 @@ function toggleFinalSelection(inscId) {
     selected.add(id);
   }
   saveFinalSelection([...selected]);
-  renderSelecionados();
+  renderBanca();
 }
 
 function clearFinalSelection() {
@@ -8233,7 +8247,9 @@ function clearFinalSelection() {
 }
 
 function generateTop15Selection() {
-  const rows = rankedTop80Rows();
+  const rows = Array.isArray(window.currentBancaAllRows)
+    ? window.currentBancaAllRows.filter(row => row.metrics?.total !== null)
+    : [];
   if (!rows.length) {
     notify('Ainda não há candidaturas com nota final para gerar a seleção.');
     return;
@@ -8242,7 +8258,7 @@ function generateTop15Selection() {
   const hasExisting = getFinalSelectionIds().length > 0;
   if (hasExisting && !confirm('Substituir a seleção atual pelos 15 primeiros do ranking?')) return;
   saveFinalSelection(ids);
-  renderSelecionados();
+  renderBanca();
 }
 
 function renderSelecionados() {
@@ -10019,6 +10035,21 @@ function bancaReviewerScoreHTML(value, options = {}) {
   return `<span class="badge banca-reviewer-score ${bancaScoreClass(numeric)}">${formatted}</span>`;
 }
 
+function bancaCriterionResultHTML(value, weight, criterionIndex, definition = bancaModelDefinition()) {
+  if (value === null || value === undefined || !Number.isFinite(Number(value))) {
+    return bancaCriterionComesFromSpreadsheet(criterionIndex, definition)
+      ? '<span class="res-faint">Pendente da planilha</span>'
+      : '<span style="color:#D5D9E0">—</span>';
+  }
+  const numeric = Number(value);
+  const numericWeight = Number(weight) || 0;
+  const contribution = numeric * (numericWeight / 100);
+  const scoreLabel = numeric.toLocaleString('pt-BR', { minimumFractionDigits:2, maximumFractionDigits:2 });
+  const weightLabel = formatCriterionWeight(numericWeight);
+  const contributionLabel = contribution.toLocaleString('pt-BR', { minimumFractionDigits:2, maximumFractionDigits:2 });
+  return `<div class="res-criterion-result"><span class="res-criterion-score">${scoreLabel}</span><span class="res-criterion-calc">${scoreLabel} × ${weightLabel}% = ${contributionLabel}</span></div>`;
+}
+
 function toggleBancaRes(rowIdx) {
   const button = document.getElementById(`exp-banca-${rowIdx}`);
   if (button) {
@@ -10048,22 +10079,53 @@ function renderBanca() {
   syncBancaTableStructure();
   const body = document.getElementById('tblBanca');
   if (!body) return;
+  const finalistView = bancaViewMode === 'finalistas';
   const selectedIds = new Set(ensureBancaTop80Selection());
+  const finalists = new Set(saveFinalSelection(getFinalSelectionIds(), { persist:false }));
   const absentCount = bancaCheckinAttendanceLoaded
     ? [...selectedIds].filter(id => isBancaAbsent(id)).length
     : 0;
-  const rows = INSCRICOES.map((e, idx) => ({ e, idx }))
+  const presentRows = INSCRICOES.map((e, idx) => ({ e, idx }))
     .filter(({ e }) => selectedIds.has(String(e.id)) && !isBancaAbsent(e.id))
     .sort((a, b) => displayPersonName(a.e.lider).localeCompare(displayPersonName(b.e.lider), 'pt-BR', { sensitivity:'base', numeric:true }) || String(a.e.id).localeCompare(String(b.e.id), 'pt-BR', { numeric:true }));
   renderBancaReviewers();
+  const pageTitle = document.getElementById('bancaPageTitle');
+  const pageSub = document.getElementById('bancaPageSub');
+  const statsButton = document.getElementById('bancaStatsButton');
+  if (pageTitle) pageTitle.textContent = finalistView ? 'Selecionados para a próxima fase' : 'Banca dos 80';
+  if (pageSub) pageSub.textContent = finalistView
+    ? 'Mesma grade da Banca dos 80, exibindo somente as 15 pessoas selecionadas para a próxima fase.'
+    : 'Segunda sessão de avaliação, em ordem alfabética e sem notas da fase anterior. Composição da nota final: Criatividade 45%, Uso de IA 35% e Marca Empregadora 20% (importada por planilha).';
+  if (statsButton) statsButton.innerHTML = `<i class="ti ti-chart-dots"></i>${finalistView ? 'Estatísticas dos 15' : 'Estatísticas da Banca'}`;
+
+  const allMetricRows = presentRows.map(row => ({ ...row, metrics:bancaTeamMetrics(row.e.id) }));
+  const hasRankedResults = allMetricRows.some(row => row.metrics.total !== null);
+  if (hasRankedResults) {
+    allMetricRows.sort((a, b) => {
+      const aScored = a.metrics.total !== null;
+      const bScored = b.metrics.total !== null;
+      if (aScored !== bScored) return aScored ? -1 : 1;
+      if (aScored && bScored && Math.abs(b.metrics.total - a.metrics.total) > 1e-9) return b.metrics.total - a.metrics.total;
+      return displayPersonName(a.e.lider).localeCompare(displayPersonName(b.e.lider), 'pt-BR', { sensitivity:'base', numeric:true })
+        || String(a.e.id).localeCompare(String(b.e.id), 'pt-BR', { numeric:true });
+    });
+  }
+  window.currentBancaAllRows = allMetricRows;
+  const metricRows = finalistView
+    ? allMetricRows.filter(({ e }) => finalists.has(String(e.id)))
+    : allMetricRows;
+  window.currentBancaRows = metricRows;
+
   const summary = document.getElementById('bancaSummary');
-  if (summary) summary.textContent = bancaCheckinAttendanceLoaded
-    ? `${rows.length} ${rows.length === 1 ? 'participante presente' : 'participantes presentes'} · ${absentCount} ${absentCount === 1 ? 'ausente bloqueado' : 'ausentes bloqueados'} · ${bancaModelDefinition().label}`
-    : `${rows.length} ${rows.length === 1 ? 'participante carregado' : 'participantes carregados'} · ${bancaModelDefinition().label}`;
+  if (summary) summary.textContent = finalistView
+    ? `${metricRows.length} de ${FINAL_SELECTION_LIMIT} selecionados · ${bancaModelDefinition().label}`
+    : bancaCheckinAttendanceLoaded
+      ? `${presentRows.length} ${presentRows.length === 1 ? 'participante presente' : 'participantes presentes'} · ${absentCount} ${absentCount === 1 ? 'ausente bloqueado' : 'ausentes bloqueados'} · ${bancaModelDefinition().label}`
+      : `${presentRows.length} ${presentRows.length === 1 ? 'participante carregado' : 'participantes carregados'} · ${bancaModelDefinition().label}`;
   const officialReviewers = officialBancaPareceristas();
-  const expectedEvaluations = rows.length * officialReviewers.length;
+  const expectedEvaluations = metricRows.length * officialReviewers.length;
   const completedEvaluations = officialReviewers.reduce((sum, reviewer) => {
-    return sum + rows.filter(({ e }) => bancaAvaliacoes[reviewer.id]?.[String(e.id)]?.done).length;
+    return sum + metricRows.filter(({ e }) => bancaAvaliacoes[reviewer.id]?.[String(e.id)]?.done).length;
   }, 0);
   const completedPercent = expectedEvaluations > 0
     ? Math.round((completedEvaluations / expectedEvaluations) * 100)
@@ -10074,20 +10136,7 @@ function renderBanca() {
     progress.title = `${completedEvaluations} avaliações concluídas de ${expectedEvaluations} esperadas`;
   }
 
-  const metricRows = rows.map(row => ({ ...row, metrics:bancaTeamMetrics(row.e.id) }));
-  const hasRankedResults = metricRows.some(row => row.metrics.total !== null);
-  if (hasRankedResults) {
-    metricRows.sort((a, b) => {
-      const aScored = a.metrics.total !== null;
-      const bScored = b.metrics.total !== null;
-      if (aScored !== bScored) return aScored ? -1 : 1;
-      if (aScored && bScored && Math.abs(b.metrics.total - a.metrics.total) > 1e-9) return b.metrics.total - a.metrics.total;
-      return displayPersonName(a.e.lider).localeCompare(displayPersonName(b.e.lider), 'pt-BR', { sensitivity:'base', numeric:true })
-        || String(a.e.id).localeCompare(String(b.e.id), 'pt-BR', { numeric:true });
-    });
-  }
-  window.currentBancaRows = metricRows;
-  const ranked = metricRows.filter(row => row.metrics.total !== null).sort((a,b) => b.metrics.total - a.metrics.total);
+  const ranked = allMetricRows.filter(row => row.metrics.total !== null).sort((a,b) => b.metrics.total - a.metrics.total);
   const rankById = new Map();
   ranked.forEach((row, index) => {
     const previous = ranked[index - 1];
@@ -10095,6 +10144,7 @@ function renderBanca() {
   });
   body.innerHTML = metricRows.length ? metricRows.map(({ e, idx, metrics }, rowIdx) => {
     const rank = rankById.get(String(e.id));
+    const isFinalist = finalists.has(String(e.id));
     const definition = bancaModelDefinition();
     const weights = bancaCriterionWeights(definition);
     const reviewerIndexes = bancaReviewerCriterionIndexes(definition);
@@ -10119,17 +10169,17 @@ function renderBanca() {
       </tr>`;
     }).join('');
     return `<tr>
-      <td class="sticky s0"><div class="res-rank-line"><span class="res-primary-rank">${rank || '—'}</span></div></td>
+      <td class="sticky s0"><div class="res-rank-line"><span class="res-primary-rank">${rank || '—'}</span></div><div class="banca-finalist-toggle-wrap${isFinalist ? ' is-selected' : ''}"><button type="button" class="res-bank-toggle${isFinalist ? ' is-selected' : ''}" onclick="toggleFinalSelection('${escapeHtmlAttr(String(e.id))}',event)" aria-pressed="${isFinalist}" aria-label="${isFinalist ? 'Retirar dos 15 selecionados' : 'Selecionar para os 15'}" title="${isFinalist ? 'Retirar dos 15 selecionados' : 'Selecionar para os 15'}"></button><span>${isFinalist ? 'Selecionado' : 'Selecionar'}</span></div></td>
       <td class="res-id-number-col">${escapeHtmlAttr(shortInscId(e.id))}</td>
       <td class="sticky s5"><div class="leader-cell"><div class="res-leader-head"><div class="res-leader-identity"><div class="res-leader-copy"><div class="res-leader-name">${formatResultadoLeaderName(e.lider)}</div></div></div><div class="res-name-actions"><button class="icon-btn" onclick="openModal(${idx},true)" title="Ver os três formulários do workshop" aria-label="Ver os três formulários do workshop"><i class="ti ti-eye"></i></button><button class="icon-btn" onclick="openModalPar(${idx})" title="Ver notas dos pareceristas" aria-label="Ver notas dos pareceristas"><i class="ti ti-notes"></i></button></div></div></div></td>
       <td class="res-project-summary-col"><div class="res-project-summary-text">Check-in · Fase 1 · Fase 2</div><div class="res-muted" style="font-size:10px;margin-top:4px">Abra pelo olhinho para consultar</div></td>
       <td class="res-gender-col">${escapeHtmlAttr([...generosTimeInscricao(e)].join(' · ') || 'Não informado')}</td>
       <td class="res-race-col">${escapeHtmlAttr([...racasTimeInscricao(e)].join(' · ') || 'Não informada')}</td>
       <td class="res-university-col"><div class="res-muted">${escapeHtmlAttr(compactInstitutionLabel(e.inst) || 'Instituição não informada')}</div><div class="res-university-location">${escapeHtmlAttr(e.uf ? `Estado informado: ${ufDisplayLabel(e.uf)}` : 'Estado não informado')}</div></td>
-      <td class="s7" style="text-align:center;vertical-align:top"><div class="nota-cell"><div class="nota-main">${metrics.total !== null ? fmtResultadoFinal(metrics.total) : '<span style="color:#D5D9E0;font-size:15px">—</span>'}</div>${metrics.partial ? `<div class="res-faint" style="font-size:9px">Parcial · ${formatCriterionWeight(metrics.availableWeight)}% da nota</div>` : ''}<div class="nota-actions">${bancaReviewerProgressHTML(e.id, rowIdx)}</div></div></td>
-      ${metrics.criteria.map((value, ci) => `<td class="crit-td">${value !== null ? `<div class="criterion-score-main">${value.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}</div><div class="res-faint" style="font-size:8.5px">peso ${formatCriterionWeight(weights[ci])}%</div>` : bancaCriterionComesFromSpreadsheet(ci, definition) ? '<span class="res-faint">Pendente da planilha</span>' : '<span style="color:#D5D9E0">—</span>'}</td>`).join('')}
+      <td class="s7" style="text-align:center;vertical-align:top"><div class="nota-cell"><div class="nota-main">${metrics.total !== null ? fmtResultadoFinal(metrics.total) : '<span style="color:#D5D9E0;font-size:15px">—</span>'}</div>${metrics.total !== null ? `<div class="res-faint" style="font-size:9px">${metrics.partial ? `Soma parcial · ${formatCriterionWeight(metrics.availableWeight)}% da nota` : 'Soma das contribuições ponderadas'}</div>` : ''}<div class="nota-actions">${bancaReviewerProgressHTML(e.id, rowIdx)}</div></div></td>
+      ${metrics.criteria.map((value, ci) => `<td class="crit-td">${bancaCriterionResultHTML(value, weights[ci], ci, definition)}</td>`).join('')}
     </tr>${subRows}`;
-  }).join('') : `<tr><td colspan="${8 + bancaModelDefinition().criterios.length}" style="padding:38px 14px;text-align:center;color:#9AA0A6">Os 80 participantes serão carregados assim que o ranking final estiver disponível.</td></tr>`;
+  }).join('') : `<tr><td colspan="${8 + bancaModelDefinition().criterios.length}" style="padding:38px 14px;text-align:center;color:#9AA0A6">${finalistView ? 'Nenhuma pessoa foi selecionada para a próxima fase.' : 'Os participantes presentes serão carregados assim que o ranking final estiver disponível.'}</td></tr>`;
 }
 
 function resultadoParticipantRows(e) {
@@ -10236,7 +10286,9 @@ function openResultsStatsDrawer(source = 'resultados') {
   const rows = source === 'banca' ? window.currentBancaRows : window.currentResultsTopRows;
   if (!rows?.length) return;
   const title = document.getElementById('resultsStatsDrawerTitle');
-  if (title) title.textContent = source === 'banca' ? 'Andamento da banca' : 'Estatísticas rápidas';
+  if (title) title.textContent = source === 'banca'
+    ? (bancaViewMode === 'finalistas' ? 'Andamento dos 15 selecionados' : 'Andamento da banca')
+    : 'Estatísticas rápidas';
   renderResultsStatsDrawer(source);
   resultsDrawerMode = 'stats';
   document.getElementById('resultsStatsDrawer')?.classList.add('open');

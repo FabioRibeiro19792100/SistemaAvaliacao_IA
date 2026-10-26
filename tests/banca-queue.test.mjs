@@ -66,7 +66,7 @@ assert.match(
 );
 assert.match(
   app,
-  /Parcial · \$\{formatCriterionWeight\(metrics\.availableWeight\)\}% da nota/,
+  /Soma parcial · \$\{formatCriterionWeight\(metrics\.availableWeight\)\}% da nota/,
   'A tela deve identificar quando a nota geral ainda representa somente os 80% avaliados pela banca.',
 );
 assert.match(
