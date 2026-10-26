@@ -27,7 +27,7 @@ assert.match(finalistsExport, /xl\/worksheets\/sheet1\.xml/, 'A exportação dev
 assert.match(app, /function exportDashboardCSV\(\)[\s\S]*?toLocaleUpperCase\('pt-BR'\)/, 'O CSV do Dashboard também deve normalizar os textos em maiúsculas.');
 assert.match(app, /if \(bancaViewMode === 'finalistas'\) \{[\s\S]*?body\.innerHTML = bancaSelectedProfileHTML\(\);[\s\S]*?return;/, 'O drawer da próxima fase deve mostrar somente o perfil dos selecionados.');
 assert.doesNotMatch(app, /Mesma grade da Banca dos 80/, 'A próxima fase não deve exibir explicação redundante sobre a grade.');
-assert.match(app, /const rankingHeader = finalistView \? '' :/, 'A próxima fase deve ocultar a coluna de ranking sem removê-la da Banca dos 80.');
+assert.match(app, /function bancaTableHeaderHTML\(\)[\s\S]*?>Ranking</, 'A tela da próxima fase deve preservar a coluna de ranking; somente o Excel fica sem posição.');
 assert.match(app, /const viewRows = finalistView[\s\S]*?\.sort\(\(a, b\) => displayPersonName\(a\.e\.lider\)\.localeCompare/, 'A lista da próxima fase deve aparecer em ordem alfabética.');
 assert.match(app, /:is\(#view-resultados,#view-banca\) \.admin-grid-head[\s\S]*?:is\(#view-resultados,#view-banca\) \.results-top-sticky[\s\S]*?:is\(#view-resultados,#view-banca\) > div > \.tbl-card/, 'Resultados, Banca e Próxima fase devem compartilhar a mesma geometria de cabeçalho, filtros e grade.');
 
