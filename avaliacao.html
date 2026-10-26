@@ -22,6 +22,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.34.1/dist/tabler-icons.min.css">
 <script src="./vendor/chart.umd.js"></script>
 <script src="./vendor/xlsx.full.min.js"></script>
+<script src="./vendor/jszip.min.js"></script>
 <script src="./vendor/supabase.js"></script>
 <style>
 /* ══════════════════════════════════════════════
@@ -5788,7 +5789,7 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
       <div class="banca-evaluation-progress" id="bancaEvaluationProgress" title="Progresso das avaliações da banca">
         <span>0 de 0 avaliações</span><strong class="banca-evaluation-progress-percent">0%</strong>
       </div>
-      <button class="btn btn-secondary btn-sm" id="bancaFinalistsDownload" type="button" onclick="exportBancaFinalistsXlsx()" style="display:none"><i class="ti ti-download"></i>Baixar lista dos 15</button>
+      <button class="btn btn-secondary btn-sm" id="bancaFinalistsDownload" type="button" onclick="exportBancaFinalistsXlsx()" style="display:none"><i class="ti ti-download"></i>Baixar planilha dos 15</button>
       <button class="btn btn-secondary btn-sm results-top-stats-btn" id="bancaStatsButton" type="button" onclick="openResultsStatsDrawer('banca')"><i class="ti ti-chart-dots"></i>Estatísticas da Banca</button>
     </div>
   </div>
@@ -10302,8 +10303,8 @@ function zerarFiltrosBanca() {
   renderBanca();
 }
 
-function exportBancaFinalistsXlsx() {
-  if (typeof XLSX === 'undefined') {
+async function exportBancaFinalistsXlsx() {
+  if (typeof JSZip === 'undefined') {
     notify('Não foi possível carregar o recurso de Excel.');
     return;
   }
@@ -10325,25 +10326,90 @@ function exportBancaFinalistsXlsx() {
   const data = rows.map(({ e }, index) => {
     const profile = resultadoParticipantRows(e)[0] || e._raw || {};
     const city = firstRawValue(profile, ['Cidade', 'Cidade onde você mora', 'Cidade em que você reside', 'Município', 'Municipio']);
-    return {
-      'POSIÇÃO': index + 1,
-      'ID': shortInscId(e.id),
-      'NOME': displayPersonName(e.lider).toLocaleUpperCase('pt-BR'),
-      'E-MAIL': String(e.le || firstRawValue(profile, ['E-mail', 'Email', 'E-mail da inscrição'])).toLocaleUpperCase('pt-BR'),
-      'IDADE': bancaParticipantAge(e),
-      'CIDADE': String(city || '').toLocaleUpperCase('pt-BR'),
-      'ESTADO': String(ufDisplayLabel(e.uf) || '').toLocaleUpperCase('pt-BR'),
-      'REGIÃO': String(regionFromUf(e.uf) || '').toLocaleUpperCase('pt-BR'),
-      'GÊNERO': [...generosTimeInscricao(e)].join(' · ').toLocaleUpperCase('pt-BR'),
-      'RAÇA': [...racasTimeInscricao(e)].join(' · ').toLocaleUpperCase('pt-BR'),
-      'UNIVERSIDADE': String(compactInstitutionLabel(e.inst) || '').toLocaleUpperCase('pt-BR'),
-    };
+    return [
+      index + 1,
+      String(shortInscId(e.id) || ''),
+      displayPersonName(e.lider).toLocaleUpperCase('pt-BR'),
+      String(e.le || firstRawValue(profile, ['E-mail', 'Email', 'E-mail da inscrição'])).toLocaleUpperCase('pt-BR'),
+      bancaParticipantAge(e),
+      String(city || '').toLocaleUpperCase('pt-BR'),
+      String(ufDisplayLabel(e.uf) || '').toLocaleUpperCase('pt-BR'),
+      String(regionFromUf(e.uf) || '').toLocaleUpperCase('pt-BR'),
+      [...generosTimeInscricao(e)].join(' · ').toLocaleUpperCase('pt-BR'),
+      [...racasTimeInscricao(e)].join(' · ').toLocaleUpperCase('pt-BR'),
+      String(compactInstitutionLabel(e.inst) || '').toLocaleUpperCase('pt-BR'),
+    ];
   });
-  const worksheet = XLSX.utils.json_to_sheet(data);
-  worksheet['!cols'] = Object.keys(data[0]).map(key => ({ wch:Math.min(42, Math.max(12, key.length + 2, ...data.map(row => String(row[key] ?? '').length + 2))) }));
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Próxima fase');
-  XLSX.writeFile(workbook, 'maratona-ia-15-selecionados.xlsx');
+  const button = document.getElementById('bancaFinalistsDownload');
+  const originalHtml = button?.innerHTML || '';
+  if (button) {
+    button.disabled = true;
+    button.innerHTML = '<i class="ti ti-loader-2"></i>Preparando planilha';
+  }
+  try {
+    const response = await fetch('./templates/lista_15_selecionados_modelo.xlsx', { cache:'no-store' });
+    if (!response.ok) throw new Error(`Modelo indisponível (${response.status})`);
+    const template = await response.arrayBuffer();
+    const archive = await JSZip.loadAsync(template);
+    const worksheetFile = archive.file('xl/worksheets/sheet1.xml');
+    if (!worksheetFile) throw new Error('A planilha-modelo não contém a aba esperada.');
+    let worksheetXml = await worksheetFile.async('string');
+    const escapeXml = value => String(value ?? '')
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&apos;');
+    const setCellValue = (address, value) => {
+      const expression = new RegExp(`<x:c\\b([^>]*\\br="${address}"[^>]*)\\s*(?:\\/>|>(?:[\\s\\S]*?)<\\/x:c>)`);
+      const nextXml = worksheetXml.replace(expression, (_match, attributes) => {
+        const cleanAttributes = attributes.replace(/\s+t="[^"]*"/g, '').replace(/\s*\/$/, '');
+        if (typeof value === 'number' && Number.isFinite(value)) {
+          return `<x:c${cleanAttributes}><x:v>${value}</x:v></x:c>`;
+        }
+        return `<x:c${cleanAttributes} t="str"><x:v>${escapeXml(value)}</x:v></x:c>`;
+      });
+      if (nextXml === worksheetXml) throw new Error(`Célula ${address} ausente na planilha-modelo.`);
+      worksheetXml = nextXml;
+    };
+    setCellValue('A3', `${data.length} pessoas selecionadas para a próxima fase.`);
+    for (let rowIndex = 0; rowIndex < 15; rowIndex += 1) {
+      for (let columnIndex = 0; columnIndex < 11; columnIndex += 1) {
+        let columnNumber = columnIndex + 1;
+        let columnName = '';
+        while (columnNumber > 0) {
+          columnNumber -= 1;
+          columnName = String.fromCharCode(65 + (columnNumber % 26)) + columnName;
+          columnNumber = Math.floor(columnNumber / 26);
+        }
+        const address = `${columnName}${6 + rowIndex}`;
+        setCellValue(address, data[rowIndex]?.[columnIndex] ?? '');
+      }
+    }
+    archive.file('xl/worksheets/sheet1.xml', worksheetXml);
+    const output = await archive.generateAsync({
+      type:'blob',
+      mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      compression:'DEFLATE',
+    });
+    const url = URL.createObjectURL(output);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'maratona-ia-15-selecionados.xlsx';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    notify('Planilha formatada dos selecionados baixada.');
+  } catch (error) {
+    console.error('Falha ao gerar a planilha formatada dos selecionados:', error);
+    notify('Não foi possível preparar a planilha formatada. Atualize a página e tente novamente.');
+  } finally {
+    if (button) {
+      button.disabled = false;
+      button.innerHTML = originalHtml;
+    }
+  }
 }
 
 function renderBanca() {
