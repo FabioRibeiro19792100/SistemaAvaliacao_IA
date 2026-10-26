@@ -14,6 +14,10 @@ for (const id of ['bancaFiltroRegiao', 'bancaFiltroUf', 'bancaFiltroGenero', 'ba
 assert.match(app, /if \(regiao && regionFromUf\(e\.uf\) !== regiao\) return false;/, 'O filtro de região deve ser aplicado às listas.');
 assert.match(app, /id="dashFiltroRegiao"/, 'A lista do Dashboard deve oferecer filtro por região.');
 assert.match(app, /function exportBancaFinalistsXlsx\(\)[\s\S]*?maratona-ia-15-selecionados\.xlsx/, 'A próxima fase deve exportar os 15 selecionados em Excel.');
+const finalistsExport = app.slice(app.indexOf('function exportBancaFinalistsXlsx()'), app.indexOf('function renderBanca()'));
+assert.doesNotMatch(finalistsExport, /['"]NOTA|Nota geral|definition\.criterios/, 'O Excel dos 15 não deve levar notas ou critérios de avaliação.');
+assert.match(finalistsExport, /toLocaleUpperCase\('pt-BR'\)/, 'Os textos do Excel dos 15 devem ser normalizados em maiúsculas.');
+assert.match(app, /function exportDashboardCSV\(\)[\s\S]*?toLocaleUpperCase\('pt-BR'\)/, 'O CSV do Dashboard também deve normalizar os textos em maiúsculas.');
 assert.match(app, /if \(bancaViewMode === 'finalistas'\) \{[\s\S]*?body\.innerHTML = bancaSelectedProfileHTML\(\);[\s\S]*?return;/, 'O drawer da próxima fase deve mostrar somente o perfil dos selecionados.');
 
 console.log('Filtros compartilhados e exportação da próxima fase validados.');
