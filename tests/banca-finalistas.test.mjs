@@ -18,6 +18,16 @@ assert.match(
   /banca-finalist-toggle-wrap[\s\S]*?res-primary-rank[\s\S]*?toggleFinalSelection/,
   'O toggle dos 15 deve ficar junto à posição do ranking.',
 );
+assert.doesNotMatch(
+  app,
+  /<span>\$\{isFinalist \? 'Selecionado' : 'Selecionar'\}<\/span>/,
+  'O toggle dos 15 deve permanecer autoexplicativo, sem texto lateral.',
+);
+assert.match(
+  app,
+  /#view-banca \.res-criterion-calc\{font-size:10\.5px;font-weight:600;color:#687386/,
+  'A conta ponderada precisa ter tamanho e contraste legíveis na Banca.',
+);
 assert.match(
   app,
   /function saveFinalSelection[\s\S]*?slice\(0, FINAL_SELECTION_LIMIT\)/,

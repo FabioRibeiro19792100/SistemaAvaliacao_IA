@@ -1338,9 +1338,8 @@ tr:hover td.sticky{background:#FAFAFA}
 .res-bank-toggle::after{content:'';width:12px;height:12px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;box-shadow:0 1px 2px rgba(0,0,0,.15);transition:transform .15s ease}
 .res-bank-toggle.is-selected{background:#1A73E8}
 .res-bank-toggle.is-selected::after{transform:translateX(12px)}
-.banca-finalist-toggle-wrap{display:flex;align-items:center;gap:5px;margin-top:7px;color:#7A828E;font-size:8.5px;font-weight:650;line-height:1.1;white-space:nowrap}
+.banca-finalist-toggle-wrap{display:flex;align-items:center;margin-top:7px;white-space:nowrap}
 .banca-finalist-toggle-wrap .res-bank-toggle{width:28px;min-width:28px}
-.banca-finalist-toggle-wrap.is-selected{color:#1558B0}
 .banca-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;padding:16px 0 14px}
 .banca-head-actions{display:flex;align-items:center;gap:12px}
 .banca-count{font-size:12px;color:#7A828E}
@@ -1513,6 +1512,8 @@ tr:hover td.sticky{background:#FAFAFA}
 .res-criterion-result{display:flex;flex-direction:column;align-items:center;gap:6px;line-height:1.15}
 .res-criterion-score{font-size:12px;font-weight:600;color:#3F4752;font-variant-numeric:tabular-nums}
 .res-criterion-calc{font-size:8.5px;font-weight:500;color:#B0B6BE;white-space:nowrap;font-variant-numeric:tabular-nums}
+#view-banca .res-criterion-score{font-size:15px;font-weight:600;color:#252D3B}
+#view-banca .res-criterion-calc{font-size:10.5px;font-weight:600;color:#687386;line-height:1.35}
 .results-stats-drawer{position:fixed;top:0;right:0;width:min(420px,92vw);height:100vh;background:#fff;box-shadow:-10px 0 30px rgba(15,23,42,.16);z-index:120;transform:translateX(105%);transition:transform .22s ease;display:flex;flex-direction:column}
 .results-stats-drawer.open{transform:translateX(0)}
 .results-drawer-backdrop{position:fixed;inset:0;background:rgba(15,23,42,.18);z-index:119;opacity:0;pointer-events:none;transition:opacity .2s ease}
@@ -10169,7 +10170,7 @@ function renderBanca() {
       </tr>`;
     }).join('');
     return `<tr>
-      <td class="sticky s0"><div class="res-rank-line"><span class="res-primary-rank">${rank || '—'}</span></div><div class="banca-finalist-toggle-wrap${isFinalist ? ' is-selected' : ''}"><button type="button" class="res-bank-toggle${isFinalist ? ' is-selected' : ''}" onclick="toggleFinalSelection('${escapeHtmlAttr(String(e.id))}',event)" aria-pressed="${isFinalist}" aria-label="${isFinalist ? 'Retirar dos 15 selecionados' : 'Selecionar para os 15'}" title="${isFinalist ? 'Retirar dos 15 selecionados' : 'Selecionar para os 15'}"></button><span>${isFinalist ? 'Selecionado' : 'Selecionar'}</span></div></td>
+      <td class="sticky s0"><div class="res-rank-line"><span class="res-primary-rank">${rank || '—'}</span></div><div class="banca-finalist-toggle-wrap"><button type="button" class="res-bank-toggle${isFinalist ? ' is-selected' : ''}" onclick="toggleFinalSelection('${escapeHtmlAttr(String(e.id))}',event)" aria-pressed="${isFinalist}" aria-label="${isFinalist ? 'Retirar dos 15 selecionados' : 'Selecionar para os 15'}" title="${isFinalist ? 'Retirar dos 15 selecionados' : 'Selecionar para os 15'}"></button></div></td>
       <td class="res-id-number-col">${escapeHtmlAttr(shortInscId(e.id))}</td>
       <td class="sticky s5"><div class="leader-cell"><div class="res-leader-head"><div class="res-leader-identity"><div class="res-leader-copy"><div class="res-leader-name">${formatResultadoLeaderName(e.lider)}</div></div></div><div class="res-name-actions"><button class="icon-btn" onclick="openModal(${idx},true)" title="Ver os três formulários do workshop" aria-label="Ver os três formulários do workshop"><i class="ti ti-eye"></i></button><button class="icon-btn" onclick="openModalPar(${idx})" title="Ver notas dos pareceristas" aria-label="Ver notas dos pareceristas"><i class="ti ti-notes"></i></button></div></div></div></td>
       <td class="res-project-summary-col"><div class="res-project-summary-text">Check-in · Fase 1 · Fase 2</div><div class="res-muted" style="font-size:10px;margin-top:4px">Abra pelo olhinho para consultar</div></td>
