@@ -69,6 +69,31 @@ assert.match(
   /Parcial · \$\{formatCriterionWeight\(metrics\.availableWeight\)\}% da nota/,
   'A tela deve identificar quando a nota geral ainda representa somente os 80% avaliados pela banca.',
 );
+assert.match(
+  app,
+  /id="bancaReviewerIsTest"/,
+  'O cadastro da Banca dos 80 deve oferecer a opção de parecerista de teste.',
+);
+assert.match(
+  app,
+  /is_teste:\s*isTest/,
+  'O marcador de parecerista de teste deve ser persistido na tabela da banca.',
+);
+assert.match(
+  app,
+  /function officialBancaPareceristas\(\)[\s\S]*?!reviewer\.isTest/,
+  'As métricas da banca devem separar pareceristas oficiais dos pareceristas de teste.',
+);
+assert.match(
+  app,
+  /const officialReviewers = officialBancaPareceristas\(\);[\s\S]*?const completed = officialReviewers\.map/,
+  'As notas agregadas devem considerar somente pareceristas oficiais.',
+);
+assert.match(
+  app,
+  /isTest:\s*!!row\.is_teste/,
+  'O estado carregado do Supabase deve preservar o marcador de teste.',
+);
 
 
 const queueStart = app.indexOf('function renderReviewerEvaluationQueue(');

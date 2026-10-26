@@ -5257,6 +5257,12 @@ body:has(#view-avaliacao.reviewer-direct-mode.active) #btnProximaPendente{displa
       <div><label class="fl">E-mail</label><input id="bancaReviewerEmail" type="email" autocomplete="off" placeholder="ana@email.com"></div>
       <div><label class="fl">Instituição (opcional)</label><input id="bancaReviewerInstitution" type="text" autocomplete="off" placeholder="Instituição"></div>
     </div>
+    <div style="margin-top:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <label style="display:inline-flex;align-items:center;gap:8px;font-size:12px;color:#5F6368;cursor:pointer">
+        <input type="checkbox" id="bancaReviewerIsTest" style="margin:0">
+        Parecerista de teste: pode avaliar os 80, mas não entra nas notas nem nas métricas oficiais
+      </label>
+    </div>
     <button class="btn btn-secondary btn-sm" type="button" onclick="addBancaReviewer()"><i class="ti ti-plus"></i>Adicionar parecerista à banca</button>
   </div>
 
@@ -9793,6 +9799,7 @@ async function addBancaReviewer() {
   const nome = String(document.getElementById('bancaReviewerName')?.value || '').trim();
   const email = String(document.getElementById('bancaReviewerEmail')?.value || '').trim().toLowerCase();
   const instituicao = String(document.getElementById('bancaReviewerInstitution')?.value || '').trim();
+  const isTest = !!document.getElementById('bancaReviewerIsTest')?.checked;
   if (!nome || !email || !email.includes('@')) {
     notify('Informe nome e um e-mail válido.');
     return;
@@ -9810,6 +9817,7 @@ async function addBancaReviewer() {
     nome,
     email,
     instituicao: instituicao || null,
+    is_teste: isTest,
     ativo: true,
     updated_at: new Date().toISOString(),
   }, { onConflict:'environment,id_externo' });
@@ -9823,9 +9831,13 @@ async function addBancaReviewer() {
     const field = document.getElementById(fieldId);
     if (field) field.value = '';
   });
+  const testField = document.getElementById('bancaReviewerIsTest');
+  if (testField) testField.checked = false;
   await loadBancaRoundStateFromSupabase();
   renderBanca();
-  notify(`${nome} adicionado à banca. O link individual já está disponível.`);
+  notify(isTest
+    ? `${nome} adicionado como parecerista de teste. As avaliações não entram nos resultados oficiais.`
+    : `${nome} adicionado à banca. O link individual já está disponível.`);
 }
 
 async function deactivateBancaReviewer(parId) {
@@ -9851,21 +9863,31 @@ function bancaReviewerCompletedCount(parId, selectedIds = new Set(getBancaSelect
   return Object.entries(bancaAvaliacoes[parId] || {}).filter(([inscId, av]) => selectedIds.has(String(inscId)) && av?.done).length;
 }
 
+function officialBancaPareceristas() {
+  return bancaPareceristas.filter(reviewer => !reviewer.isTest);
+}
+
 function renderBancaReviewers() {
   const list = document.getElementById('bancaReviewerList');
   const status = document.getElementById('bancaReviewerRoundStatus');
   if (!list) return;
   const selectedIds = new Set(getBancaSelectionIds());
+  const officialCount = officialBancaPareceristas().length;
+  const testCount = bancaPareceristas.length - officialCount;
   if (status) status.textContent = bancaRoundSchemaAvailable === false
     ? 'Configuração pendente'
-    : `${bancaPareceristas.length} ${bancaPareceristas.length === 1 ? 'parecerista ativo' : 'pareceristas ativos'} · ${selectedIds.size} candidaturas cada · ${bancaModelDefinition().label}`;
+    : `${officialCount} ${officialCount === 1 ? 'parecerista oficial' : 'pareceristas oficiais'}${testCount ? ` + ${testCount} de teste` : ''} · ${selectedIds.size} candidaturas cada · ${bancaModelDefinition().label}`;
   if (bancaRoundSchemaAvailable === false) {
     list.innerHTML = '<tr><td colspan="7" style="padding:24px;text-align:center;color:#9AA0A6">Aplique <strong>20260722_add_banca_review_round.sql</strong> no Supabase para habilitar o cadastro e os links da banca.</td></tr>';
     return;
   }
   list.innerHTML = bancaPareceristas.length ? bancaPareceristas.map(p => {
     const done = bancaReviewerCompletedCount(p.id, selectedIds);
-    return `<tr><td>${bancaPareceristas.indexOf(p) + 1}</td><td style="font-weight:500">${escapeHtmlAttr(p.nome)}</td><td>${escapeHtmlAttr(p.email)}</td><td>${escapeHtmlAttr(p.inst || '—')}</td><td><strong>${done}</strong> de ${selectedIds.size} concluídas</td><td><button class="btn btn-secondary btn-sm" type="button" onclick="openBancaReviewerLink('${p.id}')"><i class="ti ti-external-link"></i>Abrir portal</button></td><td><div class="banca-reviewer-actions"><button class="icon-btn" type="button" onclick="copyBancaReviewerLink('${p.id}','${escapeHtmlAttr(p.nome)}')" title="Copiar link"><i class="ti ti-copy"></i></button><button class="icon-btn" type="button" onclick="deactivateBancaReviewer('${p.id}')" title="Retirar da banca"><i class="ti ti-trash"></i></button></div></td></tr>`;
+    const testBadge = p.isTest ? ' <span class="badge b-pend" style="margin-left:6px">Teste</span>' : '';
+    const progressCopy = p.isTest
+      ? `<strong>${done}</strong> de ${selectedIds.size} concluídas · fora das métricas`
+      : `<strong>${done}</strong> de ${selectedIds.size} concluídas`;
+    return `<tr><td>${bancaPareceristas.indexOf(p) + 1}</td><td style="font-weight:500">${escapeHtmlAttr(p.nome)}${testBadge}</td><td>${escapeHtmlAttr(p.email)}</td><td>${escapeHtmlAttr(p.inst || '—')}</td><td>${progressCopy}</td><td><button class="btn btn-secondary btn-sm" type="button" onclick="openBancaReviewerLink('${p.id}')"><i class="ti ti-external-link"></i>Abrir portal</button></td><td><div class="banca-reviewer-actions"><button class="icon-btn" type="button" onclick="copyBancaReviewerLink('${p.id}','${escapeHtmlAttr(p.nome)}')" title="Copiar link"><i class="ti ti-copy"></i></button><button class="icon-btn" type="button" onclick="deactivateBancaReviewer('${p.id}')" title="Retirar da banca"><i class="ti ti-trash"></i></button></div></td></tr>`;
   }).join('') : '<tr><td colspan="7" style="padding:24px;text-align:center;color:#9AA0A6">Nenhum parecerista foi designado para a banca.</td></tr>';
 }
 
@@ -9898,7 +9920,8 @@ function bancaTeamMetrics(inscId) {
   const weights = bancaCriterionWeights(definition);
   const reviewerIndexes = bancaReviewerCriterionIndexes(definition);
   const spreadsheetIndexes = bancaCriterionIndexes(definition).filter(index => bancaCriterionComesFromSpreadsheet(index, definition));
-  const completed = bancaPareceristas.map(p => bancaAvaliacoes[p.id]?.[String(inscId)]).filter(av => av?.done);
+  const officialReviewers = officialBancaPareceristas();
+  const completed = officialReviewers.map(p => bancaAvaliacoes[p.id]?.[String(inscId)]).filter(av => av?.done);
   const criteria = definition.criterios.map((_, index) => {
     if (bancaCriterionComesFromSpreadsheet(index, definition)) return bancaEmployerBrandScore(inscId);
     const values = completed.map(av => NV[av.notas?.[index]]).filter(Number.isFinite);
@@ -9912,12 +9935,13 @@ function bancaTeamMetrics(inscId) {
   const total = reviewerScoresReady
     ? availableIndexes.reduce((sum, index) => sum + criteria[index] * ((weights[index] || 0) / 100), 0)
     : null;
-  return { completed:completed.length, expected:bancaPareceristas.length, criteria, total, availableWeight, partial:total !== null && availableWeight < 100 };
+  return { completed:completed.length, expected:officialReviewers.length, criteria, total, availableWeight, partial:total !== null && availableWeight < 100 };
 }
 
 function bancaReviewerProgressHTML(inscId, rowIdx) {
-  const done = bancaPareceristas.filter(p => bancaAvaliacoes[p.id]?.[String(inscId)]?.done).length;
-  const total = bancaPareceristas.length;
+  const officialReviewers = officialBancaPareceristas();
+  const done = officialReviewers.filter(p => bancaAvaliacoes[p.id]?.[String(inscId)]?.done).length;
+  const total = officialReviewers.length;
   const title = `${done} de ${total} pareceres da banca concluídos`;
   return `<button class="nota-progress-btn" id="exp-banca-${rowIdx}" onclick="toggleBancaRes(${rowIdx})" title="${title}" aria-label="${title}" aria-expanded="false">
     <i class="ti ti-chevron-down nota-progress-arrow" aria-hidden="true"></i>
@@ -9979,8 +10003,9 @@ function renderBanca() {
   renderBancaReviewers();
   const summary = document.getElementById('bancaSummary');
   if (summary) summary.textContent = `${rows.length} ${rows.length === 1 ? 'participante carregado' : 'participantes carregados'} · ${bancaModelDefinition().label}`;
-  const expectedEvaluations = rows.length * bancaPareceristas.length;
-  const completedEvaluations = bancaPareceristas.reduce((sum, reviewer) => {
+  const officialReviewers = officialBancaPareceristas();
+  const expectedEvaluations = rows.length * officialReviewers.length;
+  const completedEvaluations = officialReviewers.reduce((sum, reviewer) => {
     return sum + rows.filter(({ e }) => bancaAvaliacoes[reviewer.id]?.[String(e.id)]?.done).length;
   }, 0);
   const completedPercent = expectedEvaluations > 0
@@ -10027,7 +10052,7 @@ function renderBanca() {
       return `<tr class="sub-row sub-banca-${rowIdx}">
         <td class="sticky s0"></td>
         <td class="res-id-number-col"></td>
-        <td class="sticky s5" style="padding-left:22px"><div style="font-size:11px;font-weight:500;color:#5F6368">${escapeHtmlAttr(reviewer.nome)}</div><div class="res-faint" style="font-size:10px">Parecerista da banca</div></td>
+        <td class="sticky s5" style="padding-left:22px"><div style="font-size:11px;font-weight:500;color:#5F6368">${escapeHtmlAttr(reviewer.nome)}${reviewer.isTest ? ' <span class="badge b-pend">Teste</span>' : ''}</div><div class="res-faint" style="font-size:10px">${reviewer.isTest ? 'Parecer de teste · fora do resultado oficial' : 'Parecerista da banca'}</div></td>
         <td class="res-project-summary-col"></td>
         <td class="res-gender-col"></td>
         <td class="res-race-col"></td>
@@ -10108,14 +10133,15 @@ function renderResultsStatsDrawer(source = 'resultados') {
       done:bancaReviewerCompletedCount(reviewer.id, selectedIds),
       assigned:selectedIds.size,
     }));
-    const done = reviewers.reduce((sum, item) => sum + item.done, 0);
-    const expected = reviewers.reduce((sum, item) => sum + item.assigned, 0);
+    const officialReviewers = reviewers.filter(item => !item.reviewer.isTest);
+    const done = officialReviewers.reduce((sum, item) => sum + item.done, 0);
+    const expected = officialReviewers.reduce((sum, item) => sum + item.assigned, 0);
     const percent = expected ? Math.round((done / expected) * 100) : 0;
     const reviewerRows = reviewers.map(({ reviewer, done:reviewerDone, assigned }) => {
       const reviewerPercent = assigned ? Math.round((reviewerDone / assigned) * 100) : 0;
       return `<div class="evaluation-progress-row">
-        <div class="evaluation-progress-row-head"><span>${escapeHtmlAttr(reviewer.nome || 'Parecerista')}</span><strong>${reviewerDone}</strong></div>
-        <div class="evaluation-progress-row-meta">${reviewerDone} de ${assigned} avaliações concluídas</div>
+        <div class="evaluation-progress-row-head"><span>${escapeHtmlAttr(reviewer.nome || 'Parecerista')}${reviewer.isTest ? ' · Teste' : ''}</span><strong>${reviewerDone}</strong></div>
+        <div class="evaluation-progress-row-meta">${reviewerDone} de ${assigned} avaliações concluídas${reviewer.isTest ? ' · fora das métricas oficiais' : ''}</div>
         <div class="evaluation-progress-track" aria-hidden="true"><span style="width:${reviewerPercent}%"></span></div>
       </div>`;
     }).join('');
@@ -14138,6 +14164,7 @@ async function loadBancaRoundStateFromSupabase() {
       nome: row.nome,
       email: row.email,
       inst: row.instituicao || '',
+      isTest: !!row.is_teste,
     }));
     bancaAvaliacoes = evaluationMapFromRemote(evaluations || [], criteria || []);
     bancaRoundSchemaAvailable = true;
@@ -14575,7 +14602,7 @@ async function loadBancaReviewerPortalStateFromSupabase(parId) {
       inst: parRes.data.instituicao || '',
       cota: null,
       cotaManual: false,
-      isTest: false,
+      isTest: !!parRes.data.is_teste,
     }];
     selectedInscriptions.forEach(row => {
       atribuicoes[shortInscId(row.id_externo)] = [parId];

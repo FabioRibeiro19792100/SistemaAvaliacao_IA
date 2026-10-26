@@ -162,6 +162,7 @@ create table if not exists banca_pareceristas (
   nome text not null,
   email text not null,
   instituicao text,
+  is_teste boolean not null default false,
   ativo boolean not null default true,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
